@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" id="simulate" xml:lang="ja">
+
+	<info>
+		<link type="guide" xref="index#simulate"/>
+		<desc><guiseq><gui>シミュレート</gui><gui>実行</gui></guiseq> をクリックして作成した回路をシミュレートします。</desc>
+		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+	</info>
+
+	<title>シミュレートの基本</title>
+
+	<section id="run">
+		<title>回路の実行</title>
+		<p>作成した回路のシミュレートを開始するには、 <guiseq><gui>シミュレート</gui><gui>実行</gui></guiseq> をクリックするか、<key>F5</key> を押します。</p>
+		<p>回路をシミュレートする前に、以下の点に注意しなければなりません。</p>
+		<list>
+			<item>
+				<p>回路が周波数無限大で振動しないこと (振動する回路で伝播遅延時間などが適切に設定されていること)</p>
+			</item>
+			<item>
+				<p>素子の入力端子が開放されていないこと</p>
+			</item>
+			<item>
+				<p>素子の出力端子が短絡されていないこと</p>
+			</item>
+		</list>
+	</section>
+
+	<section id="pause">
+		<title>回路の一時停止</title>
+		<p>2つ以上のスイッチを同時に切り替えたい時は、一時停止モードが使えます。シミュレーションを一時停止するには、<guiseq><gui>シミュレート</gui><gui>一時停止</gui></guiseq>をクリックするか、<key>F6</key> を押して一時停止モードに切り替えます。</p>
+		<p>一時停止モードでは、スイッチが切り替えられた時に回路は動作しません。このモードの時に2つ以上のスイッチを切り替えることができます。シミュレーションを再開するには、メニューをクリックするか <key>F6</key> を押してモードを切り替えます。</p>
+	</section>
+
+	<section id="settle">
+		<title>収束する回路の実行</title>
+		<p>回路が振動せずに収束する場合、スイッチ素子をクリックすることで、結果を直ちに見ることができます。</p>
+	</section>
+
+	<section id="oscillate">
+		<title>振動する回路の実行</title>
+		<p>回路が振動する場合、伝播遅延時間が適切に設定されている場合に限り実行できます。この場合の回路の挙動はタイミングチャートウィンドウから把握できます。タイミングチャートウィンドウについては <link xref="timing"/> を参照してください。</p>
+	</section>
+
+	<section id="preference">
+		<title>設定</title>
+		<p><guiseq><gui>編集</gui><gui>設定</gui></guiseq> からシミュレート時の設定を変更できます。</p>
+		<terms>
+			<item>
+				<title>最大計算反復回数</title>
+				<p>システム内での計算の反復回数の上限値です。反復回数がこの値を超えると、シミュレートを停止します。</p>
+			</item>
+			<item>
+				<title>最大計算時間</title>
+				<p>伝播遅延時間などの累積時間がこの値を超えると、シミュレートを停止します。</p>
+			</item>
+		</terms>
+	</section>
+
+</page>

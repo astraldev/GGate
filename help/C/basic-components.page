@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task" id="basic-components">
+
+	<info>
+		<link type="guide" xref="index#components"/>
+		<desc>NOT, AND, OR and other basic logic components</desc>
+		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+	</info>
+
+	<title>Basic logic components</title>
+
+	<section id="not">
+		<title>NOT</title>
+		<p its:translate="no"><media type="image" src="figures/components/not.png">NOT</media></p>
+		<p>Output NOT of input.</p>
+		<terms>
+			<item>
+				<title>Truth table:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/></colgroup>
+					<colgroup><col/></colgroup>
+					<tr><td><p>Input</p></td><td><p>Output</p></td></tr>
+					<tr><td colspan="2"><p/></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
+				</table>
+			</item>
+			<item>
+				<title>Properties:</title>
+				<table frame="all" rules="all">
+					<tr>
+						<td><p>Input pins</p></td>
+						<td><p>A number of input pins. 2 or 3</p></td>
+					</tr>
+					<tr>
+						<td colspan="2"><p>Propagation delay</p></td>
+					</tr>
+					<tr>
+						<td><p>tPHL</p></td>
+						<td><p>Delays when output is changed from H level to L level</p></td>
+					</tr>
+					<tr>
+						<td><p>tPLH</p></td>
+						<td><p>Delays when output is changed from L level to H level</p></td>
+					</tr>
+				</table>
+			</item>
+		</terms>
+	</section>
+
+	<section id="and">
+		<title>AND</title>
+		<p its:translate="no"><media type="image" src="figures/components/and.png">AND</media></p>
+		<p>Outputs AND of input.</p>
+		<terms>
+			<item>
+				<title>Truth table:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/><col/></colgroup>
+					<colgroup><col/></colgroup>
+					<tr><td colspan="2"><p>Input</p></td><td><p>Output</p></td></tr>
+					<tr><td colspan="3"><p/></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td></tr>
+				</table>
+			</item>
+			<item>
+				<title>Properties:</title>
+				<table frame="all" rules="all">
+					<tr>
+						<td><p>Input pins</p></td>
+						<td><p>A number of input pins. 2 or 3</p></td>
+					</tr>
+					<tr>
+						<td colspan="2"><p>Propagation delay</p></td>
+					</tr>
+					<tr>
+						<td><p>tPHL</p></td>
+						<td><p>Delays when output is changed from H level to L level</p></td>
+					</tr>
+					<tr>
+						<td><p>tPLH</p></td>
+						<td><p>Delays when output is changed from L level to H level</p></td>
+					</tr>
+				</table>
+			</item>
+		</terms>
+	</section>
+
+	<section id="or">
+		<title>OR</title>
+		<p its:translate="no"><media type="image" src="figures/components/or.png">OR</media></p>
+		<p>Outputs OR of input.</p>
+		<terms>
+			<item>
+				<title>Truth table:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/><col/></colgroup>
+					<colgroup><col/></colgroup>
+					<tr><td colspan="2"><p>Input</p></td><td><p>Output</p></td></tr>
+					<tr><td colspan="3"><p/></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td></tr>
+				</table>
+			</item>
+			<item>
+				<title>Properties:</title>
+				<table frame="all" rules="all">
+					<tr>
+						<td><p>Input pins</p></td>
+						<td><p>A number of input pins. 2 or 3</p></td>
+					</tr>
+					<tr>
+						<td colspan="2"><p>Propagation delay</p></td>
+					</tr>
+					<tr>
+						<td><p>tPHL</p></td>
+						<td><p>Delays when output is changed from H level to L level</p></td>
+					</tr>
+					<tr>
+						<td><p>tPLH</p></td>
+						<td><p>Delays when output is changed from L level to H level</p></td>
+					</tr>
+				</table>
+			</item>
+		</terms>
+	</section>
+
+	<section id="xor">
+		<title>XOR</title>
+		<p its:translate="no"><media type="image" src="figures/components/xor.png">XOR</media></p>
+		<p>Outputs exclusive OR of input.</p>
+		<terms>
+			<item>
+				<title>Truth table:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/><col/></colgroup>
+					<colgroup><col/></colgroup>
+					<tr><td colspan="2"><p>Input</p></td><td><p>Output</p></td></tr>
+					<tr><td colspan="3"><p/></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
+				</table>
+			</item>
+			<item>
+				<title>Properties:</title>
+				<table frame="all" rules="all">
+					<tr>
+						<td><p>Input pins</p></td>
+						<td><p>A number of input pins. 2 or 3</p></td>
+					</tr>
+					<tr>
+						<td colspan="2"><p>Propagation delay</p></td>
+					</tr>
+					<tr>
+						<td><p>tPHL</p></td>
+						<td><p>Delays when output is changed from H level to L level</p></td>
+					</tr>
+					<tr>
+						<td><p>tPLH</p></td>
+						<td><p>Delays when output is changed from L level to H level</p></td>
+					</tr>
+				</table>
+			</item>
+		</terms>
+	</section>
+
+	<section id="nand">
+		<title>NAND</title>
+		<p its:translate="no"><media type="image" src="figures/components/nand.png">NAND</media></p>
+		<p>Outputs NOT-AND of input.</p>
+		<terms>
+			<item>
+				<title>Truth table:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/><col/></colgroup>
+					<colgroup><col/></colgroup>
+					<tr><td colspan="2"><p>Input</p></td><td><p>Output</p></td></tr>
+					<tr><td colspan="3"><p/></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
+				</table>
+			</item>
+			<item>
+				<title>Properties:</title>
+				<table frame="all" rules="all">
+					<tr>
+						<td><p>Input pins</p></td>
+						<td><p>A number of input pins. 2 or 3</p></td>
+					</tr>
+					<tr>
+						<td colspan="2"><p>Propagation delay</p></td>
+					</tr>
+					<tr>
+						<td><p>tPHL</p></td>
+						<td><p>Delays when output is changed from H level to L level</p></td>
+					</tr>
+					<tr>
+						<td><p>tPLH</p></td>
+						<td><p>Delays when output is changed from L level to H level</p></td>
+					</tr>
+				</table>
+			</item>
+		</terms>
+	</section>
+
+	<section id="nor">
+		<title>NOR</title>
+		<p its:translate="no"><media type="image" src="figures/components/nor.png">NOR</media></p>
+		<p>Outputs NOT-OR of input.</p>
+		<terms>
+			<item>
+				<title>Truth table:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/><col/></colgroup>
+					<colgroup><col/></colgroup>
+					<tr><td colspan="2"><p>Input</p></td><td><p>Output</p></td></tr>
+					<tr><td colspan="3"><p/></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
+				</table>
+			</item>
+			<item>
+				<title>Properties:</title>
+				<table frame="all" rules="all">
+					<tr>
+						<td><p>Input pins</p></td>
+						<td><p>A number of input pins. 2 or 3</p></td>
+					</tr>
+					<tr>
+						<td colspan="2"><p>Propagation delay</p></td>
+					</tr>
+					<tr>
+						<td><p>tPHL</p></td>
+						<td><p>Delays when output is changed from H level to L level</p></td>
+					</tr>
+					<tr>
+						<td><p>tPLH</p></td>
+						<td><p>Delays when output is changed from L level to H level</p></td>
+					</tr>
+				</table>
+			</item>
+		</terms>
+	</section>
+
+	<section id="vdd">
+		<title>Vdd</title>
+		<p its:translate="no"><media type="image" src="figures/components/vdd.png">Vdd</media></p>
+		<p>Always outputs H level.</p>
+		<terms>
+			<item>
+				<title>Truth table:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/></colgroup>
+					<colgroup><col/></colgroup>
+					<tr><td><p>Input</p></td><td><p>Output</p></td></tr>
+					<tr><td colspan="2"><p/></td></tr>
+					<tr><td><p its:translate="no">―</p></td><td><p its:translate="no">H</p></td></tr>
+				</table>
+			</item>
+			<item>
+				<title>Properties:</title>
+				<p>This component has no properties.</p>
+			</item>
+		</terms>
+	</section>
+
+	<section id="gnd">
+		<title>GND</title>
+		<p its:translate="no"><media type="image" src="figures/components/gnd.png">GND</media></p>
+		<p>Always outputs L level.</p>
+		<terms>
+			<item>
+				<title>Truth table:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/></colgroup>
+					<colgroup><col/></colgroup>
+					<tr><td><p>Input</p></td><td><p>Output</p></td></tr>
+					<tr><td colspan="2"><p/></td></tr>
+					<tr><td><p its:translate="no">―</p></td><td><p its:translate="no">L</p></td></tr>
+				</table>
+			</item>
+			<item>
+				<title>Properties:</title>
+				<p>This component has no properties.</p>
+			</item>
+		</terms>
+	</section>
+
+</page>

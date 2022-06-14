@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" type="topic" style="task" id="saveimage" xml:lang="ja">
+
+	<info>
+		<link type="guide" xref="index#saveimage"/>
+		<desc>作成した回路やタイミングチャートを画像ファイルに保存できます。</desc>
+		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+	</info>
+
+	<title>画像として保存</title>
+
+	<section id="circuit">
+		<title>回路図の保存</title>
+		<p>回路図を保存するには、 <guiseq><gui>ファイル</gui><gui>画像として保存</gui></guiseq> をクリックします。編集画面でこの操作を行った場合、配線は一色で表示されます。回路の実行画面で保存操作を行った場合は、配線の着色の有無を選択できます。</p>
+	</section>
+
+	<section id="timing">
+		<title>タイミングチャートの保存</title>
+		<p>タイミングチャートを保存するには、タイミングチャートウィンドウ上部の <gui>図を保存</gui> をクリックします。</p>
+		<note>
+			<p>PNG、PDF、SVG、PS の4つのフォーマットで保存できます。</p>
+		</note>
+	</section>
+
+</page>

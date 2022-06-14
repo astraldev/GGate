@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:its="http://www.w3.org/2005/11/its"
+      type="topic" style="task" id="add-net">
+
+	<info>
+		<link type="guide" xref="index#edit"/>
+		<desc>Click <guiseq><gui>Add</gui><gui>Net</gui></guiseq> to add nets.</desc>
+		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+	</info>
+
+	<title>Add nets and connect components</title>
+
+	<section id="add">
+		<title>Add nets</title>
+		<p>You can add vertical and horizontal nets on gLogic. To add nets:</p>
+		<steps>
+			<item>
+				<p>Click <guiseq><gui>Add</gui><gui>Net</gui></guiseq> to change to net mode</p>
+			</item>
+			<item>
+				<p>Click the starting point of a net</p>
+			</item>
+			<item>
+				<p>Click the ending point of a net</p>
+			</item>
+			<item>
+				<p>You can click more times to continue adding nets</p>
+			</item>
+			<item>
+				<p>Right click to stop adding nets</p>
+			</item>
+			<item>
+				<p>One more right click to back to select components mode</p>
+			</item>
+		</steps>
+		<p>There are two other options to change to net mode:</p>
+		<list>
+			<item>
+				<p>Click <media type="image" src="figures/add-net.png" its:translate="no">Net button</media> on the toolbar</p>
+			</item>
+			<item>
+				<p>Press <keyseq><key>Ctrl</key><key>E</key></keyseq></p>
+			</item>
+		</list>
+	</section>
+
+	<section id="connect">
+		<title>Connect components</title>
+		<p>On net mode, the cursor will be snapped to terminals of components and nets. To connect a net to a terminal, make a terminal and a net touch.</p>
+		<note><p>If you put a net on another one, they will be unified. If you put a terminal on a net, it will be split at a terminal.</p></note>
+	</section>
+
+	<section id="narrow">
+		<title>To mass nets</title>
+		<p>When you want to mass nets, snapping may annoy you to place nets. To disable snapping temporarily, press <key>Ctrl</key> while you add.</p>
+	</section>
+
+</page>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:its="http://www.w3.org/2005/11/its" type="topic" style="task" id="shiftregister-components" xml:lang="ja">
+
+	<info>
+		<link type="guide" xref="index#components"/>
+		<desc>フリップフロップの組み合わせによるシフトレジスター素子</desc>
+		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+	</info>
+
+	<title>シフトレジスター</title>
+
+	<section id="siso">
+		<title>SISOシフトレジスター</title>
+		<p its:translate="no"><media type="image" src="figures/components/siso.png">SISO shift register</media></p>
+		<p>直列Dフリップフロップによるシリアル入出力シフトレジスターです。</p>
+		<terms>
+			<item>
+				<title>真理値表:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/><col/></colgroup>
+					<colgroup><col/><col/></colgroup>
+					<tr><td colspan="2"><p>入力</p></td><td colspan="2"><p>出力</p></td></tr>
+					<tr><td><p its:translate="no">D</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
+					<tr><td colspan="4"><p/></td></tr>
+					<tr><td><p its:translate="no">X</p></td><td><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">D(n-m)</p></td><td><p its:translate="no">~D(n-m)</p></td></tr>
+				</table>
+				<p>m: シフトレジスターのビット数</p>
+			</item>
+			<item>
+				<title>プロパティー:</title>
+				<table frame="all" rules="all">
+					<tr>
+						<td><p>ビット数</p></td>
+						<td><p>シフトレジスターに含まれるDフリップフロップの段数</p></td>
+					</tr>
+					<tr>
+						<td><p>トリガータイプ</p></td>
+						<td><p>クロック信号の種類。立ち上がりエッジ(↑)または立ち下がりエッジ(↓)</p></td>
+					</tr>
+					<tr>
+						<td colspan="2"><p>伝播遅延時間</p></td>
+					</tr>
+					<tr>
+						<td><p>tPHL</p></td>
+						<td><p>出力がHレベルからLレベルに変化する時の遅延時間</p></td>
+					</tr>
+					<tr>
+						<td><p>tPLH</p></td>
+						<td><p>出力がLレベルからHレベルに変化する時の遅延時間</p></td>
+					</tr>
+				</table>
+			</item>
+		</terms>
+	</section>
+
+	<section id="sipo">
+		<title>SIPOシフトレジスター</title>
+		<p its:translate="no"><media type="image" src="figures/components/sipo.png">SIPO shift register</media></p>
+		<p>直列Dフリップフロップによるシリアル入力パラレル出力シフトレジスターです。</p>
+		<terms>
+			<item>
+				<title>等価回路:</title>
+				<p its:translate="no"><media type="image" src="figures/sipo-equiv.png">SIPO shift register</media></p>
+			</item>
+			<item>
+				<title>真理値表:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/><col/><col/></colgroup>
+					<colgroup><col/><col/></colgroup>
+					<tr><td colspan="3"><p>入力</p></td><td colspan="2"><p>出力</p></td></tr>
+					<tr><td><p its:translate="no">RST</p></td><td><p its:translate="no">D</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q0</p></td><td><p its:translate="no">Q{m}</p></td></tr>
+					<tr><td colspan="5"><p/></td></tr>
+					<tr><td><p its:translate="no">L</p></td><td rowspan="2"><p its:translate="no">X</p></td><td><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">D(n-1)</p></td><td><p its:translate="no">Q{m-1}(n-1)</p></td></tr>
+					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">X</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td></tr>
+				</table>
+			</item>
+			<item>
+				<title>プロパティー:</title>
+				<table frame="all" rules="all">
+					<tr>
+						<td><p>ビット数</p></td>
+						<td><p>シフトレジスターに含まれるDフリップフロップの段数</p></td>
+					</tr>
+					<tr>
+						<td><p>トリガータイプ</p></td>
+						<td><p>クロック信号の種類。立ち上がりエッジ(↑)または立ち下がりエッジ(↓)</p></td>
+					</tr>
+					<tr>
+						<td colspan="2"><p>伝播遅延時間</p></td>
+					</tr>
+					<tr>
+						<td><p>tPHL</p></td>
+						<td><p>出力がHレベルからLレベルに変化する時の遅延時間</p></td>
+					</tr>
+					<tr>
+						<td><p>tPLH</p></td>
+						<td><p>出力がLレベルからHレベルに変化する時の遅延時間</p></td>
+					</tr>
+				</table>
+			</item>
+		</terms>
+	</section>
+
+	<section id="piso">
+		<title>PISOシフトレジスター</title>
+		<p its:translate="no"><media type="image" src="figures/components/piso.png">PISO shift register</media></p>
+		<p>Dフリップフロップによるパラレル入力シリアル出力シフトレジスターです。</p>
+		<terms>
+			<item>
+				<title>真理値表:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/><col/><col/><col/></colgroup>
+					<colgroup><col/><col/><col/><col/></colgroup>
+					<tr><td rowspan="2"><p>モード</p></td><td colspan="3"><p>入力</p></td><td colspan="4"><p>出力</p></td></tr>
+					<tr><td><p its:translate="no">W/S</p></td><td><p its:translate="no">D{m}</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q0S</p></td><td><p its:translate="no">Q{m}S</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
+					<tr><td colspan="8"><p/></td></tr>
+					<tr><td><p>書き込み</p></td><td><p its:translate="no">L</p></td><td rowspan="2"><p its:translate="no">X</p></td><td rowspan="2"><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">D0(n-1)</p></td><td><p its:translate="no">D{m}(n-1)</p></td><td rowspan="2"><p its:translate="no">Q{p-1}S</p></td><td rowspan="2"><p its:translate="no">~Q{p-1}S</p></td></tr>
+					<tr><td><p>シフト</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">Q0S(n-1)</p></td><td><p its:translate="no">Q{m-1}S(n-1)</p></td></tr>
+				</table>
+				<p>p: シフトレジスターのビット数</p>
+				<p>Q{m}S は素子内の状態変数であり、出力端子を持ちません</p>
+			</item>
+			<item>
+				<title>プロパティー:</title>
+				<table frame="all" rules="all">
+					<tr>
+						<td><p>ビット数</p></td>
+						<td><p>シフトレジスターに含まれるDフリップフロップの段数</p></td>
+					</tr>
+					<tr>
+						<td><p>トリガータイプ</p></td>
+						<td><p>クロック信号の種類。立ち上がりエッジ(↑)または立ち下がりエッジ(↓)</p></td>
+					</tr>
+					<tr>
+						<td colspan="2"><p>伝播遅延時間</p></td>
+					</tr>
+					<tr>
+						<td><p>tPHL</p></td>
+						<td><p>出力がHレベルからLレベルに変化する時の遅延時間</p></td>
+					</tr>
+					<tr>
+						<td><p>tPLH</p></td>
+						<td><p>出力がLレベルからHレベルに変化する時の遅延時間</p></td>
+					</tr>
+				</table>
+			</item>
+		</terms>
+	</section>
+
+	<section id="pipo">
+		<title>PIPOシフトレジスター</title>
+		<p its:translate="no"><media type="image" src="figures/components/pipo.png">PIPO shift register</media></p>
+		<p>Dフリップフロップによるパラレル入出力シフトレジスターです。</p>
+		<terms>
+			<item>
+				<title>真理値表:</title>
+				<table frame="all" rules="all" shade="colgroups">
+					<colgroup><col/><col/><col/><col/><col/><col/><col/></colgroup>
+					<colgroup><col/><col/><col/></colgroup>
+					<tr><td rowspan="2"><p>モード</p></td><td colspan="6"><p>入力</p></td><td colspan="3"><p>出力</p></td></tr>
+					<tr><td><p its:translate="no">S0</p></td><td><p its:translate="no">S1</p></td><td><p its:translate="no">SR</p></td><td><p its:translate="no">D{m}</p></td><td><p its:translate="no">SL</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q0</p></td><td><p its:translate="no">Q{m}</p></td><td><p its:translate="no">Q{p}</p></td></tr>
+					<tr><td colspan="10"><p/></td></tr>
+					<tr><td><p>保持</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td rowspan="4"><p its:translate="no">X</p></td><td rowspan="4"><p its:translate="no">X</p></td><td rowspan="4"><p its:translate="no">X</p></td><td rowspan="4"><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">Q0(n-1)</p></td><td><p its:translate="no">Q{m}(n-1)</p></td><td><p its:translate="no">Q{p}(n-1)</p></td></tr>
+					<tr><td><p>左シフト</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">Q1(n-1)</p></td><td><p its:translate="no">Q{m+1}(n-1)</p></td><td><p its:translate="no">SL(n-1)</p></td></tr>
+					<tr><td><p>右シフト</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">SR(n-1)</p></td><td><p its:translate="no">Q{m-1}(n-1)</p></td><td><p its:translate="no">Q{p-1}(n-1)</p></td></tr>
+					<tr><td><p>書き込み</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">D0(n-1)</p></td><td><p its:translate="no">D{m}(n-1)</p></td><td><p its:translate="no">D{p}(n-1)</p></td></tr>
+				</table>
+				<p>p: シフトレジスターのビット数</p>
+			</item>
+			<item>
+				<title>プロパティー:</title>
+				<table frame="all" rules="all">
+					<tr>
+						<td><p>ビット数</p></td>
+						<td><p>シフトレジスターに含まれるDフリップフロップの段数</p></td>
+					</tr>
+					<tr>
+						<td><p>トリガータイプ</p></td>
+						<td><p>クロック信号の種類。立ち上がりエッジ(↑)または立ち下がりエッジ(↓)</p></td>
+					</tr>
+					<tr>
+						<td colspan="2"><p>伝播遅延時間</p></td>
+					</tr>
+					<tr>
+						<td><p>tPHL</p></td>
+						<td><p>出力がHレベルからLレベルに変化する時の遅延時間</p></td>
+					</tr>
+					<tr>
+						<td><p>tPLH</p></td>
+						<td><p>出力がLレベルからHレベルに変化する時の遅延時間</p></td>
+					</tr>
+				</table>
+			</item>
+		</terms>
+	</section>
+
+</page>

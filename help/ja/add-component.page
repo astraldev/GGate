@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<page xmlns="http://projectmallard.org/1.0/" xmlns:its="http://www.w3.org/2005/11/its" type="topic" style="task" id="add-component" xml:lang="ja">
+
+	<info>
+		<link type="guide" xref="index#edit"/>
+		<desc><guiseq><gui>追加</gui><gui>部品</gui></guiseq> をクリックして追加する部品を選択します。</desc>
+		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+	</info>
+
+	<title>部品の追加とプロパティーの編集</title>
+
+	<section id="add">
+		<title>部品の追加</title>
+		<p>部品を追加するには:</p>
+		<steps>
+			<item>
+				<p><guiseq><gui>追加</gui><gui>部品</gui></guiseq> をクリックし、部品ウィンドウを表示します</p>
+			</item>
+			<item>
+				<p>追加したい部品をクリックし、部品追加モードにします</p>
+			</item>
+			<item>
+				<p>カーソルを移動して追加位置を決め、クリックします</p>
+			</item>
+			<item>
+				<p>連続してクリックすることで、同じ部品を連続して追加できます</p>
+			</item>
+			<item>
+				<p>右クリックして部品選択モードに戻ります</p>
+			</item>
+		</steps>
+		<p>部品ウィンドウを表示するには、他に次の2つの方法があります:</p>
+		<list>
+			<item>
+				<p>ツールバーの <media type="image" src="figures/add-component.png" its:translate="no">Component button</media> をクリックする</p>
+			</item>
+			<item>
+				<p><keyseq><key>Ctrl</key><key>A</key></keyseq> を押す</p>
+			</item>
+		</list>
+	</section>
+
+	<section id="property">
+		<title>プロパティーの編集</title>
+		<p>それぞれの部品にはプロパティーが存在し、プロパティーの値を変更することで部品の挙動を変えられます。プロパティーを修正するには:</p>
+		<steps>
+			<item>
+				<p>数回右クリックして部品選択モードに変更し、更に右クリックしてプロパティーウィンドウを表示します</p>
+			</item>
+			<item>
+				<p>プロパティーを編集したい部品をクリックして選択します</p>
+			</item>
+			<item>
+				<p>プロパティーウィンドウで値を変更後、「適用」ボタンを押して設定を反映します</p>
+			</item>
+		</steps>
+		<p>プロパティーウィンドウを表示する方法は他にも2つありますが、上述した方法が最も簡単でしょう。</p>
+		<list>
+			<item>
+				<p><guiseq><gui>編集</gui><gui>プロパティー</gui></guiseq> をクリックする</p>
+			</item>
+			<item>
+				<p><keyseq><key>Ctrl</key><key>P</key></keyseq> を押す</p>
+			</item>
+		</list>
+	</section>
+
+</page>

@@ -1,0 +1,737 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-11-01 20:13+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../data/glogic.desktop.in.h:1 ../glogic/const.py:67
+msgid "gLogic"
+msgstr ""
+
+#: ../data/glogic.desktop.in.h:2
+msgid "Logic circuit simulator"
+msgstr ""
+
+#: ../glogic/MainFrame.py:67
+msgid "translator-credits"
+msgstr ""
+
+#: ../glogic/MainFrame.py:151
+msgid "_New"
+msgstr ""
+
+#: ../glogic/MainFrame.py:151
+msgid "Close this circuit and create a new one."
+msgstr ""
+
+#: ../glogic/MainFrame.py:152
+msgid "_Open..."
+msgstr ""
+
+#: ../glogic/MainFrame.py:152
+msgid "Close this circuit and open the other one."
+msgstr ""
+
+#: ../glogic/MainFrame.py:153
+msgid "_Save"
+msgstr ""
+
+#: ../glogic/MainFrame.py:153
+msgid "Save this circuit."
+msgstr ""
+
+#: ../glogic/MainFrame.py:154
+msgid "Save _As..."
+msgstr ""
+
+#: ../glogic/MainFrame.py:154
+msgid "Save this circuit with a new name."
+msgstr ""
+
+#: ../glogic/MainFrame.py:155
+msgid "Save as _image..."
+msgstr ""
+
+#: ../glogic/MainFrame.py:155
+msgid "Save schematics as image file."
+msgstr ""
+
+#: ../glogic/MainFrame.py:156
+msgid "_Quit"
+msgstr ""
+
+#: ../glogic/MainFrame.py:156
+msgid "Close this application."
+msgstr ""
+
+#: ../glogic/MainFrame.py:157
+msgid "_Undo"
+msgstr ""
+
+#: ../glogic/MainFrame.py:157
+msgid "Undo the previous action."
+msgstr ""
+
+#: ../glogic/MainFrame.py:158
+msgid "_Redo"
+msgstr ""
+
+#: ../glogic/MainFrame.py:158
+msgid "Redo the action that you have canceled."
+msgstr ""
+
+#: ../glogic/MainFrame.py:159
+msgid "Cu_t"
+msgstr ""
+
+#: ../glogic/MainFrame.py:159
+msgid "Cut selected components."
+msgstr ""
+
+#: ../glogic/MainFrame.py:160
+msgid "_Copy"
+msgstr ""
+
+#: ../glogic/MainFrame.py:160
+msgid "Copy selected components."
+msgstr ""
+
+#: ../glogic/MainFrame.py:161
+msgid "_Paste"
+msgstr ""
+
+#: ../glogic/MainFrame.py:161
+msgid "Paste copied components."
+msgstr ""
+
+#: ../glogic/MainFrame.py:162
+msgid "_Delete"
+msgstr ""
+
+#: ../glogic/MainFrame.py:162
+msgid "Delete selected components."
+msgstr ""
+
+#: ../glogic/MainFrame.py:163
+msgid "Rotate _left 90"
+msgstr ""
+
+#: ../glogic/MainFrame.py:163
+msgid "Rotate selected components 90 degrees."
+msgstr ""
+
+#: ../glogic/MainFrame.py:164
+msgid "Rotate _right 90"
+msgstr ""
+
+#: ../glogic/MainFrame.py:164
+msgid "Rotate selected components -90 degrees."
+msgstr ""
+
+#: ../glogic/MainFrame.py:165
+msgid "Flip _horizontally"
+msgstr ""
+
+#: ../glogic/MainFrame.py:165
+msgid "Flip components horizontally."
+msgstr ""
+
+#: ../glogic/MainFrame.py:166
+msgid "Flip _vertically"
+msgstr ""
+
+#: ../glogic/MainFrame.py:166
+msgid "Flip components vertically."
+msgstr ""
+
+#: ../glogic/MainFrame.py:167
+msgid "Pr_eferences"
+msgstr ""
+
+#: ../glogic/MainFrame.py:167
+msgid "Set preferences of this application."
+msgstr ""
+
+#: ../glogic/MainFrame.py:168
+msgid "_Contents"
+msgstr ""
+
+#: ../glogic/MainFrame.py:168
+msgid "Show the help browser."
+msgstr ""
+
+#: ../glogic/MainFrame.py:169
+msgid "Translate This Application..."
+msgstr ""
+
+#: ../glogic/MainFrame.py:169
+msgid "Connect to the Launchpad website to help translate this application."
+msgstr ""
+
+#: ../glogic/MainFrame.py:170
+msgid "Report a Problem..."
+msgstr ""
+
+#: ../glogic/MainFrame.py:170
+msgid ""
+"Connect to the Launchpad website to report a problem of this application."
+msgstr ""
+
+#: ../glogic/MainFrame.py:171
+msgid "_About"
+msgstr ""
+
+#: ../glogic/MainFrame.py:171
+msgid "Show about dialog."
+msgstr ""
+
+#: ../glogic/MainFrame.py:172
+msgid "_File"
+msgstr ""
+
+#: ../glogic/MainFrame.py:173
+msgid "_Edit"
+msgstr ""
+
+#: ../glogic/MainFrame.py:174
+msgid "_Add"
+msgstr ""
+
+#: ../glogic/MainFrame.py:175
+msgid "_Simulate"
+msgstr ""
+
+#: ../glogic/MainFrame.py:176
+msgid "_Help"
+msgstr ""
+
+#: ../glogic/MainFrame.py:179
+msgid "_Properties"
+msgstr ""
+
+#: ../glogic/MainFrame.py:179
+msgid "Show property dialog."
+msgstr ""
+
+#: ../glogic/MainFrame.py:180
+msgid "_Components..."
+msgstr ""
+
+#: ../glogic/MainFrame.py:180
+msgid "Show components window."
+msgstr ""
+
+#: ../glogic/MainFrame.py:181
+msgid "_Net"
+msgstr ""
+
+#: ../glogic/MainFrame.py:181
+msgid "Add nets to this circuit."
+msgstr ""
+
+#: ../glogic/MainFrame.py:182
+msgid "_Run"
+msgstr ""
+
+#: ../glogic/MainFrame.py:182
+msgid "Run and simulate this circuit."
+msgstr ""
+
+#: ../glogic/MainFrame.py:183
+msgid "_Pause"
+msgstr ""
+
+#: ../glogic/MainFrame.py:183
+msgid "Pause simulation to keep the state when components are clicked."
+msgstr ""
+
+#: ../glogic/MainFrame.py:184
+msgid "_Timing Diagram"
+msgstr ""
+
+#: ../glogic/MainFrame.py:184
+msgid "Show timing diagram window."
+msgstr ""
+
+#: ../glogic/MainFrame.py:294
+msgid "Open file"
+msgstr ""
+
+#: ../glogic/MainFrame.py:321
+msgid "Save file"
+msgstr ""
+
+#: ../glogic/MainFrame.py:334 ../glogic/Exporter.py:55
+msgid "Overwrite to the existing file?"
+msgstr ""
+
+#: ../glogic/MainFrame.py:335 ../glogic/Exporter.py:56
+msgid "The file already exist. Overwrite it?"
+msgstr ""
+
+#: ../glogic/MainFrame.py:361
+msgid "Save the modified schematics?"
+msgstr ""
+
+#: ../glogic/MainFrame.py:362
+msgid "The schematics was modifed. Save the changes before closing?"
+msgstr ""
+
+#: ../glogic/MainFrame.py:467 ../glogic/MainFrame.py:629
+msgid "Error"
+msgstr ""
+
+#: ../glogic/DiagramArea.py:216 ../glogic/DiagramArea.py:218
+#: ../glogic/DiagramArea.py:220
+msgid "Time"
+msgstr ""
+
+#: ../glogic/CircuitManager.py:256
+msgid "Output port is short circuit!"
+msgstr ""
+
+#: ../glogic/CircuitManager.py:317
+msgid "Input port is open circuit!"
+msgstr ""
+
+#: ../glogic/CircuitManager.py:336
+msgid "This circuit oscillates on infinite frequency!"
+msgstr ""
+
+#: ../glogic/CircuitManager.py:342
+#, python-format
+msgid "This logic is complexity! (iters > %d)"
+msgstr ""
+
+#: ../glogic/ComponentConverter.py:56
+#, python-format
+msgid "Compatibility error: This circuit requires glogic %s or later."
+msgstr ""
+
+#: ../glogic/ComponentConverter.py:65
+#, python-format
+msgid ""
+"Compatibility error: This circuit was created by %(creator)s. glogic "
+"%(this)s doesn't support older than %(minimum)s."
+msgstr ""
+
+#: ../glogic/ComponentWindow.py:18
+msgid "Components"
+msgstr ""
+
+#: ../glogic/Exporter.py:30 ../glogic/Exporter.py:216
+#: ../glogic/Exporter.py:252
+msgid "Save as image"
+msgstr ""
+
+#: ../glogic/Exporter.py:221 ../glogic/Exporter.py:257
+#: ../glogic/TimingDiagramWindow.py:35
+msgid "Scale:"
+msgstr ""
+
+#: ../glogic/Exporter.py:231
+msgid "Mergin:"
+msgstr ""
+
+#: ../glogic/Exporter.py:241
+msgid "Draw voltage states:"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:10
+msgid "Preferences"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:20
+msgid "Font:"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:28
+msgid "Net:"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:28
+msgid "Net (highlighted):"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:28
+msgid "Net (running):"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:29
+msgid "Net (high level):"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:29
+msgid "Net (low level):"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:30
+msgid "Component:"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:30
+msgid "Component (highlighted):"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:30
+msgid "Component (running):"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:31
+msgid "Component (picked):"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:31
+msgid "Component (pre added):"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:31
+msgid "Component (selected):"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:32
+msgid "Terminal:"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:32
+msgid "Terminal (running):"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:32
+msgid "Cursor:"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:33
+msgid "Background:"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:33
+msgid "Background (running):"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:33
+msgid "Grid:"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:51
+msgid "Symbol type:"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:54
+msgid "MIL/ANSI"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:55
+msgid "IEC"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:61
+msgid "Max calc iters:"
+msgstr ""
+
+#: ../glogic/PreferencesWindow.py:66
+msgid "Max calc duration [µs]:"
+msgstr ""
+
+#: ../glogic/PropertyWindow.py:16
+msgid "Properties"
+msgstr ""
+
+#: ../glogic/PropertyWindow.py:66
+msgid "Set values are invalid."
+msgstr ""
+
+#: ../glogic/PropertyWindow.py:105
+msgid "Please select a component to edit properties."
+msgstr ""
+
+#: ../glogic/PropertyWindow.py:172
+msgid "This component has no property."
+msgstr ""
+
+#: ../glogic/TimingDiagramWindow.py:12
+msgid "Timimg diagram"
+msgstr ""
+
+#: ../glogic/TimingDiagramWindow.py:60
+msgid "Range:"
+msgstr ""
+
+#: ../glogic/TimingDiagramWindow.py:98
+msgid "_Redraw"
+msgstr ""
+
+#: ../glogic/TimingDiagramWindow.py:103
+msgid "Save _diagram..."
+msgstr ""
+
+#: ../glogic/TimingDiagramWindow.py:114
+msgid "Cursor position:"
+msgstr ""
+
+#: ../glogic/TimingDiagramWindow.py:229
+msgid "Can't create timing diagram!"
+msgstr ""
+
+#: ../glogic/TimingDiagramWindow.py:230
+msgid "The width of the timing diagram will be too wide. (> 5000)"
+msgstr ""
+
+#: ../glogic/const.py:55
+msgid "No title"
+msgstr ""
+
+#: ../glogic/const.py:56
+msgid "Modified"
+msgstr ""
+
+#: ../glogic/const.py:58
+msgid "gLogic files (*.glc)"
+msgstr ""
+
+#: ../glogic/const.py:59
+msgid "Portable Network Graphics (*.png)"
+msgstr ""
+
+#: ../glogic/const.py:60
+msgid "Scalable Vector Graphics (*.svg)"
+msgstr ""
+
+#: ../glogic/const.py:61
+msgid "Portable Document Format (*.pdf)"
+msgstr ""
+
+#: ../glogic/const.py:62
+msgid "Post Script (*.ps)"
+msgstr ""
+
+#: ../glogic/const.py:63
+msgid "All files"
+msgstr ""
+
+#: ../glogic/const.py:68
+msgid "gLogic is a logic circuit simulator developed with GTK+ and Python."
+msgstr ""
+
+#: ../glogic/Components/Calculator.py:13
+msgid "Adder"
+msgstr ""
+
+#: ../glogic/Components/Calculator.py:25
+msgid "Half/Full:"
+msgstr ""
+
+#: ../glogic/Components/Calculator.py:25
+msgid "Half adder"
+msgstr ""
+
+#: ../glogic/Components/Calculator.py:25
+msgid "Full adder"
+msgstr ""
+
+#: ../glogic/Components/Calculator.py:27 ../glogic/Components/Counter.py:32
+#: ../glogic/Components/Counter.py:138 ../glogic/Components/Counter.py:239
+#: ../glogic/Components/Counter.py:352 ../glogic/Components/Counter.py:469
+#: ../glogic/Components/FlipFlop.py:24 ../glogic/Components/FlipFlop.py:114
+#: ../glogic/Components/FlipFlop.py:220 ../glogic/Components/FlipFlop.py:311
+#: ../glogic/Components/Standard.py:24 ../glogic/Components/Standard.py:98
+#: ../glogic/Components/Standard.py:193 ../glogic/Components/Standard.py:304
+#: ../glogic/Components/Standard.py:416 ../glogic/Components/Standard.py:515
+msgid "Propagation delay:"
+msgstr ""
+
+#: ../glogic/Components/Calculator.py:28 ../glogic/Components/Counter.py:33
+#: ../glogic/Components/Counter.py:139 ../glogic/Components/Counter.py:240
+#: ../glogic/Components/Counter.py:353 ../glogic/Components/Counter.py:470
+#: ../glogic/Components/FlipFlop.py:25 ../glogic/Components/FlipFlop.py:115
+#: ../glogic/Components/FlipFlop.py:221 ../glogic/Components/FlipFlop.py:312
+#: ../glogic/Components/Standard.py:25 ../glogic/Components/Standard.py:99
+#: ../glogic/Components/Standard.py:194 ../glogic/Components/Standard.py:305
+#: ../glogic/Components/Standard.py:417 ../glogic/Components/Standard.py:516
+msgid "tPHL:"
+msgstr ""
+
+#: ../glogic/Components/Calculator.py:30 ../glogic/Components/Counter.py:35
+#: ../glogic/Components/Counter.py:141 ../glogic/Components/Counter.py:242
+#: ../glogic/Components/Counter.py:355 ../glogic/Components/Counter.py:472
+#: ../glogic/Components/FlipFlop.py:27 ../glogic/Components/FlipFlop.py:117
+#: ../glogic/Components/FlipFlop.py:223 ../glogic/Components/FlipFlop.py:314
+#: ../glogic/Components/Standard.py:27 ../glogic/Components/Standard.py:101
+#: ../glogic/Components/Standard.py:196 ../glogic/Components/Standard.py:307
+#: ../glogic/Components/Standard.py:419 ../glogic/Components/Standard.py:518
+msgid "tPLH:"
+msgstr ""
+
+#: ../glogic/Components/Counter.py:13
+msgid "Mod-N counter"
+msgstr ""
+
+#: ../glogic/Components/Counter.py:26
+msgid "N:"
+msgstr ""
+
+#: ../glogic/Components/Counter.py:28 ../glogic/Components/Counter.py:134
+#: ../glogic/Components/Counter.py:235 ../glogic/Components/Counter.py:348
+#: ../glogic/Components/Counter.py:465
+msgid "Number of bits:"
+msgstr ""
+
+#: ../glogic/Components/Counter.py:30 ../glogic/Components/Counter.py:136
+#: ../glogic/Components/Counter.py:237 ../glogic/Components/Counter.py:350
+#: ../glogic/Components/Counter.py:467 ../glogic/Components/FlipFlop.py:112
+#: ../glogic/Components/FlipFlop.py:218 ../glogic/Components/FlipFlop.py:309
+msgid "Trigger type:"
+msgstr ""
+
+#: ../glogic/Components/Counter.py:30 ../glogic/Components/Counter.py:136
+#: ../glogic/Components/Counter.py:237 ../glogic/Components/Counter.py:350
+#: ../glogic/Components/Counter.py:467 ../glogic/Components/FlipFlop.py:112
+#: ../glogic/Components/FlipFlop.py:218 ../glogic/Components/FlipFlop.py:309
+msgid "Positive edge"
+msgstr ""
+
+#: ../glogic/Components/Counter.py:30 ../glogic/Components/Counter.py:136
+#: ../glogic/Components/Counter.py:237 ../glogic/Components/Counter.py:350
+#: ../glogic/Components/Counter.py:467 ../glogic/Components/FlipFlop.py:112
+#: ../glogic/Components/FlipFlop.py:218 ../glogic/Components/FlipFlop.py:309
+msgid "Negative edge"
+msgstr ""
+
+#: ../glogic/Components/Counter.py:123
+msgid "SISO shift register"
+msgstr ""
+
+#: ../glogic/Components/Counter.py:222
+msgid "SIPO shift register"
+msgstr ""
+
+#: ../glogic/Components/Counter.py:335
+msgid "PISO shift register"
+msgstr ""
+
+#: ../glogic/Components/Counter.py:452
+msgid "PIPO shift register"
+msgstr ""
+
+#: ../glogic/Components/FlipFlop.py:13
+msgid "RS flip-flop"
+msgstr ""
+
+#: ../glogic/Components/FlipFlop.py:101
+msgid "JK flip-flop"
+msgstr ""
+
+#: ../glogic/Components/FlipFlop.py:207
+msgid "D flip-flop"
+msgstr ""
+
+#: ../glogic/Components/FlipFlop.py:298
+msgid "T flip-flop"
+msgstr ""
+
+#: ../glogic/Components/Misc.py:13
+msgid "Text"
+msgstr ""
+
+#: ../glogic/Components/Misc.py:16
+msgid "Text:"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:13
+msgid "NOT"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:85
+msgid "AND"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:96 ../glogic/Components/Standard.py:191
+#: ../glogic/Components/Standard.py:302 ../glogic/Components/Standard.py:414
+#: ../glogic/Components/Standard.py:513
+msgid "Input pins:"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:180
+msgid "OR"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:291
+msgid "XOR"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:403
+msgid "NAND"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:502
+msgid "NOR"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:617
+msgid "Switch"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:628 ../glogic/Components/Standard.py:763
+msgid "Initial state:"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:628 ../glogic/Components/Standard.py:763
+msgid "Low level"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:628 ../glogic/Components/Standard.py:763
+msgid "High level"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:678
+msgid "Vdd rail"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:712
+msgid "GND rail"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:748
+msgid "Oscillator"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:757
+msgid "Period:"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:759
+msgid "Shift:"
+msgstr ""
+
+#: ../glogic/Components/Standard.py:761
+msgid "Duration:"
+msgstr ""
+
+#: ../glogic/Components/StateViewer.py:13
+msgid "Seven-segment display"
+msgstr ""
+
+#: ../glogic/Components/StateViewer.py:164
+msgid "LED"
+msgstr ""
+
+#: ../glogic/Components/SystemComponents.py:92
+msgid "Probe"
+msgstr ""
+
+#: ../glogic/Components/SystemComponents.py:101
+msgid "Name:"
+msgstr ""
