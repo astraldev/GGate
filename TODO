@@ -1,0 +1,4 @@
+* Animate logic circuit
+* Use signals instead of "parent" variables
+* State diagram creation
+* Add three state buffer

@@ -1,0 +1,9 @@
+[Desktop Entry]
+_Name=gLogic
+_Comment=Logic circuit simulator
+Exec=glogic
+Terminal=false
+Type=Application
+Icon=glogic
+Categories=Education;Science;Electronics
+StartupNotify=true

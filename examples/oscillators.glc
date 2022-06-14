@@ -1,0 +1,99 @@
+osc
+ position=30,70
+ input_level=
+ output_level=0
+ properties=period:2.5,shift:0.0,duration:80.0,initstate:0
+
+osc
+ position=30,120
+ input_level=
+ output_level=1
+ properties=period:2.4,shift:0.0,duration:80.0,initstate:0
+
+probe
+ position=220,60
+ input_level=0
+ output_level=
+ properties=name:Signal1
+
+probe
+ position=220,110
+ input_level=1
+ output_level=
+ properties=name:Signal2
+
+probe
+ position=220,160
+ input_level=0
+ output_level=
+ properties=name:AND
+
+probe
+ position=220,210
+ input_level=1
+ output_level=
+ properties=name:XOR
+
+xor
+ position=130,220
+ input_level=0,1
+ output_level=1
+ properties=tphl:0.0,tplh:0.0
+
+and
+ position=130,170
+ input_level=0,1
+ output_level=0
+ properties=tphl:0.0,tplh:0.0
+
+text
+ position=20,30
+ input_level=
+ output_level=
+ properties=text:T\e0.25µs
+
+text
+ position=20,140
+ input_level=
+ output_level=
+ properties=text:T\e0.24µs
+
+text
+ position=100,30
+ input_level=
+ output_level=
+ properties=text:Duration\e80µs
+
+net
+ position=230,100,100,100
+
+net
+ position=100,210,140,210
+
+net
+ position=100,100,100,160
+
+net
+ position=100,160,100,210
+
+net
+ position=140,160,100,160
+
+net
+ position=140,190,120,190
+
+net
+ position=140,140,120,140
+
+net
+ position=120,190,120,140
+
+net
+ position=120,50,230,50
+
+net
+ position=120,140,120,50
+
+net
+ position=100,50,120,50
+

@@ -1,0 +1,20 @@
+Installation Instructions
+*************************
+
+1. Required Packages
+=========================
+On Debian system, you can install dependencies with the following command:
+  $ sudo apt-get install python3-gi python3-gi-cairo libgtk-3-0 libglib2.0-dev intltool
+
+2. Install
+=========================
+You can install with the following commands
+  $ ./configure
+  $ make
+  $ sudo make install
+
+You can also use development PPA on Ubuntu
+  $ sudo apt-add-repository ppa:vbkaisetsu/glogic-daily
+  $ sudo apt-get update
+  $ sudo apt-get install glogic
+
