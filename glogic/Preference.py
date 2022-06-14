@@ -41,7 +41,7 @@ class _Preference:
 		"lowlevel_color": cairo.SolidPattern(0.0, 0.0, 1.0),
 		"bg_color": cairo.SolidPattern(0.0, 0.0, 0.0),
 		"bg_color_running": cairo.SolidPattern(1.0, 1.0, 1.0),
-		"grid_color": cairo.SolidPattern(0.25, 0.22, 0.25),
+		"grid_color": cairo.SolidPattern(0.15, 0.12, 0.15),
 		"symbol_type": 0, #  0: MIL/ANSI  1: IEC
 		"max_calc_iters": 10000,
 		"max_calc_duration": 0.0002

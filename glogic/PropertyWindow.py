@@ -15,44 +15,47 @@ class PropertyWindow(Gtk.Window):
 
 		self.title = _("Properties")
 		Gtk.Window.__init__(self, title=self.title)
-		self.set_resizable(False)
+		self.set_resizable(True)
+		self.set_size_request(310, -1)
 
 		# Buttons
-		buttons = Gtk.Box(spacing=5)
-		self.undo_btn = Gtk.Button(label="Undo")
-		buttons.append(self.undo_btn)
-		self.apply_btn = Gtk.Button(label="Apply")
-		buttons.append(self.apply_btn)
+		self.bottom_btns = Gtk.Box(spacing=5)
 
-		self.bottom_btns = buttons
+		self.reset_btn = Gtk.Button(label="Reset")
+		self.reset_btn.set_name('destructive')
+		self.reset_btn.set_hexpand(True)
 
-		buttons.set_margin_start(1)
+		self.bottom_btns.set_margin_start(1)
+		self.bottom_btns.append(self.reset_btn)
 
 		self.vbox = None
 
 		self.prop_controls = []
+		self.old_values = []
 
-		self.apply_btn.connect("clicked", self.on_apply_btn_clicked)
-		self.undo_btn.connect("clicked", self.on_undo_btn_clicked)
+		self.reset_btn.connect("clicked", self.on_undo_btn_clicked)
 		self.connect("close-request", self.on_window_delete)
 
 	def on_property_changed(self, widget):
-		self.apply_btn.set_sensitive(True)
-		self.undo_btn.set_sensitive(True)
+		self.reset_btn.set_sensitive(True)
 
-	def on_apply_btn_clicked(self, *widget):
+	def on_apply_btn_clicked(self, setter=False, *widget):
 		values = []
 		i = 0
+
+		if self.component is None: return
+		
 		for p in self.component.properties:
 			if isinstance(p[1], tuple):
 				if p[1][0] == const.property_select:
 					values.append(self.prop_controls[i].get_active())
+					self.prop_controls[i].update()
 				elif p[1][0] == const.property_int:
-					self.prop_controls[i].update()
 					values.append(int(self.prop_controls[i].get_value()))
-				elif p[1][0] == const.property_float:
 					self.prop_controls[i].update()
+				elif p[1][0] == const.property_float:
 					values.append(self.prop_controls[i].get_value())
+					self.prop_controls[i].update()
 				else:
 					values.append(self.prop_controls[i].get_text())
 			elif p[1] == const.property_bool:
@@ -66,10 +69,12 @@ class PropertyWindow(Gtk.Window):
 			dialog.run()
 			dialog.destroy()
 		else:
+
 			self.component.values = values
+
+			# Update the old values
+			# self.old_values = values
 			self.component.set_rot_props()
-			self.apply_btn.set_sensitive(False)
-			self.undo_btn.set_sensitive(False)
 			self.emit("property-changed")
 
 	def on_undo_btn_clicked(self, widget):
@@ -78,10 +83,16 @@ class PropertyWindow(Gtk.Window):
 			if isinstance(p[1], tuple):
 				if p[1][0] == const.property_select:
 					self.prop_controls[i].set_active(self.component.values[i])
+					self.prop_controls[i].update()
+					
 				elif p[1][0] == const.property_int:
 					self.prop_controls[i].set_value(self.component.values[i])
+					self.prop_controls[i].update()
+
 				elif p[1][0] == const.property_float:
 					self.prop_controls[i].set_value(self.component.values[i])
+					self.prop_controls[i].update()
+
 				else:
 					self.prop_controls[i].set_text(self.component.values[i])
 			elif p[1] == const.property_bool:
@@ -90,8 +101,7 @@ class PropertyWindow(Gtk.Window):
 				i -= 1
 			i += 1
 
-		self.apply_btn.set_sensitive(False)
-		self.undo_btn.set_sensitive(False)
+		self.reset_btn.set_sensitive(False)
 
 	def setComponent(self, component):
 
@@ -114,9 +124,11 @@ class PropertyWindow(Gtk.Window):
 			self.set_title(self.title)
 
 		else:
+
 			self.set_title("%s - %s" % (self.title, component.description))
+
 			if len(component.properties) != 0:
-				layout = Gtk.Grid()
+				layout = Gtk.ListBox()
 				i = 0
 				# Create property editor
 				self.prop_controls = []
@@ -124,8 +136,9 @@ class PropertyWindow(Gtk.Window):
 					caption = Gtk.Label(label=p[0])
 					caption.set_margin_start(2)
 					caption.set_margin_top(1)
-					layout.attach(caption, 0, 1, 1, 1)
+
 					has_property = True
+
 					if isinstance(p[1], tuple):
 						if p[1][0] == const.property_select:
 							ctrl = Gtk.ComboBoxText()
@@ -134,6 +147,7 @@ class PropertyWindow(Gtk.Window):
 								ctrl.append_text(choice)
 							ctrl.set_active(self.component.values[i])
 							ctrl.connect("changed", self.on_property_changed)
+							ctrl.connect("changed", self.on_apply_btn_clicked)
 
 						elif p[1][0] == const.property_int:
 							ctrl = Gtk.SpinButton()
@@ -148,7 +162,7 @@ class PropertyWindow(Gtk.Window):
 							ctrl = Gtk.SpinButton()
 							ctrl.set_increments(1, 10)
 							ctrl.set_range(p[1][1], p[1][2])
-							ctrl.set_digits(p[1][3])
+							ctrl.set_digits(p[1][3] if p[1][3] < 3 else 3)
 							ctrl.set_value(component.values[i])
 							ctrl.connect("changed", self.on_property_changed)
 							ctrl.connect("value-changed", self.on_apply_btn_clicked)
@@ -158,25 +172,28 @@ class PropertyWindow(Gtk.Window):
 							ctrl = Gtk.Entry()
 							ctrl.set_text(component.values[i])
 							ctrl.connect("changed", self.on_property_changed)
-							ctrl.connect("value-changed", self.on_apply_btn_clicked)
+							ctrl.connect("changed", self.on_apply_btn_clicked)
 							ctrl.set_width_chars(p[1][1])
 					elif p[1] == const.property_bool:
 						ctrl = Gtk.CheckButton("")
 						ctrl.set_active(component.values[i])
 						ctrl.connect("toggled", self.on_property_changed)
-						ctrl.connect("activate", self.on_apply_btn_clicked)
+						ctrl.connect("toggled", self.on_apply_btn_clicked)
 					else:
 						ctrl = Gtk.Label(label='')
 						i -= 1
 						has_property = False
 					i += 1
 
-					propbox = Gtk.Box()
-					propbox.append(ctrl)
+					propbox = Gtk.ListBoxRow()
+					propbox.set_name("rich-list")
+
 					ctrl.set_margin_top(3)
 					ctrl.set_margin_bottom(3)
-					ctrl.set_margin_start(3)
 					ctrl.set_margin_end(3)
+					ctrl.set_halign(Gtk.Align.START)
+					ctrl.set_size_request(60, -1)
+
 
 					if has_property:
 						self.prop_controls.append(ctrl)
@@ -187,8 +204,33 @@ class PropertyWindow(Gtk.Window):
 					_label.set_margin_start(3)
 					_label.set_margin_end(3)
 
-					propbox.append(_label)
-					layout.attach(propbox, 1, 2, 1, 1)
+					if isinstance(ctrl, Gtk.Label):
+						if ctrl.get_text() == '':
+							caption = Gtk.Label()
+							caption.set_markup(f'<b>{p[0]}</b>')
+							caption.set_margin_top(5)
+							caption.set_margin_bottom(5)
+							caption.set_margin_start(2)
+							caption.set_margin_end(2)
+
+					_list_prop_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+					_list_prop_row.append(ctrl)
+
+					_list_prop_row.append(_label)
+					# _list_prop_row.set_halign(Gtk.Align.START)
+					_list_prop_row.set_hexpand(True)
+					caption.set_hexpand(True)
+
+					_list_box_row = Gtk.Box()
+					_list_box_row.append(caption)
+					_list_box_row.append(_list_prop_row)
+
+					caption.set_size_request(100, -1)
+
+					_list_prop_row.set_size_request(90, -1)
+
+					propbox.set_child(_list_box_row)
+					layout.append(propbox)
 
 				self.vbox.append(layout)
 
@@ -211,11 +253,13 @@ class PropertyWindow(Gtk.Window):
 		self.bottom_btns.set_margin_end(5)
 		self.bottom_btns.set_margin_start(5)
 
-		self.apply_btn.set_sensitive(False)
-		self.undo_btn.set_sensitive(False)
+		# self.on_apply_btn_clicked(True)
+
+		self.reset_btn.set_sensitive(False)
+
 		self.set_child(self.vbox)
 		self.vbox.show()
 
 	def on_window_delete(self, *args):
 		self.emit("window-hidden")
-		return False
+		print("Hello")

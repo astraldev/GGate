@@ -353,7 +353,7 @@ class MainFrame(Gtk.ApplicationWindow):
 		self.about_dialog.run()
 		self.about_dialog.hide()
 
-	def on_action_new_pressed(self, widget):
+	def on_action_new_pressed(self, *args):
 		if self.check_modified():
 			return
 		if self.drawarea.drag_enabled:
@@ -380,10 +380,8 @@ class MainFrame(Gtk.ApplicationWindow):
 		# reset prop window
 		self.statusbar.push(0, "")
 		self.drawarea.set_component(const.component_none)
-		self.action_undo.set_sensitive(False)
-		self.action_redo.set_sensitive(False)
 		self.disable_edit_actions()
-		self.action_diagram.set_sensitive(False)
+		# self.action_diagram.set_sensitive(False)
 		self.action_net.set_active(False)
 		self.action_run.set_active(False)
 		# self.action_diagram.set_active(False)
@@ -522,8 +520,6 @@ class MainFrame(Gtk.ApplicationWindow):
 
 	def on_action_run_clicked(self, widget, *args):
 
-		print(self._toggle_run_state)
-
 		if (self._toggle_run_state == 0) or (self._toggle_run_state == 2):
 			icon = Gtk.Image.new_from_icon_name('media-playback-pause-symbolic')
 			widget.set_child(icon)
@@ -629,13 +625,13 @@ class MainFrame(Gtk.ApplicationWindow):
 		self.drawarea.redraw = True
 		self.drawarea.queue_draw()
 
-	def on_action_delete_pressed(self, widget):
+	def on_action_delete_pressed(self, *args):
 		self.circuit.remove_selected_component()
 		self.drawarea.nearest_component = None
 		self.drawarea.preselected_component = None
 		self.circuit.push_history()
-		self.action_undo.set_sensitive(True)
-		self.action_redo.set_sensitive(False)
+		# self.action_undo.set_sensitive(True)
+		# self.action_redo.set_sensitive(False)
 		self.disable_edit_actions()
 		self.drawarea.redraw = True
 		self.drawarea.queue_draw()
@@ -738,7 +734,6 @@ class MainFrame(Gtk.ApplicationWindow):
 		self.drawarea.redraw = True
 		self.drawarea.queue_draw()
 		self.circuit.push_history()
-		self.action_undo.set_sensitive(True)
 
 	def on_circuit_title_changed(self, circuit, title):
 		self.set_title(title)
@@ -777,6 +772,11 @@ class GLogicApplication(Gtk.Application):
 
 	def do_startup(self, *args):
 		Gtk.Application.do_startup(self)
+
+		# New File Pressed
+		action = Gio.SimpleAction.new("on_action_new_pressed", None)
+		action.connect("activate", self.action_handler('on_action_new_pressed'))
+		self.add_action(action)
 
 		# Open File Pressed
 		action = Gio.SimpleAction.new("on_action_open_pressed", None)

@@ -16,7 +16,11 @@ class _const:
 	<?xml version="1.0" encoding="UTF-8"?>
     <interface>
         <menu id="app-menu">
-            <section>
+            <section> 
+                <item>
+                    <attribute name="label">New</attribute>
+                    <attribute name="action">app.on_action_new_pressed</attribute>
+               </item>
                 <item>
                     <attribute name="label">Open</attribute>
                     <attribute name="action">app.on_action_open_pressed</attribute>

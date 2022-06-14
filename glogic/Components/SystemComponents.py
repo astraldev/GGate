@@ -73,7 +73,7 @@ class BaseComponent():
 			                           self.matrix[2] * self.rot_output_pins[i][0] + self.matrix[3] * self.rot_output_pins[i][1])
 			self.rot_output_pins_dir[i] = (self.matrix[0] * self.rot_output_pins_dir[i][0] + self.matrix[1] * self.rot_output_pins_dir[i][1],
 			                               self.matrix[2] * self.rot_output_pins_dir[i][0] + self.matrix[3] * self.rot_output_pins_dir[i][1])
-
+										   
 	def click(self, x, y, time):
 		return False
 
