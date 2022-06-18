@@ -32,7 +32,6 @@ class TimingDiagramWindow(Gtk.Window):
 
 		scalebox = Gtk.Box()
 
-		scalebox.append(Gtk.Label(label=_("Scale:")))
 
 		self.scale_combo = Gtk.ComboBox.new_with_model_and_entry(scale_list)
 		# self.scale_combo.set_events(Gdk.EventMask.FOCUS_CHANGE_MASK)
@@ -45,9 +44,11 @@ class TimingDiagramWindow(Gtk.Window):
 		self.scale_combo.get_child().set_width_chars(6)
 		self.scale_combo.set_entry_text_column(0)
 		self.scale_combo.get_child().set_text("5.0")
-		scalebox.append(self.scale_combo)
 
+		scalebox.append(Gtk.Label(label=_("Scale:")))
+		scalebox.append(self.scale_combo)
 		scalebox.append(Gtk.Label(label="px/"))
+
 
 		self.scale_unit_combo = Gtk.ComboBox.new_with_model(unit_list)
 		renderer_text = Gtk.CellRendererText()
@@ -55,6 +56,7 @@ class TimingDiagramWindow(Gtk.Window):
 		self.scale_unit_combo.add_attribute(renderer_text, "text", 0)
 		self.scale_unit_combo.set_active(1)
 		self.scale_unit_combo_changed_id = self.scale_unit_combo.connect("changed", self.on_combo_changed)
+		
 		scalebox.append(self.scale_unit_combo)
 
 		hbox1.append(scalebox)
@@ -145,9 +147,8 @@ class TimingDiagramWindow(Gtk.Window):
 
 		self.connect("close-request", self.on_window_delete)
 
-	def on_window_delete(self, widget, event):
+	def on_window_delete(self, widget, *event):
 		self.parent.action_diagram.set_active(False)
-		return True
 
 	def check_scale_format(self):
 		try:

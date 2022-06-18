@@ -4,7 +4,7 @@ from glogic import const
 from gi.repository import Gtk, Gdk, GObject
 from gettext import gettext as _
 
-class PropertyWindow(Gtk.Window):
+class PropertyWindow(Gtk.Dialog):
 
 	__gsignals__ = {
 		'property-changed': (GObject.SIGNAL_RUN_FIRST, None, ()),
@@ -18,26 +18,12 @@ class PropertyWindow(Gtk.Window):
 		self.set_resizable(True)
 		self.set_size_request(310, -1)
 
-		# Buttons
-		self.bottom_btns = Gtk.Box(spacing=5)
-
-		self.reset_btn = Gtk.Button(label="Reset")
-		self.reset_btn.set_name('destructive')
-		self.reset_btn.set_hexpand(True)
-
-		self.bottom_btns.set_margin_start(1)
-		self.bottom_btns.append(self.reset_btn)
-
 		self.vbox = None
 
 		self.prop_controls = []
 		self.old_values = []
-
-		self.reset_btn.connect("clicked", self.on_undo_btn_clicked)
+  
 		self.connect("close-request", self.on_window_delete)
-
-	def on_property_changed(self, widget):
-		self.reset_btn.set_sensitive(True)
 
 	def on_apply_btn_clicked(self, setter=False, *widget):
 		values = []
@@ -65,9 +51,18 @@ class PropertyWindow(Gtk.Window):
 			i += 1
 
 		if self.component.propertyChanged(values):
-			dialog = Gtk.MessageDialog(self, Gtk.DialogFlags.MODAL, Gtk.MessageType.WARNING, Gtk.ButtonsType.OK, _("Set values are invalid."))
-			dialog.run()
-			dialog.destroy()
+
+			def _response(widget, *args): widget.close()
+
+			dialog = Gtk.MessageDialog()
+			dialog.set_transient_for(self)
+			dialog.set_modal(True)
+			dialog.add_button("Ok", Gtk.ButtonsType.OK)
+			dialog.set_markup(_("Set values are invalid."))
+
+			dialog.present()
+			dialog.connect('response', _response)
+
 		else:
 
 			self.component.values = values
@@ -77,37 +72,13 @@ class PropertyWindow(Gtk.Window):
 			self.component.set_rot_props()
 			self.emit("property-changed")
 
-	def on_undo_btn_clicked(self, widget):
-		i = 0
-		for p in self.component.properties:
-			if isinstance(p[1], tuple):
-				if p[1][0] == const.property_select:
-					self.prop_controls[i].set_active(self.component.values[i])
-					self.prop_controls[i].update()
-					
-				elif p[1][0] == const.property_int:
-					self.prop_controls[i].set_value(self.component.values[i])
-					self.prop_controls[i].update()
-
-				elif p[1][0] == const.property_float:
-					self.prop_controls[i].set_value(self.component.values[i])
-					self.prop_controls[i].update()
-
-				else:
-					self.prop_controls[i].set_text(self.component.values[i])
-			elif p[1] == const.property_bool:
-				self.prop_controls[i].set_active(self.component.values[i])
-			else:
-				i -= 1
-			i += 1
-
-		self.reset_btn.set_sensitive(False)
-
 	def setComponent(self, component):
+     
+		if component is None:
+			return
 
 		self.component = component
 		if self.vbox is not None:
-			self.vbox.remove(self.bottom_btns)
 			self.set_child(None)
 
 		self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -116,10 +87,10 @@ class PropertyWindow(Gtk.Window):
 			self.vbox.append(label)
 			label.set_vexpand(True)
 			label.set_hexpand(True)
-			label.set_margin_bottom(5)
-			label.set_margin_top(5)
-			label.set_margin_end(5)
-			label.set_margin_start(5)
+			label.set_margin_bottom(15)
+			label.set_margin_top(15)
+			label.set_margin_end(15)
+			label.set_margin_start(15)
 			
 			self.set_title(self.title)
 
@@ -146,7 +117,6 @@ class PropertyWindow(Gtk.Window):
 							for choice in choices:
 								ctrl.append_text(choice)
 							ctrl.set_active(self.component.values[i])
-							ctrl.connect("changed", self.on_property_changed)
 							ctrl.connect("changed", self.on_apply_btn_clicked)
 
 						elif p[1][0] == const.property_int:
@@ -154,31 +124,29 @@ class PropertyWindow(Gtk.Window):
 							ctrl.set_increments(1, 10)
 							ctrl.set_range(p[1][1], p[1][2])
 							ctrl.set_value(component.values[i])
-							ctrl.connect("changed", self.on_property_changed)
 							ctrl.connect("value-changed", self.on_apply_btn_clicked)
-							ctrl.set_size_request(p[1][3], -1)
+							# ctrl.set_size_request(p[1][3], -1)
 
 						elif p[1][0] == const.property_float:
 							ctrl = Gtk.SpinButton()
 							ctrl.set_increments(1, 10)
 							ctrl.set_range(p[1][1], p[1][2])
-							ctrl.set_digits(p[1][3] if p[1][3] < 3 else 3)
+							ctrl.set_digits(p[1][3] if p[1][3] < 3 else 2)
 							ctrl.set_value(component.values[i])
-							ctrl.connect("changed", self.on_property_changed)
 							ctrl.connect("value-changed", self.on_apply_btn_clicked)
-							ctrl.set_size_request(p[1][4], -1)
+							# ctrl.set_size_request(p[1][4], -1)
 
 						else:
 							ctrl = Gtk.Entry()
 							ctrl.set_text(component.values[i])
-							ctrl.connect("changed", self.on_property_changed)
-							ctrl.connect("changed", self.on_apply_btn_clicked)
+							ctrl.connect("activate", self.on_apply_btn_clicked)
 							ctrl.set_width_chars(p[1][1])
+
 					elif p[1] == const.property_bool:
 						ctrl = Gtk.CheckButton("")
 						ctrl.set_active(component.values[i])
-						ctrl.connect("toggled", self.on_property_changed)
 						ctrl.connect("toggled", self.on_apply_btn_clicked)
+
 					else:
 						ctrl = Gtk.Label(label='')
 						i -= 1
@@ -242,24 +210,15 @@ class PropertyWindow(Gtk.Window):
 			else:
 				_label = Gtk.Label(label=_("This component has no property."))
 				self.vbox.append(_label)
-				_label.set_margin_top(5)
-				_label.set_margin_end(5)
-				_label.set_margin_start(5)
-				_label.set_margin_bottom(5)
-
-		self.vbox.append(self.bottom_btns)
-		self.bottom_btns.set_margin_bottom(5)
-		self.bottom_btns.set_margin_top(5)
-		self.bottom_btns.set_margin_end(5)
-		self.bottom_btns.set_margin_start(5)
-
+				_label.set_margin_top(15)
+				_label.set_margin_end(15)
+				_label.set_margin_start(15)
+				_label.set_margin_bottom(15)
+    
 		# self.on_apply_btn_clicked(True)
-
-		self.reset_btn.set_sensitive(False)
 
 		self.set_child(self.vbox)
 		self.vbox.show()
 
 	def on_window_delete(self, *args):
 		self.emit("window-hidden")
-		print("Hello")

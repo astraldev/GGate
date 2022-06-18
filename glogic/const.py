@@ -43,6 +43,10 @@ class _const:
                     <attribute name="label">About</attribute>
                     <attribute name="action">app.on_action_about_pressed</attribute>
                </item>
+                <item>
+                    <attribute name="label">Preference</attribute>
+                    <attribute name="action">app.on_action_prefs_pressed</attribute>
+               </item>
                <item>
                     <attribute name="label">Quit</attribute>
                     <attribute name="action">app.on_action_quit_pressed</attribute>

@@ -47,6 +47,9 @@ class MainFrame(Gtk.ApplicationWindow):
 		# Property window
 		self.prop_window = PropertyWindow()
 		self.prop_window.set_transient_for(self)
+		self.prop_window.set_hide_on_close(True)
+		self.prop_window.set_modal(True)
+  
 		self.prop_window.connect("window-hidden", self.on_propwindow_hidden)
 		self.prop_window.connect("property-changed", self.on_property_changed)
 
@@ -118,6 +121,17 @@ class MainFrame(Gtk.ApplicationWindow):
 		self.action_net.connect('clicked', self.on_action_net_toggled)
 		self.action_bar.pack_start(self.action_net)
 		self.action_net.set_active(False)
+
+		# Add Timimg
+
+		self.action_diagram = Gtk.ToggleButton()
+		image = Gtk.Image.new_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(
+                        config.DATADIR+"images/timing-icon.svg"))
+
+		self.action_diagram.set_child(image)
+		self.action_diagram.connect('clicked', self.on_action_diagram_pressed)
+
+		self.action_bar.pack_start(self.action_diagram)
 
 		self._toggle_run_state = -1
 		self._self_toggle = False
@@ -354,11 +368,12 @@ class MainFrame(Gtk.ApplicationWindow):
 		self.about_dialog.hide()
 
 	def on_action_new_pressed(self, *args):
-		if self.check_modified():
-			return
+		self.check_modified(new=True)
+
 		if self.drawarea.drag_enabled:
 			return
 
+	def _new_activated(self, *args):
 		self.set_title("%s - %s" % (const.text_notitle, const.app_name))
 		self.reset_frame()
 		self.circuit.reset_circuit()
@@ -381,74 +396,99 @@ class MainFrame(Gtk.ApplicationWindow):
 		self.statusbar.push(0, "")
 		self.drawarea.set_component(const.component_none)
 		self.disable_edit_actions()
-		# self.action_diagram.set_sensitive(False)
+		self.action_diagram.set_sensitive(False)
 		self.action_net.set_active(False)
-		self.action_run.set_active(False)
+		# self.action_run.set_active(False)
 		# self.action_diagram.set_active(False)
 		self.diagram_window.destroy()
 		self.diagram_window = TimingDiagramWindow(self)
 
+	
+
 	def on_action_open_pressed(self, *args):
-		if self.check_modified():
+		if self.check_modified(open=True):
 			return
-		while True:
-			dialog = Gtk.FileChooserDialog(_("Open file"), self, Gtk.FileChooserAction.OPEN, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.ACCEPT))
-			dialog.set_transient_for(self)
-			self.add_filters(dialog)
-			if dialog.run() == Gtk.ResponseType.ACCEPT:
-				filepath = dialog.get_filename()
-			else:
-				break
 
-			if not self.circuit.open_file(filepath):
-				self.reset_frame()
-				self.drawarea.redraw = True
-				self.drawarea.queue_draw()
-				break
+	def _open_activated(self, *args):
+		dialog = Gtk.FileChooserDialog()
+		dialog.set_title(_("Open file"))
+		dialog.set_transient_for(self)
+		dialog.set_action(Gtk.FileChooserAction.OPEN)
+		dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
+		dialog.add_button("Open", Gtk.ResponseType.ACCEPT)
+		dialog.set_transient_for(self)
+		self.add_filters(dialog)
 
-			dialog.destroy()
+		dialog.connect('response', self._open_file)
+		dialog.present()
+	
+	def _open_file(self, dialog, value, *args):
 
-		dialog.destroy()
+		if value == Gtk.ResponseType.ACCEPT:
+			filepath = dialog.get_file().get_path()
 
-	def overwrite_save(self):
-		if self.circuit.filepath == "":
-			return self.rename_save()
 		else:
-			if self.circuit.save_file(self.circuit.filepath):
-				return self.rename_save()
-			return False
+			dialog.close()
+			return
 
-	def rename_save(self):
-		chooser = Gtk.FileChooserDialog(_("Save file"), self, Gtk.FileChooserAction.SAVE, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT), flags=Gtk.DialogFlags.MODAL)
+		if not self.circuit.open_file(filepath):
+			self.reset_frame()
+			self.drawarea.redraw = True
+			self.drawarea.queue_draw()
+
+		dialog.close()
+
+	def overwrite_save(self, **kwargs):
+
+		if self.circuit.filepath == "":
+			self.rename_save(quit=kwargs.get('quit', False))
+
+		else:
+			if not self.circuit.save_file(self.circuit.filepath):
+				self.rename_save()
+				if kwargs.get('quit', True) and (not kwargs.get('save', False)):
+					self.application.quit()
+
+	def rename_save(self, **kwargs):
+		chooser = Gtk.FileChooserDialog()
+		chooser.set_title("<b>Save file</b>"),
 		chooser.set_transient_for(self)
-		chooser.set_modal(True) 
+		chooser.set_application(self.application)
+		chooser.set_action(Gtk.FileChooserAction.SAVE)
+		chooser.add_button('Cancel', Gtk.ResponseType.CANCEL)
+		chooser.add_button('Save', Gtk.ResponseType.ACCEPT)
+		chooser.set_modal(True)
+		
+		chooser.connect('response', self.on_save_response, kwargs)
+		chooser.present()
 		self.add_filters(chooser)
-		while True:
-			if chooser.run() == Gtk.ResponseType.ACCEPT:
-				filepath = chooser.get_filename()
-				filter_name = chooser.get_filter().get_name()
-				if filter_name == const.glcfile_text:
-					if not "." in os.path.basename(filepath):
-						filepath += ".glc"
+	
+	def on_save_response(self, dialog, response, *args):
 
-				if os.path.exists(filepath):
-					dialog = Gtk.MessageDialog(chooser, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _("Overwrite to the existing file?"))
-					dialog.format_secondary_text(_("The file already exist. Overwrite it?"))
-					retval = dialog.run()
-					dialog.destroy()
-					if retval == Gtk.ResponseType.NO:
-						continue
+		if response == Gtk.ResponseType.ACCEPT:
+			filepath = dialog.get_file().get_path()
+			filter_name = dialog.get_filter().get_name()
+
+			if filter_name == const.glcfile_text:
+				if not "." in os.path.basename(filepath):
+					filepath += ".glc"
+
+				self.circuit.save_file(filepath)
+				dialog.close()
+				if args[0].get('quit', False) is True:
+					self.application.quit()
 
 			else:
-				chooser.destroy()
-				return True
+				dialog.close()
+				if not self.circuit.save_file(filepath):
+					self.application.quit()
+		else:
+			dialog.close()
+			return True
 
-			if not self.circuit.save_file(filepath):
-				chooser.destroy()
-				return False
 
 	def on_action_save_pressed(self, *args):
-		self.overwrite_save()
+		self.overwrite_save(save=True)
 
 	def on_action_saveas_pressed(self, *args):
 		self.rename_save()
@@ -456,26 +496,59 @@ class MainFrame(Gtk.ApplicationWindow):
 	def on_action_quit_pressed(self, *args):
 		self.application.quit()
 
-	def check_modified(self):
+	def check_modified(self, **kwargs):
 		if self.circuit.need_save:
 			dialog = Gtk.MessageDialog(transient_for=self)
+			dialog.set_application(self.application)
 			dialog.set_modal(True)
+			dialog.add_button('Cancel', Gtk.ResponseType.CANCEL)
 			dialog.add_button('Yes', Gtk.ResponseType.YES)
 			dialog.add_button('No', Gtk.ResponseType.NO)
-			dialog.set_markup(_("Save the modified schematics?"))
-			# dialog.format_secondary_markup(_("The schematics was modifed. Save the changes before closing?"))
+			dialog.set_markup(_("<b>Save the modified schematics?</b>"))
+
+			message_area = dialog.get_message_area()
+
+			secondary_text = Gtk.Label()
+			secondary_text.set_text(_("The schematics was modifed. Save the changes before closing?"))
+
+			message_area.append(secondary_text)
 
 			dialog.present()
+			dialog.connect('response', self.on_response, kwargs)
+			return True
 
-			dialog.connect('response', self.on_response)
+		elif kwargs.get('new', False):
+			self._new_activated()
+		elif kwargs.get('open', False):
+			self._open_activated()
+		
 		return False
 
 	def on_response(self, widget, retval, *args):
+
+			should_close = not (args[0].get("open", False) or args[0].get('new', False))
+
 			if retval == Gtk.ResponseType.YES:
-				return self.overwrite_save()
-			elif retval == Gtk.ResponseType.NO:
-				return False
+
+				if args[0].get('new', False):
+					self.overwrite_save(new=True)
+
+				elif args[0].get('open', False):
+					self.overwrite_save(open=True)
+
+				else:
+					self.overwrite_save(quit=should_close)
+    
+			elif (retval == Gtk.ResponseType.NO):
+				widget.destroy()
+				if should_close:
+					self.application.quit()
+				elif args[0].get('open', False) is True: self._open_activated()
+				elif args[0].get('new', False) is True: self._new_activated()
+
+    
 			else:
+				widget.destroy()
 				return True
 
 	def on_btn_add_components_toggled(self, widget):
@@ -488,9 +561,9 @@ class MainFrame(Gtk.ApplicationWindow):
 
 
 	def on_window_delete(self, *args):
-		if self.check_modified():
-			return True
-		return False
+		if not self.check_modified():
+			return False
+		return True
 
 	def on_action_net_toggled(self, widget):
 		if widget.get_active():
@@ -534,7 +607,7 @@ class MainFrame(Gtk.ApplicationWindow):
 				# self.action_property.set_sensitive(True)
 				self.comp_window.set_all_sensitive(True)
 				self.action_net.set_sensitive(True)
-				# self.action_diagram.set_sensitive(False)
+				self.action_diagram.set_sensitive(False)
 				# self.action_diagram.set_active(False)
 				self.diagram_window.hide()
 				self.statusbar.push(0, "")
@@ -551,7 +624,7 @@ class MainFrame(Gtk.ApplicationWindow):
 
 				self.action_net.set_sensitive(False)
 				# self.action_net.set_active(False)
-				# self.action_diagram.set_sensitive(True)
+				self.action_diagram.set_sensitive(True)
 				self.prop_window.hide()
 				self.drawarea.set_component(const.component_none)
 				self.drawarea.component_dragged = False
@@ -690,21 +763,27 @@ class MainFrame(Gtk.ApplicationWindow):
 
 	def on_action_diagram_pressed(self, widget):
 		if widget.get_active():
-			self.diagram_window.show_all()
+			self.diagram_window.present()
 		else:
 			self.diagram_window.hide()
 
-	def on_action_save_image(self, widget):
+	def on_action_save_image(self, *args):
 		save_schematics_as_image(self.circuit, self.running_mode, self)
-
-	def on_action_prefs_pressed(self, widget):
-		self.pref_window.update_dialog()
-		if self.pref_window.run() == Gtk.ResponseType.APPLY:
+	
+	def _prefs_changed(self, dialog, response, *args):
+		if response == Gtk.ResponseType.APPLY:
 			self.pref_window.apply_settings()
 			Preference.save_settings()
 			self.drawarea.redraw = True
 			self.drawarea.queue_draw()
-		self.pref_window.hide()
+		
+		dialog.close()
+			
+
+	def on_action_prefs_pressed(self, *widget):
+		self.pref_window.connect('response', self._prefs_changed)
+		self.pref_window.update_dialog()
+		self.pref_window.present()
 
 	def on_comp_checked(self, widget, comp_name):
 		if comp_dict[comp_name]:
@@ -712,11 +791,13 @@ class MainFrame(Gtk.ApplicationWindow):
 			self.action_rotright.set_sensitive(True)
 			self.action_fliphori.set_sensitive(True)
 			self.action_flipvert.set_sensitive(True)
+
 		elif not self.circuit.selected_components:
 			self.action_rotleft.set_sensitive(False)
 			self.action_rotright.set_sensitive(False)
 			self.action_fliphori.set_sensitive(False)
 			self.action_flipvert.set_sensitive(False)
+
 		if comp_name != const.component_none:
 			self.action_net.set_active(False)
 		elif self.drawarea.get_component() == const.component_net:
@@ -728,6 +809,13 @@ class MainFrame(Gtk.ApplicationWindow):
 		self.action_components.set_active(False)
 
 	def on_propwindow_hidden(self, widget):
+
+		widget.destroy()
+		self.prop_window = PropertyWindow()
+		self.prop_window.set_transient_for(self)
+		self.prop_window.set_hide_on_close(True)
+		self.prop_window.set_modal(True)
+		
 		return
 
 	def on_property_changed(self, widget):
@@ -801,6 +889,12 @@ class GLogicApplication(Gtk.Application):
 		# About
 		action = Gio.SimpleAction.new("on_action_about_pressed", None)
 		action.connect("activate", self.action_handler('on_action_about_pressed'))
+		self.add_action(action)
+
+		# Preference
+
+		action = Gio.SimpleAction.new("on_action_prefs_pressed", None)
+		action.connect("activate", self.action_handler('on_action_prefs_pressed'))
 		self.add_action(action)
 
 		# Quit

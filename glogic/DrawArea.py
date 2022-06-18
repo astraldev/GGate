@@ -728,7 +728,6 @@ class DrawArea(Gtk.ScrolledWindow):
     def on_button_release_primary(self, *args):
         state = args[0].get_current_event_state()
         if args[1] == Gdk.BUTTON_PRIMARY:  # Left button released
-            print(1)
 
             if not self.parent.running_mode:
                 self.drag_enabled = False
@@ -740,7 +739,6 @@ class DrawArea(Gtk.ScrolledWindow):
                             self.circuit.split_nets(c[1], c[2])
                             self.circuit.split_nets(c[3], c[4])
                         else:
-                            print("point 2", c[1].rot_input_pins)
                             for p in c[1].rot_input_pins + c[1].rot_output_pins:
                                 self.circuit.split_nets(
                                     c[1].pos_x + p[0], c[1].pos_y + p[1])
@@ -828,11 +826,12 @@ class DrawArea(Gtk.ScrolledWindow):
 
                     if not selected and not state & Gdk.ModifierType.CONTROL_MASK:
                         self.circuit.selected_components = []
-
+                        
                     self.set_selected_component_to_prop_window()
-
+                    
                     if len(self.circuit.selected_components) == 0:
                         self.parent.disable_edit_actions()
+                        
                     else:
                         self.parent.action_rotleft.set_sensitive(True)
                         self.parent.action_rotright.set_sensitive(True)
@@ -1049,6 +1048,7 @@ class DrawArea(Gtk.ScrolledWindow):
         self.queue_draw()
 
     def set_selected_component_to_prop_window(self):
+        
         if len(self.circuit.selected_components) == 1:
             if self.circuit.selected_components[0][0] != const.component_net:
                 self.parent.prop_window.setComponent(

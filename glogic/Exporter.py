@@ -1,12 +1,14 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
-import cairo, os
+import cairo
+import os
 from glogic import const
 from glogic.Utils import cairo_paths
 from glogic import Preference
 from glogic.Utils import get_components_rect
 from gi.repository import Gtk, Pango, PangoCairo
 from gettext import gettext as _
+
 
 def add_image_filters(dialog):
 	filter_png = Gtk.FileFilter()
@@ -26,15 +28,24 @@ def add_image_filters(dialog):
 	filter_ps.add_pattern("*.ps")
 	dialog.add_filter(filter_ps)
 
-def save_image_dialog(parent):
-	chooser = Gtk.FileChooserDialog(_("Save as image"), parent, Gtk.FileChooserAction.SAVE, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_SAVE, Gtk.ResponseType.ACCEPT), flags=Gtk.DialogFlags.MODAL)
+
+def save_image_dialog(parent, handler):
+
+	chooser = Gtk.FileChooserDialog()
+	chooser.set_title(_("Save as image"))
 	chooser.set_transient_for(parent)
+	chooser.set_action(Gtk.FileChooserAction.SAVE)
+	chooser.add_button('Cancel', Gtk.ResponseType.CANCEL)
+	chooser.add_button('Save', Gtk.ResponseType.ACCEPT)
 	chooser.set_modal(True)
 	add_image_filters(chooser)
-	while True:
-		if chooser.run() == Gtk.ResponseType.ACCEPT:
-			filepath = chooser.get_filename()
+
+	def response(dialog, response):
+
+		if response == Gtk.ResponseType.ACCEPT:
+			filepath = chooser.get_file().get_path()
 			filter_name = chooser.get_filter().get_name()
+
 			if filter_name == const.pngfile_text:
 				if not "." in os.path.basename(filepath):
 					filepath += ".png"
@@ -48,44 +59,45 @@ def save_image_dialog(parent):
 				if not "." in os.path.basename(filepath):
 					filepath += ".ps"
 			else:
-				chooser.destroy()
+				dialog.close()
 				return None
 
-			if os.path.exists(filepath):
-				dialog = Gtk.MessageDialog(chooser, Gtk.DialogFlags.MODAL, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, _("Overwrite to the existing file?"))
-				dialog.format_secondary_text(_("The file already exist. Overwrite it?"))
-				retval = dialog.run()
-				dialog.destroy()
-				if retval == Gtk.ResponseType.NO:
-					continue
-
+			dialog.close()
+			handler((filepath, filter_name))
 		else:
-			chooser.destroy()
-			return None
-		break
-	chooser.destroy()
-	return (filepath, filter_name)
+			dialog.close()
+		
+
+	chooser.connect('response', response)
+	chooser.present()
 
 def save_schematics_as_image(circuit, running, parent):
-	choosedata = save_image_dialog(parent)
-	if choosedata is None:
-		return
-	filepath = choosedata[0]
-	filter_name = choosedata[1]
 
-	settingsdialog = SaveSchematicsImageDialog(running, parent)
-	if settingsdialog.run() == Gtk.ResponseType.CANCEL:
-		settingsdialog.destroy()
+	def handler(choosedata):
+		filepath = choosedata[0]
+		filter_name = choosedata[1]
+
+		settingsdialog = SaveSchematicsImageDialog(running, parent)
+		settingsdialog.connect('response', _save_schematics_as_image_response, (running, circuit, filter_name, filepath))
+		settingsdialog.present()
+
+	save_image_dialog(parent, handler)
+
+def _save_schematics_as_image_response(settingsdialog, response, content):
+
+	running, circuit, filter_name, filepath = content
+	if response == Gtk.ResponseType.CANCEL:
+		settingsdialog.close()
 		return
 
 	scale = settingsdialog.scale_spin.get_value()
-	mergin = settingsdialog.mergin_spin.get_value()
+	margin = settingsdialog.margin_spin.get_value()
 	drawvoltage = settingsdialog.voltstate_check.get_active() if running else False
 	crect = get_components_rect(circuit.components)
 
-	settingsdialog.destroy()
-	width = (crect[2] - crect[0] + 1) * scale + mergin * 2 + 1
-	height = (crect[3] - crect[1] + 1) * scale + mergin * 2 + 1
+	settingsdialog.close()
+	width = (crect[2] - crect[0] + 1) * scale + margin * 2 + 1
+	height = (crect[3] - crect[1] + 1) * scale + margin * 2 + 1
 
 	if filter_name == const.pngfile_text:
 		surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(width), int(height))
@@ -97,7 +109,7 @@ def save_schematics_as_image(circuit, running, parent):
 		surface = cairo.PSSurface(filepath, width, height)
 
 	cr = cairo.Context(surface)
-	cr.translate(mergin, mergin)
+	cr.translate(margin, margin)
 	cr.scale(scale, scale)
 	cr.translate(int(-crect[0]), int(-crect[1]))
 	draw_schematics_for_file(cr, circuit, drawvoltage)
@@ -111,23 +123,34 @@ def save_schematics_as_image(circuit, running, parent):
 	elif filter_name == const.psfile_text:
 		surface.finish()
 
-	settingsdialog.destroy()
+	settingsdialog.close()
+
+	settingsdialog.parent.statusbar.push(0, "Image schematics saved..")
 
 def save_timingdiagram_as_image(diagramarea, parent):
-	choosedata = save_image_dialog(parent)
-	if choosedata is None:
-		return
-	filepath = choosedata[0]
-	filter_name = choosedata[1]
 
-	settingsdialog = SaveTimingDiagramDialog(parent)
-	if settingsdialog.run() == Gtk.ResponseType.CANCEL:
-		settingsdialog.destroy()
+	def handler(data):
+		filepath = data[0]
+		filter_name = data[1]
+
+		settingsdialog = SaveTimingDiagramDialog(parent)
+		settingsdialog.connect('response', _save_timingdiagram_as_image_response, (diagramarea, filepath, filter_name))
+		settingsdialog.present()
+
+
+	save_image_dialog(parent, handler)
+	
+def _save_timingdiagram_as_image_response(settingsdialog, response, content):
+	diagramarea, filepath, filter_name = content
+
+	if response == Gtk.ResponseType.CANCEL:
+		settingsdialog.close()
 		return
 
 	scale = settingsdialog.scale_spin.get_value()
 
-	settingsdialog.destroy()
+	settingsdialog.close()
+
 	width = (diagramarea.diagram_width + diagramarea.name_width) * scale
 	height = diagramarea.img_height * scale
 	if filter_name == const.pngfile_text:
@@ -155,7 +178,8 @@ def save_timingdiagram_as_image(diagramarea, parent):
 	elif filter_name == const.psfile_text:
 		surface.finish()
 
-	settingsdialog.destroy()
+	settingsdialog.close()
+	settingsdialog.parent.statusbar.push(0, "Timing diagram saved..")
 
 def draw_schematics_for_file(cr, circuit, withlevels):
 
@@ -213,56 +237,191 @@ def draw_schematics_for_file(cr, circuit, withlevels):
 
 class SaveSchematicsImageDialog(Gtk.Dialog):
 	def __init__(self, running, parent):
-		Gtk.Dialog.__init__(self, _("Save as image"), parent, 0, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK))
+		Gtk.Dialog.__init__(self)
+		self.set_title(_("Save as image"))
+		self.set_transient_for(parent)
+		self.set_application(parent.application)
+		self.add_button("Cancel", Gtk.ResponseType.CANCEL)
+		self.add_button("Ok", Gtk.ResponseType.OK)
 
-		vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+		self.set_size_request(200, 150)
+		self.set_resizable(False)
 
-		hbox = Gtk.Box()
-		hbox.pack_start(Gtk.Label(_("Scale:")), False, False, 3)
+		vbox = Gtk.ListBox()
+
+		row_box = Gtk.ListBoxRow()
+
+		hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+
+		scale_label = Gtk.Label(label=_("Scale:"))
+
+		scale_label.set_margin_top(3)
+		scale_label.set_margin_end(10)
+		scale_label.set_margin_start(3)
+		scale_label.set_margin_bottom(3)
+
+		scale_label.set_size_request(90, -1)
+
+		hbox.append(scale_label)
+
 		self.scale_spin = Gtk.SpinButton()
 		self.scale_spin.set_increments(1, 10)
 		self.scale_spin.set_range(0.1, 10)
 		self.scale_spin.set_digits(2)
 		self.scale_spin.set_value(1.0)
-		hbox.pack_start(self.scale_spin, False, False, 3)
-		vbox.pack_start(hbox, False, False, 3)
+
+		self.scale_spin.set_margin_top(3)
+		self.scale_spin.set_margin_end(3)
+		self.scale_spin.set_margin_start(3)
+		self.scale_spin.set_margin_bottom(3)
+
+		hbox.append(self.scale_spin)
+
+		hbox.set_margin_top(3)
+		hbox.set_margin_end(3)
+		hbox.set_margin_start(3)
+		hbox.set_margin_bottom(3)
+
+		row_box.set_child(hbox)
+
+		vbox.append(row_box)
+
+		row_box = Gtk.ListBoxRow()
 
 		hbox = Gtk.Box()
-		hbox.pack_start(Gtk.Label(_("Mergin:")), False, False, 3)
-		self.mergin_spin = Gtk.SpinButton()
-		self.mergin_spin.set_increments(1, 10)
-		self.mergin_spin.set_range(0, 100)
-		self.mergin_spin.set_value(5)
-		hbox.pack_start(self.mergin_spin, False, False, 3)
-		vbox.pack_start(hbox, False, False, 3)
+		margin_label = Gtk.Label(label=_("Margin:"))
+
+		margin_label.set_margin_top(3)
+		margin_label.set_margin_end(10)
+		margin_label.set_margin_start(3)
+		margin_label.set_margin_bottom(3)
+
+		margin_label.set_size_request(90, -1)
+
+		hbox.append(margin_label)
+
+		self.margin_spin = Gtk.SpinButton()
+		self.margin_spin.set_increments(1, 10)
+		self.margin_spin.set_range(0, 100)
+		self.margin_spin.set_value(5)
+
+		self.margin_spin.set_margin_top(3)
+		self.margin_spin.set_margin_end(3)
+		self.margin_spin.set_margin_start(3)
+		self.margin_spin.set_margin_bottom(3)
+
+		hbox.append(self.margin_spin)
+		hbox.set_margin_top(3)
+		hbox.set_margin_end(3)
+		hbox.set_margin_start(3)
+		hbox.set_margin_bottom(3)
+
+		row_box.set_child(hbox)
+
+		vbox.append(row_box)
 
 		if running:
+
+			row_box = Gtk.ListBoxRow()
+
 			hbox = Gtk.Box()
-			hbox.pack_start(Gtk.Label(_("Draw voltage states:")), False, False, 3)
-			self.voltstate_check = Gtk.CheckButton("")
-			hbox.pack_start(self.voltstate_check, False, False, 3)
-			vbox.pack_start(hbox, False, False, 3)
+			voltage_state_label = Gtk.Label(label=_("Draw voltage states:"))
+			voltage_state_label.set_margin_top(3)
+			voltage_state_label.set_margin_end(3)
+			voltage_state_label.set_margin_start(3)
+			voltage_state_label.set_margin_bottom(3)
+
+			hbox.append(voltage_state_label)
+
+			self.voltstate_check = Gtk.CheckButton()
+
+			self.voltstate_check.set_margin_top(3)
+			self.voltstate_check.set_margin_end(3)
+			self.voltstate_check.set_margin_start(3)
+			self.voltstate_check.set_margin_bottom(3)
+
+			hbox.append(self.voltstate_check)
+
+			hbox.set_margin_top(3)
+			hbox.set_margin_end(3)
+			hbox.set_margin_start(3)
+			hbox.set_margin_bottom(3)
+
+			row_box.set_child(hbox)
+
+			vbox.append(row_box)
 
 		box = self.get_content_area()
-		box.add(vbox)
-		self.show_all()
+		vbox.set_vexpand(True)
+		vbox.set_hexpand(True)
+		vbox.set_halign(Gtk.Align.FILL)
+		vbox.set_valign(Gtk.Align.FILL)
+
+		vbox.set_margin_start(3)
+		vbox.set_margin_bottom(3)
+		vbox.set_margin_top(3)
+		vbox.set_margin_end(3)
+
+		box.append(vbox)
 
 class SaveTimingDiagramDialog(Gtk.Dialog):
 	def __init__(self, parent):
-		Gtk.Dialog.__init__(self, _("Save as image"), parent, 0, (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK))
+		Gtk.Dialog.__init__(self)
+		self.set_title(_("Save as image"))
+		self.set_transient_for(parent)
+		self.add_button('Cancel', Gtk.ResponseType.CANCEL)
+		self.add_button('Ok', Gtk.ResponseType.OK)
 
-		vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+		self.set_size_request(200, 150)
+		self.set_resizable(False)
+
+		vbox = Gtk.ListBox()
+
+		row_box = Gtk.ListBoxRow()
 
 		hbox = Gtk.Box()
-		hbox.pack_start(Gtk.Label(_("Scale:")), False, False, 3)
+		scale_label = Gtk.Label(label=_("Scale:"))
+
+		scale_label.set_margin_top(3)
+		scale_label.set_margin_end(10)
+		scale_label.set_margin_start(3)
+		scale_label.set_margin_bottom(3)
+
+		scale_label.set_size_request(90, -1)
+
+		hbox.append(scale_label)
 		self.scale_spin = Gtk.SpinButton()
 		self.scale_spin.set_increments(1, 10)
 		self.scale_spin.set_range(0.1, 10)
 		self.scale_spin.set_digits(2)
 		self.scale_spin.set_value(1.0)
-		hbox.pack_start(self.scale_spin, False, False, 3)
-		vbox.pack_start(hbox, False, False, 3)
+
+		self.scale_spin.set_margin_top(3)
+		self.scale_spin.set_margin_end(3)
+		self.scale_spin.set_margin_start(3)
+		self.scale_spin.set_margin_bottom(3)
+
+		hbox.append(self.scale_spin)
+
+
+		hbox.set_margin_top(3)
+		hbox.set_margin_end(3)
+		hbox.set_margin_start(3)
+		hbox.set_margin_bottom(3)
+
+		row_box.set_child(hbox)
+
+		vbox.append(row_box)
 
 		box = self.get_content_area()
-		box.add(vbox)
-		self.show_all()
+		vbox.set_vexpand(True)
+		vbox.set_hexpand(True)
+		vbox.set_halign(Gtk.Align.FILL)
+		vbox.set_valign(Gtk.Align.FILL)
+
+		vbox.set_margin_start(3)
+		vbox.set_margin_bottom(3)
+		vbox.set_margin_top(3)
+		vbox.set_margin_end(3)
+
+		box.append(vbox)
