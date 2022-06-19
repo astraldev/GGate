@@ -63,7 +63,7 @@
 	</section>
 
 	<section id="delete"><title>Delete components</title>
-		<p>Select components and press <key>Delete</key> or click <guiseq><gui>Edit</gui><gui>Delete</gui></guiseq> to delete components.</p>
+		<p>Select components and press <key>Delete</key> to delete components.</p>
 	</section>
 
 </page>

@@ -58,11 +58,8 @@
 				<p>Change values on the property window, and click "Apply" to reflect your settings</p>
 			</item>
 		</steps>
-		<p>There are two other options to show the property window. However, the above one may be the easiest way.</p>
+		<p>There is another option to show the property window. However, the above one may be the easiest way.</p>
 		<list>
-			<item>
-				<p>Click <guiseq><gui>Edit</gui><gui>Property</gui></guiseq></p>
-			</item>
 			<item>
 				<p>Press <keyseq><key>Ctrl</key><key>P</key></keyseq></p>
 			</item>

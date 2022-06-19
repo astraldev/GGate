@@ -59,9 +59,6 @@
 		<p>プロパティーウィンドウを表示する方法は他にも2つありますが、上述した方法が最も簡単でしょう。</p>
 		<list>
 			<item>
-				<p><guiseq><gui>編集</gui><gui>プロパティー</gui></guiseq> をクリックする</p>
-			</item>
-			<item>
 				<p><keyseq><key>Ctrl</key><key>P</key></keyseq> を押す</p>
 			</item>
 		</list>

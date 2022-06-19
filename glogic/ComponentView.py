@@ -24,7 +24,7 @@ class ComponentView(Gtk.ScrolledWindow):
         # Create toggle buttons
 
         self.button_names = {
-            'standard':  [const.component_NOT,     const.component_AND,     const.component_OR],
+            'Basic Components':  [const.component_NOT,     const.component_AND,     const.component_OR],
             'alternate': [const.component_XOR,     const.component_NAND,    const.component_NOR],
 
             'components': [const.component_SW,      const.component_7seg,    const.component_LED,
@@ -67,7 +67,7 @@ class ComponentView(Gtk.ScrolledWindow):
             for gate in self.button_names[button_types]:
                 gate_row = Gtk.ListBoxRow()
                 content_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-                
+
                 icon = Gtk.Image.new_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(config.DATADIR+"/images/components/"+gate+".png"))
                 label = Gtk.Label(label=str(gate).capitalize())
 

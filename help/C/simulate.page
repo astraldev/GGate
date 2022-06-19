@@ -47,7 +47,7 @@
 
 	<section id="preference">
 		<title>Preference</title>
-		<p>You can change settings for simulation from <guiseq><gui>Edit</gui><gui>Preference</gui></guiseq>.</p>
+		<p>You can change settings for simulation from <guiseq>Preference</gui></guiseq>.</p>
 		<terms>
 			<item>
 				<title>Max calc iters</title>

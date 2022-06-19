@@ -4,7 +4,7 @@
 
 	<info>
 		<link type="guide" xref="index#edit"/>
-		<desc>You can change a type of symbols shown on the circuit from <guiseq><gui>Edit</gui><gui>Preference</gui></guiseq>.</desc>
+		<desc>You can change a type of symbols shown on the circuit in Preference</gui></guiseq>.</desc>
 		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
 		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
 		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>

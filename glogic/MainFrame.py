@@ -67,7 +67,8 @@ class MainFrame(Gtk.ApplicationWindow):
 
         # About dialog
         self.about_dialog = Gtk.AboutDialog()
-        # self.about_dialog.set_logo(GdkPixbuf.Pixbuf.new_from_file(config.DATADIR+"/images/glogic.png"))
+        picture = Gdk.Texture.new_for_pixbuf(GdkPixbuf.Pixbuf.new_from_file(config.DATADIR+"/images/glogic.png"))
+        self.about_dialog.set_logo(picture)
         self.about_dialog.set_program_name(const.app_name)
         self.about_dialog.set_version(
             config.VERSION if config.BZRREV == "" else "%s (+bzr%s)" % (config.VERSION, config.BZRREV))
