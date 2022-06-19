@@ -67,8 +67,8 @@ class ComponentView(Gtk.ScrolledWindow):
             for gate in self.button_names[button_types]:
                 gate_row = Gtk.ListBoxRow()
                 content_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-                icon = Gtk.Image.new_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(
-                        config.DATADIR+"/images/components/"+gate+".png"))
+                
+                icon = Gtk.Image.new_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(config.DATADIR+"/images/components/"+gate+".png"))
                 label = Gtk.Label(label=str(gate).capitalize())
 
                 icon.set_margin_end(5)

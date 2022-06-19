@@ -1,0 +1,48 @@
+version
+ author=2.6
+ required=2.6
+
+rsff
+ position=220,240
+ input_level=0,0
+ output_level=0,1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+osc
+ position=120,230
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=period:2.0,shift:0.0,duration:50.0,initstate:1
+
+osc
+ position=120,270
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=period:2.0,shift:0.0,duration:20.0,initstate:0
+
+net
+ position=230,230,230,250
+
+net
+ position=190,250,230,250
+
+net
+ position=190,210,230,210
+
+probe
+ position=310,220
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:Q
+
+probe
+ position=310,240
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:~Q
+

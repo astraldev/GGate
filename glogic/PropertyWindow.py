@@ -35,13 +35,15 @@ class PropertyWindow(Gtk.Dialog):
 			if isinstance(p[1], tuple):
 				if p[1][0] == const.property_select:
 					values.append(self.prop_controls[i].get_active())
-					self.prop_controls[i].update()
+
 				elif p[1][0] == const.property_int:
 					values.append(int(self.prop_controls[i].get_value()))
 					self.prop_controls[i].update()
+
 				elif p[1][0] == const.property_float:
 					values.append(self.prop_controls[i].get_value())
 					self.prop_controls[i].update()
+					
 				else:
 					values.append(self.prop_controls[i].get_text())
 			elif p[1] == const.property_bool:
@@ -219,6 +221,7 @@ class PropertyWindow(Gtk.Dialog):
 
 		self.set_child(self.vbox)
 		self.vbox.show()
+		self.queue_resize()
 
 	def on_window_delete(self, *args):
 		self.emit("window-hidden")

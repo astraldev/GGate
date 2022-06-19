@@ -103,7 +103,6 @@ class DrawArea(Gtk.ScrolledWindow):
     def on_draw(self, widget, cr, width, height, *args):
 
         if self.redraw:
-
             mcr = cairo.Context(self.mpixbuf)
             if self.parent.running_mode:
                 mcr.set_source(Preference.bg_color_running)
@@ -145,7 +144,7 @@ class DrawArea(Gtk.ScrolledWindow):
                             mcr.set_source(Preference.component_color)
                             c[1].drawComponentEditOverlap(mcr, layout)
                         mcr.set_matrix(matrix)
-
+                        
             if not self.parent.running_mode:
                 # Draw net
                 for c in self.circuit.components:
@@ -237,6 +236,7 @@ class DrawArea(Gtk.ScrolledWindow):
                 if self.netstarted:
                     # Draw net
                     cr.set_source(Preference.net_color)
+
                     if self.net_right and self.netstart_x < self.cursor_x or self.net_left and self.cursor_x < self.netstart_x:
                         cairo_paths(cr, (self.netstart_x, self.netstart_y),
                                     (self.cursor_x, self.netstart_y))
@@ -455,6 +455,29 @@ class DrawArea(Gtk.ScrolledWindow):
     def on_key_release(self, widget, key_val, *args):
         if self.parent.running_mode:
             return
+
+        if key_val == Gdk.KEY_equal and args[-1] & Gdk.ModifierType.CONTROL_MASK:
+            for components in self.circuit.selected_components:
+                if components[0] != const.component_net:
+                    components[1].enlarge()
+                    self.queue_draw()
+        
+        """Setup ShortCuts for Flip, Rotate"""
+
+        # Rotate Right => R
+        if key_val == Gdk.KEY_R or key_val == Gdk.KEY_r:
+            self.parent.on_action_rotate_right_90()
+        # Rotate Left => R
+        if key_val == Gdk.KEY_L or key_val == Gdk.KEY_l:
+            self.parent.on_action_rotate_left_90()
+        # Flip Horizontally => H
+        if key_val == Gdk.KEY_H or key_val == Gdk.KEY_h:
+            self.parent.on_action_flip_horizontally()
+        # Flip Vertically => V
+        if key_val == Gdk.KEY_V or key_val == Gdk.KEY_v:
+            self.parent.on_action_flip_vertically()
+
+
         if self.cursor_over:
             
             if key_val == Gdk.KEY_Delete:
@@ -479,16 +502,16 @@ class DrawArea(Gtk.ScrolledWindow):
     def on_key_press(self, *args):
         if self.parent.running_mode:
             return
+
         if self.cursor_over:
             if self._pushed_component_name != const.component_none:
                 if args[1] == Gdk.KEY_Control_L or args[1] == Gdk.KEY_Control_R:
+
                     oldcursor_x = self.cursor_x
                     oldcursor_y = self.cursor_y
 
-                    self.cursor_x = int(
-                        self.cursor_smooth_x - self.cursor_smooth_x % 10)
-                    self.cursor_y = int(
-                        self.cursor_smooth_y - self.cursor_smooth_y % 10)
+                    self.cursor_x = int(self.cursor_smooth_x - self.cursor_smooth_x % 10)
+                    self.cursor_y = int(self.cursor_smooth_y - self.cursor_smooth_y % 10)
 
                     if oldcursor_x != self.cursor_x or oldcursor_y != self.cursor_y:
                         self.queue_draw()
@@ -975,8 +998,6 @@ class DrawArea(Gtk.ScrolledWindow):
                             self.refresh_nets()
                             self._pasted_components = None
                             self.circuit.push_history()
-                            # self.parent.action_undo.set_sensitive(True)
-                            # self.parent.action_redo.set_sensitive(False)
                             self.added = True
                             self.redraw = True
                     else:

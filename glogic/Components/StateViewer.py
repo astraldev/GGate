@@ -54,6 +54,9 @@ class SevenSegment(BaseComponent):
 			cr.set_source_rgb(0.0, 1.0, 0.0)
 			cairo_paths(cr, (60, -40), (62, -38), (88, -38), (90, -40), (88, -42), (62, -42), (60, -40))
 			cr.fill()
+		
+		
+
 
 	def drawComponent(self, cr, layout):
 		cairo_paths(cr, (60, -70), (62, -68), (88, -68), (90, -70), (88, -72), (62, -72), (60, -70))
@@ -70,6 +73,7 @@ class SevenSegment(BaseComponent):
 		cairo_draw_text(cr, layout, "IC", 35, -30, 0.0, 0.5)
 		cairo_draw_text(cr, layout, "ID", 35, -10, 0.0, 0.5)
 		cr.fill()
+		
 
 	def drawComponentEditOverlap(self, cr, layout):
 		cairo_paths(cr, (10, -70), (30, -70))
@@ -77,6 +81,7 @@ class SevenSegment(BaseComponent):
 		cairo_paths(cr, (10, -30), (30, -30))
 		cairo_paths(cr, (10, -10), (30, -10))
 		cr.stroke()
+		
 
 	def drawComponentRunOverlap(self, cr, layout):
 		if self.input_level[0]:
@@ -174,10 +179,12 @@ class LED(BaseComponent):
 		cr.arc(50, -20, 8, 0, 2 * math.pi)
 		cr.rectangle(30, -40, 40, 40)
 		cr.stroke()
+		
 
 	def drawComponentEditOverlap(self, cr, layout):
 		cairo_paths(cr, (10, -20), (30, -20))
 		cr.stroke()
+		
 
 	def drawComponentRunOverlap(self, cr, layout):
 		if self.input_level[0]:
@@ -193,6 +200,7 @@ class LED(BaseComponent):
 			cr.set_source_rgb(0.0, 0.25, 0.0)
 			cr.arc(50, -20, 8, 0, 2 * math.pi)
 		cr.fill()
+		
 
 	def isMouseOvered(self, x, y):
 		if self.pos_x + 13 <= x <= self.pos_x + 67 and self.pos_y - 37 <= y <= self.pos_y - 3:

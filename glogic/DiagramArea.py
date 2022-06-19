@@ -140,7 +140,7 @@ class DiagramArea(Gtk.Box):
             self.cursor_y = y_axis
             if 39 <= self.cursor_y < self.img_height:
                 self.mouse_down = True
-                widget.queue_draw()
+                self.queue_draw()
 
     def on_diagramarea_button_press_secondary(self, controller, *events):
         event_button, x_axis, y_axis = events
@@ -160,11 +160,9 @@ class DiagramArea(Gtk.Box):
                 self.drawarea.queue_draw()
 
     def on_diagramarea_button_release_secondary(self, controller, *event):
-        if event.button == Gdk.BUTTON_SECONDARY:
-            self.middle_move_enabled = False
+        self.middle_move_enabled = False
 
     def on_diagramarea_motion(self, controller, x_axis, y_axis, *args):
-
         widget = controller.get_widget()
 
         if self.middle_move_enabled:

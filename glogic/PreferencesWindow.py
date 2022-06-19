@@ -172,12 +172,11 @@ class PreferencesWindow(Gtk.Dialog):
         self.calc_duration_spin.set_value(Preference.max_calc_duration * 1000000)
 
     def apply_settings(self):
-        Preference.drawing_font = self.drawing_font_btn.get_use_font()
+        Preference.drawing_font = self.drawing_font_btn.get_font()
 
         for key in self.color_buttons:
             color = self.color_buttons[key].get_rgba()
-            Preference.__setattr__(key, "%f,%f,%f" % (
-                color.red / 65536, color.green / 65536, color.blue / 65536))
+            Preference.__setattr__(key, "%f,%f,%f" % (color.red , color.green , color.blue ))
 
         Preference.symbol_type = self.symbol_type_combo.get_active()
         Preference.max_calc_iters = self.calc_iter_spin.get_value()

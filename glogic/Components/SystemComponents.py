@@ -27,6 +27,16 @@ class BaseComponent():
 		self.output_pins_dir = []
 		self.store = []
 
+		self.scale = [1.0, 1.0]
+	
+	def enlarge(self, *args):
+		self.scale[0] = self.scale[0] + 0.05
+		self.scale[1] = self.scale[1] + 0.05
+	
+	def shrink(self, *args):
+		self.scale[0] = self.scale[0] - 0.05
+		self.scale[1] = self.scale[1] - 0.05
+		
 	def drawComponent(self, cr, layout):
 		return
 

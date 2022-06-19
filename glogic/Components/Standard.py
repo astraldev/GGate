@@ -44,11 +44,13 @@ class NOT(BaseComponent):
 		if Preference.symbol_type == 1:
 			cairo_draw_text(cr, layout, "1", 45, -40, 0.5, 0.0)
 			cr.fill()
+		
 
 	def drawComponentEditOverlap(self, cr, layout):
 		cairo_paths(cr, (10, -20), (30, -20))
 		cairo_paths(cr, (72, -20), (90, -20))
 		cr.stroke()
+
 
 	def drawComponentRunOverlap(self, cr, layout):
 		if self.input_level[0]:
@@ -63,6 +65,8 @@ class NOT(BaseComponent):
 			cr.set_source(Preference.lowlevel_color)
 		cairo_paths(cr, (72, -20), (90, -20))
 		cr.stroke()
+
+
 
 	def isMouseOvered(self, x, y):
 		if self.pos_x + 13 <= x <= self.pos_x + 87 and self.pos_y - 37 <= y <= self.pos_y - 3:
@@ -109,22 +113,26 @@ class AND(BaseComponent):
 			self.input_pins_dir.append(const.direction_E)
 			self.input_level.append(False)
 			self.input_pins.append((10, -20))
+			
 		self.tp_hl = prop[1] * 0.000001
 		self.tp_lh = prop[2] * 0.000001
 
-		print(prop)
 		return False
 
 	def drawComponent(self, cr, layout):
+		
 		if Preference.symbol_type == 0:
 			cairo_paths(cr, (60, 0), (30, 0), (30, -40), (60, -40))
 			cr.arc(60, -20, 20, -0.5 * math.pi, 0.5 * math.pi)
 			cr.stroke()
+
 		elif Preference.symbol_type == 1:
 			cr.rectangle(30, -40, 50, 40)
 			cr.stroke()
 			cairo_draw_text(cr, layout, "&", 55, -40, 0.5, 0.0)
 			cr.fill()
+		
+
 
 	def drawComponentEditOverlap(self, cr, layout):
 		cairo_paths(cr, (10, -30), (30, -30))
@@ -133,6 +141,7 @@ class AND(BaseComponent):
 		cairo_paths(cr, (10, -10), (30, -10))
 		cairo_paths(cr, (80, -20), (100, -20))
 		cr.stroke()
+
 
 	def drawComponentRunOverlap(self, cr, layout):
 		if self.input_level[0]:
@@ -154,12 +163,14 @@ class AND(BaseComponent):
 				cr.set_source(Preference.lowlevel_color)
 			cairo_paths(cr, (10, -20), (30, -20))
 			cr.stroke()
+
 		if self.output_level[0]:
 			cr.set_source(Preference.highlevel_color)
 		else:
 			cr.set_source(Preference.lowlevel_color)
 		cairo_paths(cr, (80, -20), (100, -20))
 		cr.stroke()
+
 
 	def isMouseOvered(self, x, y):
 		if self.pos_x + 13 <= x <= self.pos_x + 97 and self.pos_y - 37 <= y <= self.pos_y - 3:
@@ -198,6 +209,8 @@ class OR(BaseComponent):
 		self.properties.append((_("tPLH:"), (const.property_float, 0, 1000, 3, 100), "µs"))
 		self.values.append(0)
 
+
+
 	def propertyChanged(self, prop):
 		self.input_pins_dir = [const.direction_E, const.direction_E]
 		self.input_level = [False, False]
@@ -215,10 +228,16 @@ class OR(BaseComponent):
 			cairo_bezier(cr, 30, -40, 40, -30, 40, -10, 30, 0)
 			cairo_bezier(cr, 30, -40, 50, -40, 65, -40, 80, -20)
 			cairo_bezier(cr, 30, 0, 50, 0, 65, 0, 80, -20)
+
 			cr.stroke()
+			
+
+
 		elif Preference.symbol_type == 1:
 			cr.rectangle(30, -40, 50, 40)
 			cr.stroke()
+			
+
 			cairo_draw_text(cr, layout, "≥1", 55, -40, 0.5, 0.0)
 			cr.fill()
 
@@ -227,6 +246,7 @@ class OR(BaseComponent):
 			cairo_paths(cr, (10, -30), (36, -30))
 			if self.values[0] == 3:
 				cairo_paths(cr, (10, -20), (37, -20))
+
 			cairo_paths(cr, (10, -10), (36, -10))
 		elif Preference.symbol_type == 1:
 			cairo_paths(cr, (10, -30), (30, -30))
@@ -234,7 +254,9 @@ class OR(BaseComponent):
 				cairo_paths(cr, (10, -20), (30, -20))
 			cairo_paths(cr, (10, -10), (30, -10))
 		cairo_paths(cr, (80, -20), (100, -20))
+
 		cr.stroke()
+		
 
 	def drawComponentRunOverlap(self, cr, layout):
 		if self.input_level[0]:
@@ -246,6 +268,8 @@ class OR(BaseComponent):
 		elif Preference.symbol_type == 1:
 			cairo_paths(cr, (10, -30), (30, -30))
 		cr.stroke()
+		
+
 		if self.input_level[1]:
 			cr.set_source(Preference.highlevel_color)
 		else:
@@ -255,6 +279,8 @@ class OR(BaseComponent):
 		elif Preference.symbol_type == 1:
 			cairo_paths(cr, (10, -10), (30, -10))
 		cr.stroke()
+		
+
 		if self.values[0] == 3:
 			if self.input_level[2]:
 				cr.set_source(Preference.highlevel_color)
@@ -265,12 +291,15 @@ class OR(BaseComponent):
 			elif Preference.symbol_type == 1:
 				cairo_paths(cr, (10, -20), (30, -20))
 			cr.stroke()
+			
+
 		if self.output_level[0]:
 			cr.set_source(Preference.highlevel_color)
 		else:
 			cr.set_source(Preference.lowlevel_color)
 		cairo_paths(cr, (80, -20), (100, -20))
 		cr.stroke()
+		
 
 	def isMouseOvered(self, x, y):
 		if self.pos_x + 13 <= x <= self.pos_x + 97 and self.pos_y - 37 <= y <= self.pos_y - 3:

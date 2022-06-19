@@ -50,6 +50,8 @@ class CircuitManager(GObject.GObject):
 		self.simple_change = True
 		self.save_point = self.action_count
 		self.emit("title-changed", "%s - %s" % (os.path.basename(filepath), const.app_name))
+
+		self.emit('message-changed', _('Saved File')+os.path.basename(filepath))
 		return False
 
 	def open_file(self, filepath):
@@ -71,6 +73,7 @@ class CircuitManager(GObject.GObject):
 			self.components_history = [copy.deepcopy(self.components)]
 			self.filepath = filepath
 			self.emit("title-changed", "%s - %s" % (os.path.basename(filepath), const.app_name))
+			self.emit('message-changed', _('Opened file ' + os.path.basename(filepath)))
 			fp.close()
 		return False
 

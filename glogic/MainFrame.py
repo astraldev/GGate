@@ -221,13 +221,13 @@ class MainFrame(Gtk.ApplicationWindow):
                             ('app.on_action_save_pressed',   	["<Ctrl>S"]),
                             ('app.on_action_quit_pressed',   	["<Ctrl>Q"]),
                             ('app.on_action_saveas_pressed',
-                             ["<Shift><Ctrl>S"])
+                             ["<Ctrl><Shift>S"])
                             ],
             'window':	   [
                 (self.on_action_undo_pressed,
                  'app.on_action_undo_pressed',   	["<Ctrl>Z"]),
                 (self.on_action_redo_pressed,     'app.on_action_redo_pressed',   	[
-                    "<Shift><Ctrl>Z"]),
+                    "<Ctrl><Shift>Z"]),
                 (self.on_action_cut_pressed,      'app.on_action_cut_pressed',    	[
                     "<Ctrl>X"]),
                 (self.on_action_copy_pressed,     'app.on_action_copy_pressed',   	[
@@ -295,7 +295,6 @@ class MainFrame(Gtk.ApplicationWindow):
         self.drawarea.nearest_component = None
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
-        self.statusbar.push(0, "Opened new circuit...")
 
     def add_filters(self, dialog):
         filter_wxl = Gtk.FileFilter()
@@ -314,8 +313,6 @@ class MainFrame(Gtk.ApplicationWindow):
         self.disable_edit_actions()
         self.action_diagram.set_sensitive(False)
         self.action_net.set_active(False)
-        # self.action_run.set_active(False)
-        # self.action_diagram.set_active(False)
         self.diagram_window.destroy()
         self.diagram_window = TimingDiagramWindow(self)
 
@@ -356,14 +353,16 @@ class MainFrame(Gtk.ApplicationWindow):
 
         if self.circuit.filepath == "":
             self.rename_save(quit=kwargs.get('quit', False))
-
         else:
             if not self.circuit.save_file(self.circuit.filepath):
-                self.rename_save()
+                self.rename_save(ask=False if kwargs.get('save', False) else True)
+
                 if kwargs.get('quit', True) and (not kwargs.get('save', False)):
                     self.application.quit()
 
-    def rename_save(self, **kwargs):
+    def rename_save(self, ask=True, **kwargs):
+        if not ask:
+            return
         chooser = Gtk.FileChooserDialog()
         chooser.set_title("<b>Save file</b>"),
         chooser.set_transient_for(self)
@@ -479,8 +478,8 @@ class MainFrame(Gtk.ApplicationWindow):
     def on_action_net_toggled(self, widget):
         if widget.get_active():
             self.drawarea.netstarted = False
-            # self.comp_window.uncheck_all_buttons()
             widget.set_active(True)
+
             self.drawarea.set_component(const.component_net)
         elif self.drawarea.get_component() == const.component_net:
             self.drawarea.set_component(const.component_none)
@@ -515,21 +514,19 @@ class MainFrame(Gtk.ApplicationWindow):
                 self.clicked_on_pause = False
                 if self.circuit.action_count < len(self.circuit.components_history) - 1:
                     self.action_redo.set_sensitive(True)
-                # self.action_property.set_sensitive(True)
                 self.comp_window.set_all_sensitive(True)
                 self.action_net.set_sensitive(True)
                 self.action_diagram.set_sensitive(False)
-                # self.action_diagram.set_active(False)
-                self.diagram_window.hide()
+
+                self.diagram_window.close()
+                self.diagram_window = TimingDiagramWindow(self)
+
                 self.statusbar.push(0, "")
             else:
                 self.running_mode = True
                 self.circuit.selected_components = []
-                # self.action_undo.set_sensitive(False)
-                # self.action_redo.set_sensitive(False)
+
                 self.disable_edit_actions()
-                # self.action_property.set_sensitive(False)
-                # self.action_property.set_active(False)
 
                 self.comp_window.set_all_sensitive(False)
 
@@ -579,7 +576,6 @@ class MainFrame(Gtk.ApplicationWindow):
             str_data = clipboard.read_text_finish(task)
             if str_data != None:
                 tmp = string_to_components(str_data)
-                print(tmp, str_data)
                 if isinstance(tmp, str):
                     dialog = Gtk.MessageDialog(transient_for=self, message_type=Gtk.MessageType.ERROR, button_type=Gtk.ButtonsType.OK)
                     dialog.set_markup(_("Error"))
@@ -625,7 +621,7 @@ class MainFrame(Gtk.ApplicationWindow):
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
 
-    def on_action_rotate_left_90(self, widget):
+    def on_action_rotate_left_90(self, *widget):
         if comp_dict[self.drawarea.get_component()] is None:
             self.circuit.rotate_left_selected_components()
             self.circuit.push_history()
@@ -634,7 +630,7 @@ class MainFrame(Gtk.ApplicationWindow):
             self.drawarea.rotate_left_picked_components()
         self.drawarea.queue_draw()
 
-    def on_action_rotate_right_90(self, widget):
+    def on_action_rotate_right_90(self, *widget):
         if comp_dict[self.drawarea.get_component()] is None:
             self.circuit.rotate_right_selected_components()
             self.circuit.push_history()
@@ -643,7 +639,7 @@ class MainFrame(Gtk.ApplicationWindow):
             self.drawarea.rotate_right_picked_components()
         self.drawarea.queue_draw()
 
-    def on_action_flip_horizontally(self, widget):
+    def on_action_flip_horizontally(self, *widget):
         if comp_dict[self.drawarea.get_component()] is None:
             self.circuit.flip_hori_selected_components()
             self.circuit.push_history()
@@ -652,7 +648,7 @@ class MainFrame(Gtk.ApplicationWindow):
             self.drawarea.flip_hori_picked_components()
         self.drawarea.queue_draw()
 
-    def on_action_flip_vertically(self, widget):
+    def on_action_flip_vertically(self, *widget):
         if comp_dict[self.drawarea.get_component()] is None:
             self.circuit.flip_vert_selected_components()
             self.circuit.push_history()
@@ -661,7 +657,7 @@ class MainFrame(Gtk.ApplicationWindow):
             self.drawarea.flip_vert_picked_components()
         self.drawarea.queue_draw()
 
-    def on_action_property_pressed(self, widget):
+    def on_action_property_pressed(self, *widget):
         self.drawarea.set_selected_component_to_prop_window()
         self.prop_window.present()
 
@@ -680,6 +676,7 @@ class MainFrame(Gtk.ApplicationWindow):
             self.diagram_window.present()
         else:
             self.diagram_window.close()
+            
 
     def on_action_save_image(self, *args):
         save_schematics_as_image(self.circuit, self.running_mode, self)
@@ -723,19 +720,21 @@ class MainFrame(Gtk.ApplicationWindow):
         self.action_components.set_active(False)
 
     def on_propwindow_hidden(self, widget):
-
+        
         widget.destroy()
         self.prop_window = PropertyWindow()
         self.prop_window.set_transient_for(self)
         self.prop_window.set_hide_on_close(True)
         self.prop_window.set_modal(True)
 
+        self.drawarea.queue_draw()
+
         return
 
     def on_property_changed(self, widget):
         self.drawarea.redraw = True
-        self.drawarea.queue_draw()
         self.circuit.push_history()
+        self.drawarea.queue_draw()
 
     def on_circuit_title_changed(self, circuit, title):
         self.set_title(title)

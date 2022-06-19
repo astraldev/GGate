@@ -159,10 +159,10 @@ class TimingDiagramWindow(Gtk.Window):
 			scale = 5.0
 			self.scale_combo.get_child().set_text("5.0")
 
-	def on_scale_combo_activate(self, widget):
+	def on_scale_combo_activate(self, *widget):
 		self.check_scale_format()
 
-	def on_scale_combo_focusout(self, widget, event):
+	def on_scale_combo_focusout(self, *args):
 		self.check_scale_format()
 
 	def expand_time(self, time, unit):
