@@ -1,6 +1,6 @@
 ./*.py
 **.glc
-*.png
+./*.png
 **/__pycache__/
 **.pyc
 glogic/__pycache__/*.pyc
