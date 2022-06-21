@@ -88,8 +88,8 @@ class Menu(Gtk.PopoverMenu):
     
     def present(self, x, y):
         rectangle = Gdk.Rectangle()
-        rectangle.x = x + 78
-        rectangle.y = y - 50
+        rectangle.x = x
+        rectangle.y = y 
         rectangle.width = 1
         rectangle.height = 1
 

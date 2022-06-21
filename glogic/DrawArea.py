@@ -1083,7 +1083,13 @@ class DrawArea(Gtk.ScrolledWindow):
 
     # Right Click
     def on_button_release_secondary(self, *args):
+
+
         if not self.parent.running_mode:
+
+            if (not self.parent.action_net.get_active()) and (not self.netstarted):
+                self.menu.present(args[2], args[3])
+
             if self._pasted_components:
                 self._pasted_components = None
 
@@ -1093,8 +1099,9 @@ class DrawArea(Gtk.ScrolledWindow):
             else:
                 # Finish creating net
                 self.netstarted = False
+        else:
+            self.menu.present(args[2], args[3])
 
-        self.menu.present(args[2], args[3])
         self.queue_draw()
 
     def set_selected_component_to_prop_window(self):

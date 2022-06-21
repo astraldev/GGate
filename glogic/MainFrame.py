@@ -8,7 +8,7 @@ import os
 import sys
 import webbrowser
 from gi.repository import Gtk, Gdk, GdkPixbuf, Gio
-from glogic import config, const
+from glogic import UserInterfaces, config, const
 from glogic.Exporter import save_schematics_as_image
 from gettext import gettext as _
 from glogic.DrawArea import DrawArea
@@ -24,9 +24,12 @@ from glogic.ComponentConverter import components_to_string, string_to_components
 themed_icons = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
 themed_icons.add_search_path(config.DATADIR+"/images")
 
-class ShortCutWindow(Gtk.ShortcutsWindow):
+class ShortCutWindow:
     def __init__(self, parent):
-        super().__init__(transient_for=parent)
+        shortcut_builder = Gtk.Builder.new_from_string(UserInterfaces.shortcut_ui, -1)
+        shortcut_window = shortcut_builder.get_object("shortcuts")
+        shortcut_window.set_transient_for(parent)
+        shortcut_window.show()
 
 class MainFrame(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
@@ -100,6 +103,7 @@ class MainFrame(Gtk.ApplicationWindow):
                 ('app.on_action_save_pressed',   	["<Ctrl>S"]),
                 ('app.on_action_quit_pressed',   	["<Ctrl>Q"]),
                 ('app.on_action_saveas_pressed',    ["<Ctrl><Shift>S"]),
+                ('app.on_show_shortcut',            ['<Ctrl><Shift>question'])
             ],
             'window':	   [
                 (
@@ -222,7 +226,7 @@ class MainFrame(Gtk.ApplicationWindow):
 
         # Menu Popover
 
-        _menu_builder = Gtk.Builder.new_from_string(const.menu_xml, -1)
+        _menu_builder = Gtk.Builder.new_from_string(UserInterfaces.menu_xml, -1)
         _menu = _menu_builder.get_object("app-menu")
 
         self.popover = Gtk.PopoverMenu.new_from_model(_menu)
@@ -799,6 +803,9 @@ class GLogicApplication(Gtk.Application):
                     return _
                 eval(cmd)(*args)
         return _
+    
+    def on_show_shortcut(self, *args):
+        ShortCutWindow(self.window)
 
     def do_startup(self, *args):
         Gtk.Application.do_startup(self)
@@ -859,6 +866,12 @@ class GLogicApplication(Gtk.Application):
         action = Gio.SimpleAction.new("on_action_prefs_pressed", None)
         action.connect("activate", self.action_handler(
             'on_action_prefs_pressed'))
+        self.add_action(action)
+
+        # Shortcut
+
+        action = Gio.SimpleAction.new("on_show_shortcut", None)
+        action.connect("activate", self.on_show_shortcut)
         self.add_action(action)
 
         # Quit

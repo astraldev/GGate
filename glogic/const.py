@@ -17,76 +17,6 @@ class _const:
             raise (self.ConstError, "Can't rebind const(%s)" % name)
         self.__dict__[name] = value
 
-    menu_xml = """
-	<?xml version="1.0" encoding="UTF-8"?>
-    <interface>
-        <menu id="app-menu">
-            <section> 
-                <item>
-                    <attribute name="label">_New</attribute>
-                    <attribute name="action">app.on_action_new_pressed</attribute>
-                    <attribute name="accel">&lt;Ctrl&gt;N</attribute>
-               </item>
-                <item>
-                    <attribute name="label">Open</attribute>
-                    <attribute name="action">app.on_action_open_pressed</attribute>
-                    <attribute name="accel">&lt;Ctrl&gt;O</attribute>
-               </item>
-			</section>
-			<section>
-                <item>
-                    <attribute name="label">Save</attribute>
-                    <attribute name="action">app.on_action_save_pressed</attribute>
-                    <attribute name="accel">&lt;Ctrl&gt;S</attribute>
-               </item>
-                <item>
-                    <attribute name="label">Save as</attribute>
-                    <attribute name="action">app.on_action_saveas_pressed</attribute>
-                    <attribute name="accel">&lt;Shift&gt;&lt;Ctrl&gt;S</attribute>
-               </item>
-                <item>
-                    <attribute name="label">Save Image</attribute>
-                    <attribute name="action">app.on_action_save_image</attribute>
-               </item>
-            </section>
-			<section>
-				<submenu>
-            	    <attribute name="label" translatable="yes">Help</attribute>
-					<section>
-						<item>
-            	   		    <attribute name="label">Content</attribute>
-            	   		    <attribute name="action">app.on_action_show_help</attribute>
-                            <attribute name="accel">F1</attribute>
-            	   		</item>
-            	   		 <item>
-            	   		    <attribute name="label">Translate</attribute>
-            	   		    <attribute name="action">app.on_action_translate_pressed</attribute>
-            	   		</item>
-            	   		 <item>
-            	   		    <attribute name="label">Report Issue</attribute>
-            	   		    <attribute name="action">app.on_action_bug_pressed</attribute>
-            	   		</item>
-					</section>
-				</submenu>
-			</section>
-            <section>
-                <item>
-                    <attribute name="label">Preference</attribute>
-                    <attribute name="action">app.on_action_prefs_pressed</attribute>
-               </item>
-                <item>
-                    <attribute name="label">About</attribute>
-                    <attribute name="action">app.on_action_about_pressed</attribute>
-               </item>
-               <item>
-                    <attribute name="label">Quit</attribute>
-                    <attribute name="action">app.on_action_quit_pressed</attribute>
-                    <attribute name="accel">&lt;Ctrl&gt;Q</attribute>
-               </item>
-            </section>
-        </menu>
-    </interface>"""
-
     # Definitions
     component_none = "none"
     component_net = "net"
@@ -143,7 +73,8 @@ class _const:
     description = _(
         "gLogic is a logic circuit simulator developed with GTK+ and Python.")
     copyright = "Copyright © 2012 - 2022 Koichi Akabe"
-    developer = ["Koichi Akabe <vbkaisetsu@gmail.com>", 'Ekure Edem <ekureedem480@gmail.com>']
+    developer = ["Koichi Akabe <vbkaisetsu@gmail.com>",
+                 'Ekure Edem <ekureedem480@gmail.com>']
     website = "https://launchpad.net/glogic"
     help = "help:glogic"
     license = """gLogic is free software: you can redistribute it and/or modify it
