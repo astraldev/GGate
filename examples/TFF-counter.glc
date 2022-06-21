@@ -1,108 +1,124 @@
+version
+ author=3.0.0
+ required=2.6
+
 tff
- position=370,160
- input_level=0
+ position=530,280
+ input_level=1
  output_level=0,1
+ matrix=1,0,0,1
  properties=trig:1,tphl:0.0,tplh:0.0
 
 tff
- position=270,180
- input_level=0
- output_level=0,1
+ position=430,300
+ input_level=1
+ output_level=1,0
+ matrix=1,0,0,1
  properties=trig:1,tphl:0.0,tplh:0.0
 
 tff
- position=70,110
- input_level=1
- output_level=1,0
+ position=230,230
+ input_level=0
+ output_level=0,1
+ matrix=1,0,0,1
  properties=trig:0,tphl:0.0,tplh:0.0
 
 tff
- position=170,90
- input_level=1
- output_level=1,0
- properties=trig:0,tphl:0.0,tplh:0.0
-
-sw
- position=10,110
- input_level=
- output_level=1
- properties=initstate:0
-
-tff
- position=270,70
- input_level=1
- output_level=1,0
+ position=330,210
+ input_level=0
+ output_level=0,1
+ matrix=1,0,0,1
  properties=trig:0,tphl:0.0,tplh:0.0
 
 tff
- position=370,50
- input_level=1
- output_level=1,0
+ position=430,190
+ input_level=0
+ output_level=0,1
+ matrix=1,0,0,1
+ properties=trig:0,tphl:0.0,tplh:0.0
+
+tff
+ position=530,170
+ input_level=0
+ output_level=0,1
+ matrix=1,0,0,1
  properties=trig:0,tphl:0.0,tplh:0.0
 
 7seg
- position=470,110
- input_level=0,0,0,0
- output_level=
- properties=
-
-tff
- position=170,200
- input_level=0
- output_level=0,1
- properties=trig:1,tphl:0.0,tplh:0.0
-
-tff
- position=70,220
- input_level=0
- output_level=0,1
- properties=trig:1,tphl:0.0,tplh:0.0
-
-sw
- position=10,220
- input_level=
- output_level=0
- properties=initstate:0
-
-7seg
- position=470,220
+ position=630,230
  input_level=1,1,1,1
  output_level=
- properties=
+ matrix=1,0,0,1
+ properties=_red:0
+
+tff
+ position=330,320
+ input_level=0
+ output_level=1,0
+ matrix=1,0,0,1
+ properties=trig:1,tphl:0.0,tplh:0.0
+
+tff
+ position=230,340
+ input_level=0
+ output_level=0,1
+ matrix=1,0,0,1
+ properties=trig:1,tphl:0.0,tplh:0.0
+
+7seg
+ position=630,340
+ input_level=1,0,0,1
+ output_level=
+ matrix=1,0,0,1
+ properties=_red:2
+
+sw
+ position=170,230
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+sw
+ position=170,340
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
 
 net
- position=180,80,180,70
+ position=340,200,340,190
 
 net
- position=280,60,280,50
+ position=440,180,440,170
 
 net
- position=380,40,380,30
+ position=540,160,540,150
 
 net
- position=480,100,180,100
+ position=640,220,340,220
 
 net
- position=280,80,480,80
+ position=440,200,640,200
 
 net
- position=480,60,380,60
+ position=640,180,540,180
 
 net
- position=180,210,480,210
+ position=340,330,640,330
 
 net
- position=480,190,280,190
+ position=640,310,440,310
 
 net
- position=380,170,480,170
+ position=540,290,640,290
 
 net
- position=380,150,380,140
+ position=540,270,540,260
 
 net
- position=280,170,280,160
+ position=440,290,440,280
 
 net
- position=180,190,180,180
+ position=340,310,340,300
 

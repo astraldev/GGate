@@ -4,7 +4,7 @@ import math
 import copy
 import cairo
 from glogic import const
-from glogic.MenuPopover import Menu
+from glogic.MenuPopover import Menu, RunningMenu
 from glogic.Utils import *
 from glogic.Components import comp_dict
 from glogic import Preference
@@ -36,6 +36,7 @@ class DrawArea(Gtk.ScrolledWindow):
             self.install_action(action, None, self.menu_activated)
 
         self.menu = Menu(self)
+        self.run_menu = RunningMenu(self)
 
         controller = Gtk.EventControllerMotion()
         controller.connect('leave', self.on_leave)
@@ -1084,7 +1085,6 @@ class DrawArea(Gtk.ScrolledWindow):
     # Right Click
     def on_button_release_secondary(self, *args):
 
-
         if not self.parent.running_mode:
 
             if (not self.parent.action_net.get_active()) and (not self.netstarted):
@@ -1100,7 +1100,7 @@ class DrawArea(Gtk.ScrolledWindow):
                 # Finish creating net
                 self.netstarted = False
         else:
-            self.menu.present(args[2], args[3])
+            self.run_menu.present(args[2], args[3])
 
         self.queue_draw()
 

@@ -18,10 +18,12 @@
 		<p its:translate="no"><media type="image" src="figures/components/led.png">LED</media></p>
 		<p>View a voltage level of a net</p>
 		<terms>
-			<item>
-				<title>Properties:</title>
-				<p>This component has no properties.</p>
-			</item>
+			<table frame="all" rules="all">
+				<tr>
+					<td><p>Color</p></td>
+					<td><p>Color to indicate</p></td>
+				</tr>
+			</table>
 		</terms>
 	</section>
 
@@ -30,10 +32,12 @@
 		<p its:translate="no"><media type="image" src="figures/components/7seg.png">Seven-segment display</media></p>
 		<p>View 4 bit input as a hex</p>
 		<terms>
-			<item>
-				<title>Properties:</title>
-				<p>This component has no properties.</p>
-			</item>
+			<table frame="all" rules="all">
+				<tr>
+					<td><p>Color</p></td>
+					<td><p>Color to indicate</p></td>
+				</tr>
+			</table>
 		</terms>
 	</section>
 

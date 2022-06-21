@@ -45,13 +45,6 @@ menu_xml = """
     </section>
     <section>
         <item>
-          <attribute name="label" translatable="yes">Timing Diagram</attribute>
-          <attribute name="action">app.on_action_diagram_pressed</attribute>
-          <attribute name="accel">&lt;Ctrl&gt;T</attribute>
-        </item>
-    </section>
-    <section>
-        <item>
           <attribute name="label" translatable="yes">Copy</attribute>
           <attribute name="action">app.on_action_copy_pressed</attribute>
           <attribute name="accel">&lt;Ctrl&gt;C</attribute>
@@ -71,13 +64,21 @@ menu_xml = """
 </interface>
 """
 
+running_xml = """
+<interface>
+  <menu id="model">
+    <section>
+        <item>
+          <attribute name="label" translatable="yes">Timing Diagram</attribute>
+          <attribute name="action">app.on_action_diagram_pressed</attribute>
+        </item>
+    </section>
+  </menu>
+</interface>
+"""
+
 
 class Menu(Gtk.PopoverMenu):
-
-    __gsignals__ = {
-        'activated': (GObject.SIGNAL_RUN_FIRST, None, ())
-    }
-
     def __init__(self, parent):
         _menu_builder = Gtk.Builder.new_from_string(menu_xml, -1)
         _menu = _menu_builder.get_object("model")
@@ -111,26 +112,34 @@ class Menu(Gtk.PopoverMenu):
               return
           window.action_set_enabled('app.on_action_paste_pressed', False)
 
-        if window.running_mode:
-          window.action_set_enabled('app.on_action_diagram_pressed', True)
-          window.action_set_enabled('app.on_action_paste_pressed', False)
-          window.action_set_enabled('app.toggle_net', False)
-          for action in self.get_parent().actions:
-            self.action_set_enabled(action, False)
-          for action in window_actions:
+        for action in self.get_parent().actions:
+          self.action_set_enabled(action, has_selected)
+        for action in window_actions:
+          if not has_selected:
             window.action_set_enabled(action, False)
-        else:
-          window.action_set_enabled('app.on_action_diagram_pressed', False)
-          for action in self.get_parent().actions:
-            self.action_set_enabled(action, has_selected)
-
-          for action in window_actions:
-            if not has_selected:
-              window.action_set_enabled(action, False)
-            else:
-              window.action_set_enabled(action, True)
-          window.clipboard.read_text_async(None, _)
+          else:
+            window.action_set_enabled(action, True)
+        window.clipboard.read_text_async(None, _)
 
         self.set_pointing_to(rectangle)
         self.popup()
 
+class RunningMenu(Gtk.PopoverMenu):
+
+    def __init__(self, parent):
+        _menu_builder = Gtk.Builder.new_from_string(running_xml, -1)
+        _menu = _menu_builder.get_object("model")
+        super().__init__()
+        self.set_menu_model(_menu)
+        self.set_parent(parent)
+        self.set_has_arrow(False)
+
+    def present(self, x, y):
+        rectangle = Gdk.Rectangle()
+        rectangle.x = x
+        rectangle.y = y 
+        rectangle.width = 1
+        rectangle.height = 1
+
+        self.set_pointing_to(rectangle)
+        self.popup()
