@@ -60,7 +60,7 @@ class PreferencesWindow(Gtk.Dialog):
         for key in prefset.keys():
 
             listBox = Gtk.ListBox()
-            listBox.set_name("rich-list")
+            listBox.add_css_class("rich-list")
 
             section_row = Gtk.ListBoxRow()
             _label = Gtk.Label()
@@ -123,6 +123,7 @@ class PreferencesWindow(Gtk.Dialog):
 
         pref.append(Gtk.Label(label=_("Max calc iters:")))
         self.calc_iter_spin = Gtk.SpinButton()
+        self.calc_iter_spin.set_hexpand(True)
         self.calc_iter_spin.set_increments(1, 10)
         self.calc_iter_spin.set_range(10, 1000000)
         pref.append(self.calc_iter_spin)
@@ -150,7 +151,8 @@ class PreferencesWindow(Gtk.Dialog):
 
 
         self.add_button("Cancel", Gtk.ResponseType.CANCEL)
-        self.add_button("Apply", Gtk.ResponseType.APPLY)
+        apply_button = self.add_button("Apply", Gtk.ResponseType.APPLY)
+        apply_button.add_css_class("suggested-action")
 
     def update_dialog(self):
 

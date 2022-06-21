@@ -19,39 +19,48 @@ class SevenSegment(BaseComponent):
 		self.input_level = [False, False, False, False]
 		self.output_level = []
 
+		self.prop_names = ['_red', '_blue', '_green', '_yellow']
+		self.properties.append((_("Color of 7 Segment LEDs :"), None, ''))
+		self.properties.append((_("Color :"), (const.property_select, _('Red'), _('Blue'), _('Green'), _('Yellow')), ''))
+		self.values.append(2)
+
 	def set_7seg(self, cr, a, b, c, d, e, f, g):
+
+		color = self.prop_names[self.values[0]]
+		high_color = Preference[color] if self.prop_names[self.values[0]] is not None else Preference['_green']
+
 		if a:
-			cr.set_source_rgb(0.0, 1.0, 0.0)
+			cr.set_source(high_color)
 			cairo_paths(cr, (60, -70), (62, -68), (88, -68), (90, -70), (88, -72), (62, -72), (60, -70))
 			cr.fill()
 
 		if b:
-			cr.set_source_rgb(0.0, 1.0, 0.0)
+			cr.set_source(high_color)
 			cairo_paths(cr, (90, -70), (88, -68), (88, -42), (90, -40), (92, -42), (92, -68), (90, -70))
 			cr.fill()
 
 		if c:
-			cr.set_source_rgb(0.0, 1.0, 0.0)
+			cr.set_source(high_color)
 			cairo_paths(cr, (90, -40), (88, -38), (88, -12), (90, -10), (92, -12), (92, -38), (90, -40))
 			cr.fill()
 
 		if d:
-			cr.set_source_rgb(0.0, 1.0, 0.0)
+			cr.set_source(high_color)
 			cairo_paths(cr, (60, -10), (62, -8), (88, -8), (90, -10), (88, -12), (62, -12), (60, -10))
 			cr.fill()
 
 		if e:
-			cr.set_source_rgb(0.0, 1.0, 0.0)
+			cr.set_source(high_color)
 			cairo_paths(cr, (60, -40), (58, -38), (58, -12), (60, -10), (62, -12), (62, -38), (60, -40))
 			cr.fill()
 
 		if f:
-			cr.set_source_rgb(0.0, 1.0, 0.0)
+			cr.set_source(high_color)
 			cairo_paths(cr, (60, -70), (58, -68), (58, -42), (60, -40), (62, -42), (62, -68), (60, -70))
 			cr.fill()
 
 		if g:
-			cr.set_source_rgb(0.0, 1.0, 0.0)
+			cr.set_source(high_color)
 			cairo_paths(cr, (60, -40), (62, -38), (88, -38), (90, -40), (88, -42), (62, -42), (60, -40))
 			cr.fill()
 		
@@ -175,6 +184,11 @@ class LED(BaseComponent):
 		self.input_level = [False]
 		self.output_level = []
 
+		self.prop_names = ['_red', '_blue', '_green', '_yellow']
+		self.properties.append((_("Color of LED :"), None, ''))
+		self.properties.append((_("Color :"), (const.property_select, _('Red'), _('Blue'), _('Green'), _('Yellow')), ''))
+		self.values.append(2)
+
 	def drawComponent(self, cr, layout):
 		cr.arc(50, -20, 8, 0, 2 * math.pi)
 		cr.rectangle(30, -40, 40, 40)
@@ -187,18 +201,23 @@ class LED(BaseComponent):
 		
 
 	def drawComponentRunOverlap(self, cr, layout):
+		color = self.prop_names[self.values[0]]
+		high_color = Preference[color] if self.prop_names[self.values[0]] is not None else Preference['_green']
+		
 		if self.input_level[0]:
 			cr.set_source(Preference.highlevel_color)
 			cairo_paths(cr, (10, -20), (30, -20))
 			cr.stroke()
-			cr.set_source_rgb(0.0, 1.0, 0.0)
+			cr.set_source(high_color)
 			cr.arc(50, -20, 8, 0, 2 * math.pi)
+
 		else:
 			cr.set_source(Preference.lowlevel_color)
 			cairo_paths(cr, (10, -20), (30, -20))
 			cr.stroke()
 			cr.set_source_rgb(0.0, 0.25, 0.0)
 			cr.arc(50, -20, 8, 0, 2 * math.pi)
+
 		cr.fill()
 		
 

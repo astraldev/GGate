@@ -4,6 +4,7 @@ import math
 import copy
 import cairo
 from glogic import const
+from glogic.MenuPopover import Menu
 from glogic.Utils import *
 from glogic.Components import comp_dict
 from glogic import Preference
@@ -20,11 +21,21 @@ class DrawArea(Gtk.ScrolledWindow):
         self.vadj = self.get_vadjustment()
         self.hadj = self.get_hadjustment()
         self.netstarted = False
+
         self.drawingarea = Gtk.DrawingArea()
         self.drawingarea.set_size_request(self.width, self.height)
         self.set_child(self.drawingarea)
-
         self.drawingarea.set_draw_func(self.on_draw)
+
+        self.actions = [
+            'menu.flip_hori', 'menu.flip_verti', 
+            'menu.rot_left', 'menu.rot_right', 
+            'menu.properties'
+        ]
+        for action in self.actions:
+            self.install_action(action, None, self.menu_activated)
+
+        self.menu = Menu(self)
 
         controller = Gtk.EventControllerMotion()
         controller.connect('leave', self.on_leave)
@@ -94,11 +105,31 @@ class DrawArea(Gtk.ScrolledWindow):
         self._pushed_component_name = const.component_none
         self._pushed_component = comp_dict[const.component_none]
 
+
     def queue_draw(self, *args):
         self.show()
         super().queue_draw(*args)
         self.drawingarea.show()
         self.drawingarea.queue_draw()
+    
+    def menu_activated(self, widget, action_name, *args):
+        action = action_name.split('.')[-1]
+
+        if action == 'rot_left':
+            self.parent.on_action_rotate_left_90()
+
+        elif action == 'rot_right':
+            self.parent.on_action_rotate_right_90()
+
+        elif action == 'flip_hori':
+            self.parent.on_action_flip_horizontally()
+
+        elif action == 'flip_verti':
+            self.parent.on_action_flip_vertically()
+
+        elif action == 'properties':
+            self.set_selected_component_to_prop_window()
+            self.parent.prop_window.present()
 
     def on_draw(self, widget, cr, width, height, *args):
 
@@ -678,6 +709,7 @@ class DrawArea(Gtk.ScrolledWindow):
                 if self._pushed_component_name == const.component_none and not self._pasted_components:
                     # Check selected area
                     self.rect_select_enabled = True
+
                     for c in self.circuit.components:
                         if c[0] == const.component_net:
                             if (c[1] - 3 <= self.cursor_smooth_x <= c[3] + 3 or c[3] - 3 <= self.cursor_smooth_x <= c[1] + 3) and (c[2] - 3 <= self.cursor_smooth_y <= c[4] + 3 or c[4] - 3 <= self.cursor_smooth_y <= c[2] + 3):
@@ -707,8 +739,7 @@ class DrawArea(Gtk.ScrolledWindow):
                     self.select_start_y = self.cursor_smooth_y
 
                     if self.drag_enabled:
-                        self.comps_rect = get_components_rect(
-                            self.circuit.selected_components)
+                        self.comps_rect = get_components_rect(self.circuit.selected_components)
 
                 else:
                     self.preadd = True
@@ -1055,10 +1086,7 @@ class DrawArea(Gtk.ScrolledWindow):
         if not self.parent.running_mode:
             if self._pasted_components:
                 self._pasted_components = None
-            elif self._pushed_component_name == const.component_none:
-                self.set_selected_component_to_prop_window()
-                self.parent.prop_window.present()
-                # self.parent.action_property.set_active(True)
+
             elif not self.netstarted:
                 self.parent.action_net.set_active(False)
                 self.set_component(const.component_none)
@@ -1066,6 +1094,7 @@ class DrawArea(Gtk.ScrolledWindow):
                 # Finish creating net
                 self.netstarted = False
 
+        self.menu.present(args[2], args[3])
         self.queue_draw()
 
     def set_selected_component_to_prop_window(self):

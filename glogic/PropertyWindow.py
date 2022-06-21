@@ -119,11 +119,15 @@ class PropertyWindow(Gtk.Dialog):
 							for choice in choices:
 								ctrl.append_text(choice)
 							ctrl.set_active(self.component.values[i])
+							ctrl.set_halign(Gtk.Align.START)
+							ctrl.set_hexpand(True)
 							ctrl.connect("changed", self.on_apply_btn_clicked)
 
 						elif p[1][0] == const.property_int:
 							ctrl = Gtk.SpinButton()
 							ctrl.set_increments(1, 10)
+							ctrl.set_halign(Gtk.Align.START)
+							ctrl.set_hexpand(True)
 							ctrl.set_range(p[1][1], p[1][2])
 							ctrl.set_value(component.values[i])
 							ctrl.connect("value-changed", self.on_apply_btn_clicked)
@@ -132,6 +136,8 @@ class PropertyWindow(Gtk.Dialog):
 						elif p[1][0] == const.property_float:
 							ctrl = Gtk.SpinButton()
 							ctrl.set_increments(1, 10)
+							ctrl.set_halign(Gtk.Align.START)
+							ctrl.set_hexpand(True)
 							ctrl.set_range(p[1][1], p[1][2])
 							ctrl.set_digits(p[1][3] if p[1][3] < 3 else 2)
 							ctrl.set_value(component.values[i])
@@ -141,11 +147,15 @@ class PropertyWindow(Gtk.Dialog):
 						else:
 							ctrl = Gtk.Entry()
 							ctrl.set_text(component.values[i])
+							ctrl.set_halign(Gtk.Align.START)
+							ctrl.set_hexpand(True)
 							ctrl.connect("activate", self.on_apply_btn_clicked)
 							ctrl.set_width_chars(p[1][1])
 
 					elif p[1] == const.property_bool:
 						ctrl = Gtk.CheckButton("")
+						ctrl.set_halign(Gtk.Align.START)
+						ctrl.set_hexpand(True)
 						ctrl.set_active(component.values[i])
 						ctrl.connect("toggled", self.on_apply_btn_clicked)
 
@@ -156,7 +166,7 @@ class PropertyWindow(Gtk.Dialog):
 					i += 1
 
 					propbox = Gtk.ListBoxRow()
-					propbox.set_name("rich-list")
+					propbox.add_css_class("rich-list")
 
 					ctrl.set_margin_top(3)
 					ctrl.set_margin_bottom(3)

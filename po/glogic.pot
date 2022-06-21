@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../data/glogic.desktop.in.h:1 ../glogic/const.py:67
+#: ../data/org.astralco.glogic.desktop.in.h:1 ../glogic/const.py:142
 msgid "gLogic"
 msgstr ""
 
@@ -25,7 +25,7 @@ msgstr ""
 msgid "Logic circuit simulator"
 msgstr ""
 
-#: ../glogic/MainFrame.py:67
+#: ../glogic/MainFrame.py:79
 msgid "translator-credits"
 msgstr ""
 

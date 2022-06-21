@@ -51,7 +51,7 @@ class CircuitManager(GObject.GObject):
 		self.save_point = self.action_count
 		self.emit("title-changed", "%s - %s" % (os.path.basename(filepath), const.app_name))
 
-		self.emit('message-changed', _('Saved File')+os.path.basename(filepath))
+		self.emit('message-changed', _('Saved File ')+os.path.basename(filepath))
 		return False
 
 	def open_file(self, filepath):

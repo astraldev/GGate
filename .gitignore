@@ -1,3 +1,5 @@
 ./*.py
-**/__pycache__/**
-**/*.pyc
+**.glc
+*.png
+**/__pycache__/
+**.pyc

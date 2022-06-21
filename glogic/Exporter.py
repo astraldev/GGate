@@ -28,7 +28,6 @@ def add_image_filters(dialog):
 	filter_ps.add_pattern("*.ps")
 	dialog.add_filter(filter_ps)
 
-
 def save_image_dialog(parent, handler):
 
 	chooser = Gtk.FileChooserDialog()
@@ -240,9 +239,11 @@ class SaveSchematicsImageDialog(Gtk.Dialog):
 		Gtk.Dialog.__init__(self)
 		self.set_title(_("Save as image"))
 		self.set_transient_for(parent)
+		self.parent = parent
 		self.set_application(parent.application)
 		self.add_button("Cancel", Gtk.ResponseType.CANCEL)
-		self.add_button("Ok", Gtk.ResponseType.OK)
+		ok_button = self.add_button("Ok", Gtk.ResponseType.OK)
+		ok_button.add_css_class("suggested-action")
 
 		self.set_size_request(200, 150)
 		self.set_resizable(False)
@@ -369,8 +370,10 @@ class SaveTimingDiagramDialog(Gtk.Dialog):
 		Gtk.Dialog.__init__(self)
 		self.set_title(_("Save as image"))
 		self.set_transient_for(parent)
+		self.parent = parent
 		self.add_button('Cancel', Gtk.ResponseType.CANCEL)
-		self.add_button('Ok', Gtk.ResponseType.OK)
+		ok_button = self.add_button("Ok", Gtk.ResponseType.OK)
+		ok_button.add_css_class("suggested-action")
 
 		self.set_size_request(200, 150)
 		self.set_resizable(False)

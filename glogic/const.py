@@ -56,6 +56,7 @@ class _const:
 						<item>
             	   		    <attribute name="label">Content</attribute>
             	   		    <attribute name="action">app.on_action_show_help</attribute>
+                            <attribute name="accel">F1</attribute>
             	   		</item>
             	   		 <item>
             	   		    <attribute name="label">Translate</attribute>
@@ -141,8 +142,8 @@ class _const:
     app_name = _("gLogic")
     description = _(
         "gLogic is a logic circuit simulator developed with GTK+ and Python.")
-    copyright = "Copyright © 2012 Koichi Akabe"
-    developer = ["Koichi Akabe <vbkaisetsu@gmail.com>"]
+    copyright = "Copyright © 2012 - 2022 Koichi Akabe"
+    developer = ["Koichi Akabe <vbkaisetsu@gmail.com>", 'Ekure Edem <ekureedem480@gmail.com>']
     website = "https://launchpad.net/glogic"
     help = "help:glogic"
     license = """gLogic is free software: you can redistribute it and/or modify it

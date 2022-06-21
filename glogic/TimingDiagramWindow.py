@@ -145,11 +145,6 @@ class TimingDiagramWindow(Gtk.Window):
 
 		self.set_child(vbox)
 
-		self.connect("close-request", self.on_window_delete)
-
-	def on_window_delete(self, widget, *event):
-		self.parent.action_diagram.set_active(False)
-
 	def check_scale_format(self):
 		try:
 			scale = float(self.scale_combo.get_child().get_text())
@@ -231,10 +226,13 @@ class TimingDiagramWindow(Gtk.Window):
 		diagram_width = int((new_end_time - new_start_time) * new_scale)
 
 		if diagram_width > 5000:
-			dialog = Gtk.MessageDialog(self, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _("Can't create timing diagram!"))
-			dialog.format_secondary_text(_("The width of the timing diagram will be too wide. (> 5000)"))
-			dialog.run()
-			dialog.destroy()
+			
+			dialog = Gtk.MessageDialog(transient_for=self, message_type=Gtk.MessageType.ERROR, button_type=Gtk.ButtonsType.OK)
+			dialog.set_modal(True)
+			dialog.set_markup(_("Can't create timing diagram!"))
+			dialog.get_message_area().append(Gtk.Label(label=_("The width of the timing diagram will be too wide. (> 5000)")))
+			dialog.present()
+
 		else:
 			self.diagramarea.scale = new_scale
 			self.diagramarea.diagram_unit = new_diagram_unit

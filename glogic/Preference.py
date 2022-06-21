@@ -3,7 +3,7 @@
 import cairo, sys
 from gi.repository import Pango
 
-class _Preference:
+class _Preference(dict):
 	def __setattr__(self, name, value):
 		import cairo
 		from gi.repository import Pango
@@ -22,8 +22,16 @@ class _Preference:
 
 	def __getattr__(self, name):
 		return self.pref_dict[name]
+	
+	def __getitem__(self, __k):
+		return self.pref_dict.get(__k, None)
 
 	pref_dict = {
+		'_red': 	cairo.SolidPattern(1.0, 0.0, 0.0),
+		'_green':	cairo.SolidPattern(0.0, 1.0, 0.0),
+		'_blue': 	cairo.SolidPattern(0.0, 0.0, 1.0),
+		'_yellow': 	cairo.SolidPattern(1.0, 1.0, 0.0),
+
 		"drawing_font": Pango.FontDescription("Liberation Mono 10"),
 		"net_color": cairo.SolidPattern(0.0, 0.0, 1.0),
 		"net_high_color": cairo.SolidPattern(0.5, 0.5, 1.0),

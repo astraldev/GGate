@@ -1,99 +1,114 @@
+version
+ author=3.0.0
+ required=2.6
+
 osc
- position=30,70
+ position=340,260
  input_level=
  output_level=0
+ matrix=1,0,0,1
  properties=period:2.5,shift:0.0,duration:80.0,initstate:0
 
 osc
- position=30,120
+ position=340,310
  input_level=
  output_level=1
+ matrix=1,0,0,1
  properties=period:2.4,shift:0.0,duration:80.0,initstate:0
 
 probe
- position=220,60
+ position=530,250
  input_level=0
  output_level=
+ matrix=1,0,0,1
  properties=name:Signal1
 
 probe
- position=220,110
+ position=530,300
  input_level=1
  output_level=
+ matrix=1,0,0,1
  properties=name:Signal2
 
 probe
- position=220,160
+ position=530,350
  input_level=0
  output_level=
+ matrix=1,0,0,1
  properties=name:AND
 
 probe
- position=220,210
+ position=530,400
  input_level=1
  output_level=
+ matrix=1,0,0,1
  properties=name:XOR
 
 xor
- position=130,220
+ position=440,410
  input_level=0,1
  output_level=1
- properties=tphl:0.0,tplh:0.0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 and
- position=130,170
+ position=440,360
  input_level=0,1
  output_level=0
- properties=tphl:0.0,tplh:0.0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 text
- position=20,30
+ position=330,220
  input_level=
  output_level=
+ matrix=1,0,0,1
  properties=text:T\e0.25µs
 
 text
- position=20,140
+ position=330,330
  input_level=
  output_level=
+ matrix=1,0,0,1
  properties=text:T\e0.24µs
 
 text
- position=100,30
+ position=410,220
  input_level=
  output_level=
+ matrix=1,0,0,1
  properties=text:Duration\e80µs
 
 net
- position=230,100,100,100
+ position=540,290,410,290
 
 net
- position=100,210,140,210
+ position=410,400,450,400
 
 net
- position=100,100,100,160
+ position=410,290,410,350
 
 net
- position=100,160,100,210
+ position=410,350,410,400
 
 net
- position=140,160,100,160
+ position=450,350,410,350
 
 net
- position=140,190,120,190
+ position=450,380,430,380
 
 net
- position=140,140,120,140
+ position=450,330,430,330
 
 net
- position=120,190,120,140
+ position=430,380,430,330
 
 net
- position=120,50,230,50
+ position=430,240,540,240
 
 net
- position=120,140,120,50
+ position=430,330,430,240
 
 net
- position=100,50,120,50
+ position=410,240,430,240
 

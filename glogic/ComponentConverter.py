@@ -6,7 +6,7 @@ from glogic import const, config
 from gettext import gettext as _
 import copy
 
-required = [2, 6]
+required = [2, 6] 
 backward_compat = [0]
 
 def components_to_string(components):

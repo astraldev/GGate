@@ -24,6 +24,9 @@ from glogic.ComponentConverter import components_to_string, string_to_components
 themed_icons = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
 themed_icons.add_search_path(config.DATADIR+"/images")
 
+class ShortCutWindow(Gtk.ShortcutsWindow):
+    def __init__(self, parent):
+        super().__init__(transient_for=parent)
 
 class MainFrame(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
@@ -70,13 +73,13 @@ class MainFrame(Gtk.ApplicationWindow):
         picture = Gdk.Texture.new_for_pixbuf(GdkPixbuf.Pixbuf.new_from_file(config.DATADIR+"/images/glogic.png"))
         self.about_dialog.set_logo(picture)
         self.about_dialog.set_program_name(const.app_name)
-        self.about_dialog.set_version(
-            config.VERSION if config.BZRREV == "" else "%s (+bzr%s)" % (config.VERSION, config.BZRREV))
+        self.about_dialog.set_version(config.VERSION )
         self.about_dialog.set_comments(const.description)
         self.about_dialog.set_copyright(const.copyright)
         self.about_dialog.set_website(const.website)
         self.about_dialog.set_license(const.license)
         self.about_dialog.set_authors(const.developer)
+
         tr_credits = _("translator-credits")
         if tr_credits != "translator-credits":
             self.about_dialog.set_translator_credits(tr_credits)
@@ -88,7 +91,65 @@ class MainFrame(Gtk.ApplicationWindow):
             self.drawarea.redraw = True
             self.drawarea.queue_draw()
 
-    def set_up_shortcuts(self, actions, *args):
+    def set_up_shortcuts(self, *args):
+
+        actions = {
+            "application": [
+                ('app.on_action_new_pressed',       ["<Ctrl>N"]),
+                ('app.on_action_open_pressed',      ["<Ctrl>O"]),
+                ('app.on_action_save_pressed',   	["<Ctrl>S"]),
+                ('app.on_action_quit_pressed',   	["<Ctrl>Q"]),
+                ('app.on_action_saveas_pressed',    ["<Ctrl><Shift>S"]),
+            ],
+            'window':	   [
+                (
+                    self.toggle_run,
+                    'app.toggle_run',
+                    ['F5']
+                ),
+                (
+                    self.toggle_net,
+                    'app.toggle_net',
+                    ['<Ctrl>E']
+                ),
+                (
+                    self.on_action_undo_pressed,     
+                    'app.on_action_undo_pressed',   	
+                    ["<Ctrl>Z"]
+                ),
+                (
+                    self.on_action_redo_pressed,     
+                    'app.on_action_redo_pressed',   	
+                    ["<Ctrl><Shift>Z"]
+                ),
+                (
+                    self.on_action_cut_pressed,      
+                    'app.on_action_cut_pressed',    	
+                    ["<Ctrl>X"]
+                ),
+                (
+                    self.on_action_copy_pressed,     
+                    'app.on_action_copy_pressed',   	
+                    ["<Ctrl>C"]
+                ),
+                (
+                    self.on_action_paste_pressed,    
+                    'app.on_action_paste_pressed',  	
+                    ["<Ctrl>V"]
+                ),
+                (
+                    self.on_action_diagram_pressed,  
+                    'app.on_action_diagram_pressed',	
+                    ["<Ctrl>T"]
+                ),
+                (
+                    self.on_action_property_pressed, 
+                    'app.on_action_property_toggled',  
+                    ["<Ctrl>P"]
+                )
+            ]
+        }
+
         for action, accel in actions['application']:
             self.application.set_accels_for_action(action, accel)
 
@@ -104,8 +165,7 @@ class MainFrame(Gtk.ApplicationWindow):
         image = Gtk.Image.new_from_icon_name('object-rotate-left-symbolic')
         self.action_rotleft.set_child(image)
         self.action_rotleft.connect('clicked', self.on_action_rotate_left_90)
-        self.action_rotleft.set_tooltip_markup(
-            _("Rotate component ") + '<b>' + _('Left 90°') + '</b>')
+        self.action_rotleft.set_tooltip_markup(_("Rotate component ") + '<b>' + _('Left 90°') + '</b>')
 
         self.action_bar.pack_start(self.action_rotleft)
 
@@ -123,10 +183,8 @@ class MainFrame(Gtk.ApplicationWindow):
         self.action_fliphori = Gtk.Button()
         image = Gtk.Image.new_from_icon_name('object-flip-horizontal-symbolic')
         self.action_fliphori.set_child(image)
-        self.action_fliphori.connect(
-            'clicked', self.on_action_flip_horizontally)
-        self.action_fliphori.set_tooltip_markup(
-            _('Flip component ' + '<b>' + _('horizontally') + '</b>'))
+        self.action_fliphori.connect('clicked', self.on_action_flip_horizontally)
+        self.action_fliphori.set_tooltip_markup(_('Flip component ' + '<b>' + _('horizontally') + '</b>'))
 
         self.action_bar.pack_start(self.action_fliphori)
 
@@ -135,34 +193,18 @@ class MainFrame(Gtk.ApplicationWindow):
         image = Gtk.Image.new_from_icon_name('object-flip-vertical-symbolic')
         self.action_flipvert.set_child(image)
         self.action_flipvert.connect('clicked', self.on_action_flip_vertically)
-        self.action_flipvert.set_tooltip_markup(
-            _('Flip component ') + '<b>' + _('vertically') + '</b>')
+        self.action_flipvert.set_tooltip_markup(_('Flip component ') + '<b>' + _('vertically') + '</b>')
 
         self.action_bar.pack_start(self.action_flipvert)
 
         # Add Net
         self.action_net = Gtk.ToggleButton()
-        image = Gtk.Image.new_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(
-            config.DATADIR+"images/add-net.png"))
+        image = Gtk.Image.new_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(config.DATADIR+"images/add-net.png"))
         self.action_net.set_child(image)
-        self.action_net.connect('clicked', self.on_action_net_toggled)
-        self.action_net.set_tooltip_markup(
-            _('Add net to circuit') + '<b>' + _(' Ctrl+E') + '</b>')
+        self.action_net.connect('toggled', self.on_action_net_toggled)
+        self.action_net.set_tooltip_markup(_('Add net to circuit') + '<b>' + _(' Ctrl+E') + '</b>')
         self.action_bar.pack_start(self.action_net)
         self.action_net.set_active(False)
-
-        # Add Timimg
-
-        self.action_diagram = Gtk.ToggleButton()
-        image = Gtk.Image.new_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(
-            config.DATADIR+"images/timing-icon.svg"))
-
-        self.action_diagram.set_child(image)
-        self.action_diagram.set_tooltip_markup(
-            _('Show timing diagram window') + '<b>' + _(' Ctrl+T') + '</b>')
-        self.action_diagram.connect('clicked', self.on_action_diagram_pressed)
-
-        self.action_bar.pack_start(self.action_diagram)
 
         self._toggle_run_state = -1
         self._self_toggle = False
@@ -187,19 +229,18 @@ class MainFrame(Gtk.ApplicationWindow):
         self.menu_button.set_popover(self.popover)
 
         # play pause button
-        play_button = Gtk.ToggleButton()
-        play_image = Gtk.Image.new_from_icon_name(
-            'media-playback-start-symbolic')
-        play_button.set_tooltip_text(_("Run and simulate this circuit"))
-        play_button.connect('toggled', self.on_action_run_toggled)
-        play_button.connect('clicked', self.on_action_run_clicked)
+        self.action_run = Gtk.ToggleButton()
+        play_image = Gtk.Image.new_from_icon_name('media-playback-start-symbolic')
+        self.action_run.set_tooltip_text(_("Run and simulate this circuit"))
+        self.action_run.connect('toggled', self.on_action_run_toggled)
+        self.action_run.connect('toggled', self.on_action_run_clicked)
 
-        play_button.set_child(play_image)
+        self.action_run.set_child(play_image)
 
         # Header Bar
         self.header_bar = Gtk.HeaderBar()
         self.header_bar.pack_start(self.menu_button)
-        self.header_bar.pack_end(play_button)
+        self.header_bar.pack_end(self.action_run)
 
         self.set_titlebar(self.header_bar)
 
@@ -215,47 +256,22 @@ class MainFrame(Gtk.ApplicationWindow):
         self.action_bar = Gtk.ActionBar()
 
         self.set_up_action_bar()
-
-        actions = {
-            "application": [('app.on_action_new_pressed',       ["<Ctrl>N"]),
-                            ('app.on_action_open_pressed',      ["<Ctrl>O"]),
-                            ('app.on_action_save_pressed',   	["<Ctrl>S"]),
-                            ('app.on_action_quit_pressed',   	["<Ctrl>Q"]),
-                            ('app.on_action_saveas_pressed',
-                             ["<Ctrl><Shift>S"])
-                            ],
-            'window':	   [
-                (self.on_action_undo_pressed,
-                 'app.on_action_undo_pressed',   	["<Ctrl>Z"]),
-                (self.on_action_redo_pressed,     'app.on_action_redo_pressed',   	[
-                    "<Ctrl><Shift>Z"]),
-                (self.on_action_cut_pressed,      'app.on_action_cut_pressed',    	[
-                    "<Ctrl>X"]),
-                (self.on_action_copy_pressed,     'app.on_action_copy_pressed',   	[
-                    "<Ctrl>C"]),
-                (self.on_action_paste_pressed,    'app.on_action_paste_pressed',  	[
-                    "<Ctrl>V"]),
-                (self.on_action_diagram_pressed,  'app.on_action_diagram_pressed',	[
-                    "<Ctrl>T"]),
-                (self.on_action_property_pressed, 'app.on_action_property_toggled',  [
-                    "<Ctrl>P"])
-            ],
-            'togglable':   [(self.on_action_net_toggled,      'app.on_action_net_toggled',    	["<Ctrl>E", 'notify']),
-                            (self.on_action_run_clicked,
-                             'app.on_action_run_clicked',       ["F5", 'notify']),
-                            ]
-        }
-        self.set_up_shortcuts(actions)
+        self.set_up_shortcuts()
 
         action_bar_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 
-        action_bar_box.append(self.action_bar)
-        action_bar_box.append(self.statusbar)
+        _box = Gtk.Box()
+        _box.set_hexpand(False)
+        _box.set_halign(Gtk.Align.START)
 
-        self.action_bar.set_hexpand(False)
+        _box.append(self.action_bar)
+        action_bar_box.append(_box)
+        action_bar_box.append(self.statusbar)
 
         self.statusbar.set_hexpand(True)
         self.statusbar.set_halign(Gtk.Align.FILL)
+
+        action_bar_box.set_hexpand(True)
 
         box.append(action_bar_box)
 
@@ -275,9 +291,6 @@ class MainFrame(Gtk.ApplicationWindow):
         # Connect events
         self.connect("close-request", self.on_window_delete)
 
-        self.action_diagram.set_sensitive(False)
-
-        # Reopen it later.
         self.disable_edit_actions()
 
     def on_action_about_pressed(self, *widget):
@@ -312,7 +325,6 @@ class MainFrame(Gtk.ApplicationWindow):
         self.statusbar.push(0, "")
         self.drawarea.set_component(const.component_none)
         self.disable_edit_actions()
-        self.action_diagram.set_sensitive(False)
         self.action_net.set_active(False)
         self.diagram_window.destroy()
         self.diagram_window = TimingDiagramWindow(self)
@@ -326,8 +338,13 @@ class MainFrame(Gtk.ApplicationWindow):
         dialog.set_title(_("Open file"))
         dialog.set_transient_for(self)
         dialog.set_action(Gtk.FileChooserAction.OPEN)
-        dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
-        dialog.add_button("Open", Gtk.ResponseType.ACCEPT)
+
+        cancel_button = dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
+        cancel_button.add_css_class('destructive-action')
+
+        open_button = dialog.add_button("Open", Gtk.ResponseType.ACCEPT)
+        open_button.add_css_class('suggested-action')
+
         dialog.set_transient_for(self)
         self.add_filters(dialog)
 
@@ -369,8 +386,13 @@ class MainFrame(Gtk.ApplicationWindow):
         chooser.set_transient_for(self)
         chooser.set_application(self.application)
         chooser.set_action(Gtk.FileChooserAction.SAVE)
-        chooser.add_button('Cancel', Gtk.ResponseType.CANCEL)
-        chooser.add_button('Save', Gtk.ResponseType.ACCEPT)
+
+        cancel_button = chooser.add_button('Cancel', Gtk.ResponseType.CANCEL)
+        cancel_button.add_css_class('destructive-action')
+
+        save_button = chooser.add_button('Save', Gtk.ResponseType.ACCEPT)
+        save_button.add_css_class('suggested-action')
+
         chooser.set_modal(True)
 
         chooser.connect('response', self.on_save_response, kwargs)
@@ -393,7 +415,7 @@ class MainFrame(Gtk.ApplicationWindow):
                     self.application.quit()
                     return
                 else:
-                    self.statusbar.push(0, "Saved file...")
+                    self.statusbar.push(0, "Saved file... ")
 
             else:
                 dialog.close()
@@ -402,6 +424,12 @@ class MainFrame(Gtk.ApplicationWindow):
         else:
             dialog.close()
             return True
+    
+    def toggle_net(self, *args):
+        self.action_net.set_active(not self.action_net.get_active())
+
+    def toggle_run(self, *argrs):
+        self.action_run.set_active(not self.action_run.get_active())
 
     def on_action_save_pressed(self, *args):
         self.overwrite_save(save=True)
@@ -476,14 +504,16 @@ class MainFrame(Gtk.ApplicationWindow):
             return False
         return True
 
-    def on_action_net_toggled(self, widget):
+    def on_action_net_toggled(self, widget, *args):
+
         if widget.get_active():
             self.drawarea.netstarted = False
             widget.set_active(True)
-
             self.drawarea.set_component(const.component_net)
+
         elif self.drawarea.get_component() == const.component_net:
             self.drawarea.set_component(const.component_none)
+
         self.drawarea.queue_draw()
 
     def on_action_run_toggled(self, widget, *args):
@@ -503,13 +533,13 @@ class MainFrame(Gtk.ApplicationWindow):
     def on_action_run_clicked(self, widget, *args):
 
         if (self._toggle_run_state == 0) or (self._toggle_run_state == 2):
-            icon = Gtk.Image.new_from_icon_name(
-                'media-playback-pause-symbolic')
+            icon = Gtk.Image.new_from_icon_name('media-playback-pause-symbolic')
             widget.set_tooltip_markup(_("Pause circuit simulation"))
             widget.set_child(icon)
 
             if self.drawarea.drag_enabled:
                 return
+
             if self.running_mode:
                 self.running_mode = False
                 self.clicked_on_pause = False
@@ -517,7 +547,6 @@ class MainFrame(Gtk.ApplicationWindow):
                     self.action_redo.set_sensitive(True)
                 self.comp_window.set_all_sensitive(True)
                 self.action_net.set_sensitive(True)
-                self.action_diagram.set_sensitive(False)
 
                 self.diagram_window.close()
                 self.diagram_window = TimingDiagramWindow(self)
@@ -533,7 +562,6 @@ class MainFrame(Gtk.ApplicationWindow):
 
                 self.action_net.set_sensitive(False)
                 self.action_net.set_active(False)
-                self.action_diagram.set_sensitive(True)
                 self.prop_window.hide()
                 self.drawarea.set_component(const.component_none)
                 self.drawarea.component_dragged = False
@@ -559,8 +587,7 @@ class MainFrame(Gtk.ApplicationWindow):
             self.clicked_on_pause = False
 
         if self._toggle_run_state == 1:
-            play_image = Gtk.Image.new_from_icon_name(
-                'media-playback-stop-symbolic')
+            play_image = Gtk.Image.new_from_icon_name('media-playback-stop-symbolic')
             widget.set_tooltip_markup(_("Stop circuit simulation"))
             widget.set_child(play_image)
             self.pause_running_mode = True
@@ -671,12 +698,8 @@ class MainFrame(Gtk.ApplicationWindow):
     def on_action_bug_pressed(self, *args):
         webbrowser.open(const.devel_bug)
 
-    def on_action_diagram_pressed(self, widget):
-
-        if widget.get_active():
-            self.diagram_window.present()
-        else:
-            self.diagram_window.close()
+    def on_action_diagram_pressed(self, *widget):
+        self.diagram_window.present()
             
 
     def on_action_save_image(self, *args):
@@ -685,10 +708,12 @@ class MainFrame(Gtk.ApplicationWindow):
     def _prefs_changed(self, dialog, response, *args):
         if response == Gtk.ResponseType.APPLY:
             self.pref_window.apply_settings()
+            
+
             Preference.save_settings()
             self.drawarea.redraw = True
             self.drawarea.queue_draw()
-
+        self.pref_window = PreferencesWindow(self)
         dialog.close()
 
     def on_action_prefs_pressed(self, *widget):
@@ -758,7 +783,6 @@ class MainFrame(Gtk.ApplicationWindow):
             self.action_rotright.set_sensitive(False)
             self.action_fliphori.set_sensitive(False)
             self.action_flipvert.set_sensitive(False)
-
 
 class GLogicApplication(Gtk.Application):
     def __init__(self, *args, **kwargs):

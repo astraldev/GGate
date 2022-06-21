@@ -5,7 +5,7 @@ glogic/MainFrame.py
 glogic/DiagramArea.py
 glogic/CircuitManager.py
 glogic/ComponentConverter.py
-glogic/ComponentWindow.py
+glogic/ComponentView.py
 glogic/Exporter.py
 glogic/PreferencesWindow.py
 glogic/PropertyWindow.py

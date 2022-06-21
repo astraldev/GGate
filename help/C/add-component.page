@@ -18,10 +18,7 @@
 		<p>To add components:</p>
 		<steps>
 			<item>
-				<p>Click <guiseq><gui>Add</gui><gui>Components</gui></guiseq> to show Components window</p>
-			</item>
-			<item>
-				<p>Click a component that you want to add, and change to add components mode</p>
+				<p>Click a component that you want to add on the component pane</p>
 			</item>
 			<item>
 				<p>Move the cursor and decide the position, then click</p>
@@ -30,18 +27,9 @@
 				<p>You can click a few times to continue adding same components</p>
 			</item>
 			<item>
-				<p>Right click to back to select components mode</p>
+				<p>Right click to unselect component </p>
 			</item>
 		</steps>
-		<p>There are two other options to show the components window:</p>
-		<list>
-			<item>
-				<p>Click <media type="image" src="figures/add-component.png" its:translate="no">Component button</media> on the toolbar</p>
-			</item>
-			<item>
-				<p>Press <keyseq><key>Ctrl</key><key>A</key></keyseq></p>
-			</item>
-		</list>
 	</section>
 
 	<section id="property">
@@ -49,19 +37,19 @@
 		<p>Each components have properties, and you can adjust it to change behavior. To modify properties:</p>
 		<steps>
 			<item>
-				<p>Right click a few times to change to select components mode, and do it one more time to show the property window</p>
+				<p>Select the component and right click. </p>
 			</item>
 			<item>
-				<p>Click and select a component that you want to change properties</p>
+				<p>Choose from the menu, properties </p>
 			</item>
 			<item>
-				<p>Change values on the property window, and click "Apply" to reflect your settings</p>
+				<p>Change values on the property window and close. The properties will be automatically saved</p>
 			</item>
 		</steps>
 		<p>There is another option to show the property window. However, the above one may be the easiest way.</p>
 		<list>
 			<item>
-				<p>Press <keyseq><key>Ctrl</key><key>P</key></keyseq></p>
+				<p>Select the component and press <keyseq><key>Ctrl</key><key>P</key></keyseq></p>
 			</item>
 		</list>
 	</section>

@@ -46,10 +46,10 @@ class ComponentView(Gtk.ScrolledWindow):
             section_title = Gtk.Box()
 
             section_label = Gtk.Label()
-            section_label.set_markup(f'<b>{str(button_types).capitalize()}</b>')
+            section_label.set_markup('<b>' + _(button_types).capitalize() + '</b>')
             section_label.set_margin_top(5)
             section_label.set_margin_bottom(5)
-            section_label.set_name('subtitle')
+            section_label.add_css_class('title')
 
             section_title.append(section_label)
             section_title.set_margin_start(5)
@@ -78,6 +78,8 @@ class ComponentView(Gtk.ScrolledWindow):
 
                 content_box.append(icon)
                 content_box.append(label)
+
+                label.add_css_class('subtitle')
                 gate_row.set_child(content_box)
                 gate_row.set_activatable(True)
                 gate_row.type = gate

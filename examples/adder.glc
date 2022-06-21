@@ -1,169 +1,201 @@
+version
+ author=3.0.0
+ required=2.6
+
 sw
  position=30,550
  input_level=
- output_level=0
+ output_level=1
+ matrix=1,0,0,1
  properties=initstate:0
 
 sw
  position=30,500
  input_level=
- output_level=1
+ output_level=0
+ matrix=1,0,0,1
  properties=initstate:1
 
 sw
  position=30,450
  input_level=
- output_level=1
+ output_level=0
+ matrix=1,0,0,1
  properties=initstate:1
 
 sw
  position=30,400
  input_level=
  output_level=0
+ matrix=1,0,0,1
  properties=initstate:0
 
 7seg
  position=50,100
- input_level=0,1,1,0
+ input_level=0,0,0,1
  output_level=
- properties=
+ matrix=1,0,0,1
+ properties=_red:2
 
 7seg
  position=180,100
- input_level=0,1,0,1
+ input_level=0,0,0,1
  output_level=
- properties=
+ matrix=1,0,0,1
+ properties=_red:1
 
 7seg
  position=610,100
- input_level=1,0,1,1
+ input_level=0,0,1,0
  output_level=
- properties=
+ matrix=1,0,0,1
+ properties=_red:0
 
 sw
  position=160,400
  input_level=
  output_level=0
+ matrix=1,0,0,1
  properties=initstate:0
 
 sw
  position=160,450
  input_level=
- output_level=1
+ output_level=0
+ matrix=1,0,0,1
  properties=initstate:1
 
 sw
  position=160,500
  input_level=
  output_level=0
+ matrix=1,0,0,1
  properties=initstate:0
 
 sw
  position=160,550
  input_level=
  output_level=1
+ matrix=1,0,0,1
  properties=initstate:1
 
 and
  position=400,220
- input_level=1,1
- output_level=1
- properties=tphl:0.0,tplh:0.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 and
  position=400,270
  input_level=0,0
  output_level=0
- properties=tphl:0.0,tplh:0.0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 and
  position=400,350
- input_level=1,0
+ input_level=0,0
  output_level=0
- properties=tphl:0.0,tplh:0.0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 and
  position=400,400
- input_level=1,0
+ input_level=0,1
  output_level=0
- properties=tphl:0.0,tplh:0.0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 xor
  position=300,260
- input_level=1,1
+ input_level=0,0
  output_level=0
- properties=tphl:0.0,tplh:0.0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 xor
  position=300,390
- input_level=0,1
- output_level=1
- properties=tphl:0.0,tplh:0.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 xor
  position=400,170
  input_level=0,0
  output_level=0
- properties=tphl:0.0,tplh:0.0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 xor
  position=490,180
- input_level=0,1
- output_level=1
- properties=tphl:0.0,tplh:0.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 xor
  position=490,310
  input_level=0,0
  output_level=0
- properties=tphl:0.0,tplh:0.0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 xor
  position=490,440
- input_level=1,0
+ input_level=0,1
  output_level=1
- properties=tphl:0.0,tplh:0.0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 xor
  position=490,550
- input_level=1,0
- output_level=1
- properties=tphl:0.0,tplh:0.0
+ input_level=1,1
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 and
  position=490,500
- input_level=0,1
- output_level=0
- properties=tphl:0.0,tplh:0.0
+ input_level=1,1
+ output_level=1
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 or
  position=490,390
  input_level=0,0
  output_level=0
- properties=tphl:0.0,tplh:0.0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 or
  position=490,260
- input_level=1,0
- output_level=1
- properties=tphl:0.0,tplh:0.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
 
 text
  position=30,350
  input_level=
  output_level=
+ matrix=1,0,0,1
  properties=text:IN1
 
 text
  position=160,350
  input_level=
  output_level=
+ matrix=1,0,0,1
  properties=text:IN2
 
 text
  position=630,120
  input_level=
  output_level=
+ matrix=1,0,0,1
  properties=text:OUT \e IN1 + IN2
 
 net
