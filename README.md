@@ -30,10 +30,6 @@ GLogic can be installed via snap or apt. View [installation](./INSTALL) for more
 
 ![Tool Bar](./screenshots/glogic-toolbar.png)
 
-### Preference
-
-![Preference Window](./screenshots/glogic-pref.png)
-
 ## Contribution
 
 GLogic is open to any contributions and translation aid.
