@@ -17,13 +17,10 @@
 #  with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import gi
-gi.require_version("Gtk", '4.0')
-gi.require_version('PangoCairo', '1.0')
-
+from glogic.MainFrame import MainFrame
 from gi.repository import Gtk
-from glogic.MainFrame import GLogicApplication
 
 if __name__ == "__main__":
-   application = GLogicApplication()
-   application.run()
+	mainframe = MainFrame()
+	mainframe.show_all()
+	Gtk.main()

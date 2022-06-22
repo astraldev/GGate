@@ -18,7 +18,7 @@ A logic gate simulator for linux developed with Gtk and python.
 
 ## Installation
 
-GLogic can be installed via snap or apt. View [installation](./INSTALL) for more details
+GLogic can be installed via snap or apt. View [installation](./INSTALL.md) for more details
 
 ## Screenshots
 

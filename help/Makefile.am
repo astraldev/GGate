@@ -2,8 +2,6 @@
 
 HELP_ID = glogic
 
-HELP_LINGUAS = ja
-
 HELP_FILES = \
 	add-component.page \
 	add-net.page \

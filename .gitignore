@@ -5,3 +5,5 @@
 **.pyc
 glogic/__pycache__/*.pyc
 testrun.py
+m4/
+*.cache/

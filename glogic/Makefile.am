@@ -5,7 +5,9 @@ glogic_PYTHON = \
 	__init__.py \
 	CircuitManager.py \
 	ComponentConverter.py \
-	ComponentWindow.py \
+	ComponentView.py \
+	MenuPopover.py \
+	UserInterfaces.py \
 	DiagramArea.py \
 	DrawArea.py \
 	Exporter.py \
