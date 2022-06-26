@@ -25,7 +25,7 @@ class ComponentView(Gtk.ScrolledWindow):
 
         self.button_names = {
             'Basic Components':  [const.component_NOT,     const.component_AND,     const.component_OR],
-            'alternate': [const.component_XOR,     const.component_NAND,    const.component_NOR],
+            'alternate': [const.component_XOR,     const.component_NAND,    const.component_NOR, const.component_tribuff],
 
             'components': [const.component_SW,      const.component_7seg,    const.component_LED,
                            const.component_VDD,     const.component_GND,     const.component_OSC,

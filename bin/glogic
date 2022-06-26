@@ -17,10 +17,12 @@
 #  with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from glogic.MainFrame import MainFrame
-from gi.repository import Gtk
+import gi
+
+gi.require_version("Gtk", '4.0')
+
+from glogic.MainFrame import GLogicApplication
 
 if __name__ == "__main__":
-	mainframe = MainFrame()
-	mainframe.show_all()
-	Gtk.main()
+	app = GLogicApplication()
+	app.run()

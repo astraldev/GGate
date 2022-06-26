@@ -30,7 +30,9 @@ comp_dict = {
 	const.component_adder:   Calculator.Adder(),
 	const.component_7seg:    StateViewer.SevenSegment(),
 	const.component_LED:     StateViewer.LED(),
-	const.component_text:    Misc.Text()
+	const.component_text:    Misc.Text(),
+
+	const.component_tribuff: Standard.TriStateBuffer()
 }
 
 for c in comp_dict.values():

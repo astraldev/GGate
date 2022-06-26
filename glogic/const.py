@@ -45,6 +45,8 @@ class _const:
     component_probe = "probe"
     component_text = "text"
 
+    component_tribuff = "tribuff"
+
     direction_none = (0, 0)
     direction_E = (1, 0)
     direction_N = (0, -1)

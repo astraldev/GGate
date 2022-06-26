@@ -6,6 +6,7 @@ A logic gate simulator for linux developed with Gtk and python.
 
 ## Features
 
+* Includes Tri State Buffer
 * LED and 7 segment for state viewing
 * Easy to understand UI and accesible shortcuts
 * Contains all logic gates with appropriate diagrams and alternative (IEC, MIL/ANSI)
