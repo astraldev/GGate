@@ -1087,7 +1087,7 @@ class DrawArea(Gtk.ScrolledWindow):
 
         if not self.parent.running_mode:
 
-            if (not self.parent.action_net.get_active()) and (not self.netstarted):
+            if (not self.parent.action_net.get_active()) and (not self.netstarted) and (not self._pushed_component):
                 self.menu.present(args[2], args[3])
 
             if self._pasted_components:
