@@ -2,9 +2,7 @@
 **.glc
 ./*.png
 **/__pycache__/
-**.pyc
-glogic/__pycache__/*.pyc
-testrun.py
-run.py
 m4/
 *.cache/
+.vscode/
+debian/

@@ -71,7 +71,7 @@ class _const:
 
     config_path = os.path.join(os.path.expanduser("~"), ".config/glogic")
 
-    app_name = _("gLogic")
+    app_name = _("GLogic")
     description = _(
         "gLogic is a logic circuit simulator developed with GTK+ and Python.")
     copyright = "Copyright © 2012 - 2022 Koichi Akabe"

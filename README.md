@@ -17,6 +17,8 @@ A logic gate simulator for linux developed with Gtk and python.
 * Has display contents like LED, 7 Segments etc
 * File handling support
 
+Check out latest news on glogic [here.](./NEWS)
+
 ## Installation
 
 GLogic can be installed via snap or apt. View [installation](./INSTALL.md) for more details

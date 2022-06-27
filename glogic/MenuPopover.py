@@ -1,7 +1,6 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
-from glogic import const
-from gi.repository import Gtk, Gdk, GObject, Gio
+from gi.repository import Gtk, Gdk 
 from gettext import gettext as _
 from glogic.ComponentConverter import string_to_components
 

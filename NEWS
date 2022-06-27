@@ -1,54 +1,62 @@
+# NEWS
+
+2022-06-26: version 3.0.0
+
+* Port to Gtk4
+* add tristate buffer
+* removed component window
+
 2012-11-01: version 2.6
 
-  * add shift registers and half/full adder
-  * Hex counter is renamed to Counter and support up to 8 bits
-  * basic components support triple input
-  * add a pause button to keep the state of the circuit when components (switches) are clicked
-  * add a documentation
-  * support copy and paste
-  * support middle button drag to move the circuit window
-  * support rotate and flip components
+* add shift registers and half/full adder
+* Hex counter is renamed to Counter and support up to 8 bits
+* basic components support triple input
+* add a pause button to keep the state of the circuit when components (switches) are clicked
+* add a documentation
+* support copy and paste
+* support middle button drag to move the circuit window
+* support rotate and flip components
 
 2012-10-02: version 2.5
 
-  * add a cursor to timing chart to fall back to a specified time
-  * prohibit moving components to out of range
-  * fix many bugs
+* add a cursor to timing chart to fall back to a specified time
+* prohibit moving components to out of range
+* fix many bugs
 
 2012-08-13: version 2.4
 
-  * add max calc iters and max calc duration preferences
-  * force directions of nets started at a pin of a component
-  * fix bugs
+* add max calc iters and max calc duration preferences
+* force directions of nets started at a pin of a component
+* fix bugs
 
 2012-06-18: version 2.3
 
-  * add duration property for oscillator
-  * change default font to Liberation Mono
-  * code cleanup
-  * fix many bugs
+* add duration property for oscillator
+* change default font to Liberation Mono
+* code cleanup
+* fix many bugs
 
 2012-05-24: version 2.2
 
-  * add Preferences window to change appearance
-  * support IEC symbols
-  * fix bugs
+* add Preferences window to change appearance
+* support IEC symbols
+* fix bugs
 
 2012-05-08: version 2.1
 
-  * add tooltips for component window
-  * add components' names on property window
-  * fix behavior on schematics area
+* add tooltips for component window
+* add components' names on property window
+* fix behavior on schematics area
 
 2012-05-03: version 2.0
 
-  * Migrate from wxWidget to GTK+
-  * Add oscillator, probe and text components
-  * Add property window
-  * Add timing chart window
-  * Add "Save as image" menu and "Save chart" button
-  * Fix many bugs
+* Migrate from wxWidget to GTK+
+* Add oscillator, probe and text components
+* Add property window
+* Add timing chart window
+* Add "Save as image" menu and "Save chart" button
+* Fix many bugs
 
 2012-02-16: version 1.0 released
 
-  * initial release
+* initial release

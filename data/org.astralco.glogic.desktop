@@ -1,7 +1,8 @@
 [Desktop Entry]
-_Name=gLogic
+_Name=GLogic
 _Comment=Logic circuit simulator
 Exec=glogic
+Name=GLogic
 Terminal=false
 Type=Application
 Icon=glogic

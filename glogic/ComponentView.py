@@ -1,10 +1,8 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
-import math
 from glogic import config, const
-from glogic.Components import comp_dict
 from gettext import gettext as _
-from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
+from gi.repository import Gtk, GdkPixbuf, GObject
 
 
 class ComponentView(Gtk.ScrolledWindow):

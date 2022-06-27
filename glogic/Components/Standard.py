@@ -907,8 +907,6 @@ class TriStateBuffer(BaseComponent):
 
 
 	def drawComponentRunOverlap(self, cr, layout):
-		print(self.input_level)
-
 		# Proper state for tribuff
 		if self.input_level[0]:
 			cr.set_source(Preference.highlevel_color)

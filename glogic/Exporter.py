@@ -6,7 +6,7 @@ from glogic import const
 from glogic.Utils import cairo_paths
 from glogic import Preference
 from glogic.Utils import get_components_rect
-from gi.repository import Gtk, Pango, PangoCairo
+from gi.repository import Gtk, PangoCairo
 from gettext import gettext as _
 
 

@@ -8,7 +8,7 @@ from glogic.MenuPopover import Menu, RunningMenu
 from glogic.Utils import *
 from glogic.Components import comp_dict
 from glogic import Preference
-from gi.repository import Gtk, Gdk, GdkPixbuf, PangoCairo
+from gi.repository import Gtk, Gdk, PangoCairo
 
 
 class DrawArea(Gtk.ScrolledWindow):

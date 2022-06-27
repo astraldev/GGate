@@ -1,7 +1,7 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
-import copy, os, gettext, pickle
-from gi.repository import Gtk, Gdk, GObject
+import copy, os
+from gi.repository import GObject
 from glogic import const, Preference
 from glogic.Utils import *
 from glogic.Components import *
