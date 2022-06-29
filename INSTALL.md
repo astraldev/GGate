@@ -13,16 +13,12 @@
   You can install with the following commands
 
   ```bash
-    ./configure
-    make
-    sudo make install
+     python3 setup.py install --layout=deb
   ```
 
 Or install using __snap__
 
-```bash
-snap install GLogic --edge
-```
+> Coming soon
 
 Or install using __flatpak__
 > Coming soon

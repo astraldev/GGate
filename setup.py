@@ -3,7 +3,29 @@ from setuptools import find_packages, setup
 import pathlib
 
 here = pathlib.Path(__file__).parent
+help_translations = []
+translations = []
+pkg_name = 'glogic'
+base = 'help'
+help_files = []
+
 os.chdir(here)
+
+for root, folders, files in os.walk(base):
+    for folder in folders:
+        if root+'/'+folder not in help_translations:
+            help_translations.append(root+'/'+folder)
+    if root == base:
+        for folder in folders:
+            translations.append(folder)
+
+for folder in help_translations:
+    if folder.split('/')[1] in translations:
+        parts = list(folder.split('/'))
+        parts.insert(2, pkg_name)
+        fd = "/".join(parts)
+        help_files.append((fd, [folder+'/'+x for x in os.listdir(folder) if os.path.isfile(folder+'/'+x)]))
+    
 
 icons = {
     "16": ['data/images/glogic-small.ico'],
@@ -12,8 +34,8 @@ icons = {
     "scalable": ['data/icons/scalable/glogic.svg']
 }
 
-os.system('chmod +777 data/org.astralco.glogic.desktop')
-os.system('chmod +777 bin/glogic')
+os.system(f'chmod +777 {here}/data/org.astralco.glogic.desktop')
+os.system(f'chmod +777 {here}/bin/glogic')
 
 setup(
     name="glogic",
@@ -28,7 +50,7 @@ setup(
     license="GPL v3",
     keywords="logic circuit simulation simulate gates computers buffers",
     python_requires=">=3",
-    scripts=["bin/glogic"],
+    scripts=['bin/glogic'],
     packages=['glogic', 'glogic.Components'],
     package_data={
         'glogic': [
@@ -66,6 +88,7 @@ setup(
         ]
     },
     data_files=[
+        *help_files,
         ("share/applications", ["data/org.astralco.glogic.desktop"]),
         ("share/icons/hicolor/96x96/apps", icons["96"]),
         ("share/icons/hicolor/48x48/apps", icons["48"]),

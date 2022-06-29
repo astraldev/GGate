@@ -6,3 +6,10 @@ m4/
 *.cache/
 .vscode/
 debian/
+*.egg-info/
+dist/
+build/
+.pybuild/
+deb_dist/
+**.gz
+**.deb

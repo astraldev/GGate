@@ -6,7 +6,6 @@ description: |
   A logic gate simulator for linux developed with Gtk and python.
 grade: devel # must be 'stable' to release into candidate/stable channels
 confinement: strict
-compression: lzo
 
 architectures:
   - build-on: amd64
@@ -24,12 +23,13 @@ plugs:
 apps:
   pynes:
     command: glogic
-    plugs: [home, desktop]
+    plugs: [home]
 
 parts:
   pynes:
     plugin: python
     source: https://github.com/astraldev/GLogic.git
+    source-type: git
     stage-packages:
       - python3-gi
       - python3-gi-cairo
