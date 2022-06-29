@@ -1,14 +1,14 @@
 # Installation Instructions
 
-1. __Required Packages__
+## __Required Packages__
 
   On Debian system, you can install dependencies with the following command:
 
   ```bash
-  sudo apt-get install python3-gi python3-gi-cairo libgtk-4-0 intltool
+  sudo apt-get install python3-gi python3-gi-cairo libgtk-4-0
   ```
 
-2. __Install__
+## __Install__
 
   You can install with the following commands
 
