@@ -23,9 +23,9 @@ for folder in help_translations:
     if folder.split('/')[1] in translations:
         parts = list(folder.split('/'))
         parts.insert(2, pkg_name)
+        parts = ['share'] + parts
         fd = "/".join(parts)
         help_files.append((fd, [folder+'/'+x for x in os.listdir(folder) if os.path.isfile(folder+'/'+x)]))
-    
 
 icons = {
     "16": ['data/images/glogic-small.ico'],

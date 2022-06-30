@@ -14,7 +14,7 @@
 	<title>Move and delete components</title>
 
 	<section id="add"><title>Select components</title>
-		<p>When you launch gLogic, it will be first the select components mode. To change to this mode from the net mode or the add components mode, right-click a few times. There are two ways to select components:</p>
+		<p>When you launch GLogic, it will be first the select components mode. To change to this mode from the net mode or the add components mode, right-click a few times. There are two ways to select components:</p>
 		<list>
 			<item>
 				<p>Move the cursor on a component and click it when the color is changed.</p>

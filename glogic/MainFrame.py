@@ -692,8 +692,8 @@ class MainFrame(Gtk.ApplicationWindow):
     def on_action_show_help(self, *args):
         Gtk.show_uri(None, const.help, Gdk.CURRENT_TIME)
 
-    def on_action_translate_pressed(self, *args):
-        webbrowser.open(const.devel_translate)
+    # def on_action_translate_pressed(self, *args):
+    #     webbrowser.open(const.devel_translate)
 
     def on_action_bug_pressed(self, *args):
         webbrowser.open(const.devel_bug)
@@ -839,11 +839,6 @@ class GLogicApplication(Gtk.Application):
 
         action = Gio.SimpleAction.new("on_action_show_help", None)
         action.connect("activate", self.action_handler('on_action_show_help'))
-        self.add_action(action)
-
-        action = Gio.SimpleAction.new("on_action_translate_pressed", None)
-        action.connect("activate", self.action_handler(
-            'on_action_translate_pressed'))
         self.add_action(action)
 
         action = Gio.SimpleAction.new("on_action_bug_pressed", None)

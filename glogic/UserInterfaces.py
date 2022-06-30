@@ -195,16 +195,11 @@ menu_xml = """
                             <attribute name="accel">F1</attribute>
                            </item>
                             <item>
-                               <attribute name="label">Translate</attribute>
-                               <attribute name="action">app.on_action_translate_pressed</attribute>
-                           </item>
-                            <item>
                                <attribute name="label">Report Issue</attribute>
                                <attribute name="action">app.on_action_bug_pressed</attribute>
                            </item>
                     </section>
                 </submenu>
-                
                 <item>
                     <attribute name="label">Shortcuts</attribute>
                     <attribute name="action">app.on_show_shortcut</attribute>

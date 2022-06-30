@@ -1,28 +1,62 @@
 import os
 from subprocess import call
 import pathlib
+import sys
 
 pkg = 'glogic'
 version='3.0.0'
 here = pathlib.Path(__file__).parent
+email = 'ekureedem480@gmail.com'
+full_name = 'Ekure Edem'
 
-tempdirs = ['deb_dist', f'{pkg}.egg-info']
+rules = f"""#!/usr/bin/make -f
+export PYBUILD_NAME={pkg}
+export PYBUILD_VERBOSE=1
+export DH_VERBOSE=1
+export DH_VERBOSE = 1
+%:
+	dh $@ --with python3 --buildsystem=pybuild"""
 
-call('python3 setup.py --command-packages=stdeb.command sdist_dsc --compat 11 --with-python3 True'.split())
-os.chdir(f'deb_dist/{pkg}-{version}')
-os.system(f'dpkg-buildpackage -rfakeroot -uc -us')
-
-print("Cleaning.... \n\n")
-
-os.system('python3 setup.py clean')
-
-os.system('cd ..')
-db_file = [f'deb_dist/{x}' for x in os.listdir('../') if x.endswith('.deb')][0]
 os.chdir(here)
-os.system(f"mv {db_file} {here}/dist/{db_file.split('/')[-1]} ")
-for dir in tempdirs:
-    os.system(f'rm -rf {dir}')
+tempdirs = [f'dist/{pkg}-{version}', f'{pkg}.egg-info']
 
-#os.system()
+call('python3 setup.py sdist'.split())
 
-        
+os.chdir(f'{here}/dist')
+
+os.system(f'debmake -s -b ":py3" -e {email} -f "{full_name}" -p "{pkg}" -u "{version}" -a {pkg}-{version}.tar.gz')
+os.chdir(f'{here}/dist/{pkg}-{version}')
+
+print("\nEdit the following files \n")
+print(f"{here}/dist/{pkg}-{version}/debian/control")
+print(f"{here}/dist/{pkg}-{version}/debian/changelog")
+print(f"{here}/dist/{pkg}-{version}/debian/README.Debian")
+
+open(f'{here}/dist/{pkg}-{version}/debian/rules', 'w').write(rules)
+
+def _clean():
+    print("Cleaning.... \n")
+    os.chdir(f'{here}')
+    os.system('python3 setup.py clean')
+    for dir in tempdirs:
+        os.system(f'rm -rf {dir}')
+    
+    for file in os.listdir('dist'):
+        if os.path.isfile(f'dist/{file}'):
+            if not file.endswith('.tar.gz') and not file.endswith('.deb'):
+                os.remove(f'dist/{file}')
+        else:
+            os.system(f'rm -rf dist/{file}')
+
+tries = 0
+while input("Are you done? [Y/N]: ").lower() != 'y' :
+    if tries >= 10:
+        print("Out of tries")
+        _clean()
+        sys.exit(1)
+    tries += 1
+print("\nBegining Build\n")
+os.system(f'dpkg-buildpackage')
+print("\nBuild over\n")
+
+_clean()
