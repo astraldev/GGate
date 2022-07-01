@@ -1,10 +1,10 @@
 version
- author=3.0.0
- required=2.6
+ author=3.1.0
+ required=3.0
 
 tff
  position=530,280
- input_level=1
+ input_level=0
  output_level=0,1
  matrix=1,0,0,1
  properties=trig:1,tphl:0.0,tplh:0.0
@@ -12,13 +12,13 @@ tff
 tff
  position=430,300
  input_level=1
- output_level=1,0
+ output_level=0,1
  matrix=1,0,0,1
  properties=trig:1,tphl:0.0,tplh:0.0
 
 tff
  position=230,230
- input_level=0
+ input_level=1
  output_level=0,1
  matrix=1,0,0,1
  properties=trig:0,tphl:0.0,tplh:0.0
@@ -26,63 +26,56 @@ tff
 tff
  position=330,210
  input_level=0
- output_level=0,1
+ output_level=1,0
  matrix=1,0,0,1
  properties=trig:0,tphl:0.0,tplh:0.0
 
 tff
  position=430,190
- input_level=0
- output_level=0,1
+ input_level=1
+ output_level=1,0
  matrix=1,0,0,1
  properties=trig:0,tphl:0.0,tplh:0.0
 
 tff
  position=530,170
- input_level=0
+ input_level=1
  output_level=0,1
  matrix=1,0,0,1
  properties=trig:0,tphl:0.0,tplh:0.0
 
 7seg
  position=630,230
- input_level=1,1,1,1
+ input_level=1,0,0,1
  output_level=
  matrix=1,0,0,1
  properties=_red:0
 
 tff
  position=330,320
- input_level=0
+ input_level=1
  output_level=1,0
  matrix=1,0,0,1
  properties=trig:1,tphl:0.0,tplh:0.0
 
 tff
  position=230,340
- input_level=0
- output_level=0,1
+ input_level=1
+ output_level=1,0
  matrix=1,0,0,1
  properties=trig:1,tphl:0.0,tplh:0.0
 
 7seg
  position=630,340
- input_level=1,0,0,1
+ input_level=1,1,0,0
  output_level=
  matrix=1,0,0,1
  properties=_red:2
 
 sw
- position=170,230
+ position=150,285
  input_level=
- output_level=0
- matrix=1,0,0,1
- properties=initstate:0
-
-sw
- position=170,340
- input_level=
- output_level=0
+ output_level=1
  matrix=1,0,0,1
  properties=initstate:0
 
@@ -121,4 +114,16 @@ net
 
 net
  position=340,310,340,300
+
+net
+ position=220,320,220,265
+
+net
+ position=240,320,220,320
+
+net
+ position=220,265,220,210
+
+net
+ position=220,210,240,210
 

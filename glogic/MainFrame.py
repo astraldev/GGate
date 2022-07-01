@@ -747,19 +747,18 @@ class MainFrame(Gtk.ApplicationWindow):
 
     def on_propwindow_hidden(self, widget):
         
-        widget.destroy()
+        widget.destroy() 
         self.prop_window = PropertyWindow()
         self.prop_window.set_transient_for(self)
         self.prop_window.set_hide_on_close(True)
         self.prop_window.set_modal(True)
-
+        self.prop_window.connect("window-hidden", self.on_propwindow_hidden)
+        self.prop_window.connect("property-changed", self.on_property_changed)
         self.drawarea.queue_draw()
 
-        return
-
     def on_property_changed(self, widget):
-        self.drawarea.redraw = True
         self.circuit.push_history()
+        self.drawarea.redraw = True
         self.drawarea.queue_draw()
 
     def on_circuit_title_changed(self, circuit, title):

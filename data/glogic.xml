@@ -1,0 +1,8 @@
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+    <mime-type type="text/glc">
+        <sub-class-of type="text/plain"/>
+        <comment>GLogic files</comment>
+        <glob pattern="*.glc" />
+        <icon name="text-glc" />
+    </mime-type>
+</mime-info>

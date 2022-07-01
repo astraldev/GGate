@@ -68,11 +68,9 @@ class PropertyWindow(Gtk.Dialog):
 		else:
 
 			self.component.values = values
-
-			# Update the old values
-			# self.old_values = values
 			self.component.set_rot_props()
-			self.emit("property-changed")
+		
+		self.emit("property-changed")
 
 	def setComponent(self, component):
      

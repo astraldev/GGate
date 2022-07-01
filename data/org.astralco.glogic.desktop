@@ -1,10 +1,10 @@
 [Desktop Entry]
-_Name=GLogic
-_Comment=Logic circuit simulator
-Exec=glogic
+Comment=Logic circuit simulator for linux
+Exec=glogic %F
 Name=GLogic
 Terminal=false
 Type=Application
 Icon=glogic
-Categories=Education;Science;Electronics
+Categories=Science
 StartupNotify=true
+MimeType=text/glc

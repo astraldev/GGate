@@ -13,8 +13,9 @@
   You can install with the following commands
 
   ```bash
-     python3 setup.py install --layout=deb
+     sudo python3 setup.py install --install-layout=deb
   ```
+  
 
 Or install using __snap__
 

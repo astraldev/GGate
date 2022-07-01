@@ -1,5 +1,5 @@
 import os
-from setuptools import find_packages, setup
+from setuptools import setup
 import pathlib
 
 here = pathlib.Path(__file__).parent
@@ -31,15 +31,38 @@ icons = {
     "16": ['data/images/glogic-small.ico'],
     "96": ['data/images/glogic.png'],
     "48": ['data/images/glogic.ico'],
-    "scalable": ['data/icons/scalable/glogic.svg']
+    "scalable": ['data/icons/scalable/glogic.svg'],
+
+    "mime": {
+        '16': ['data/images/mime/16x16/text-glc.png'],
+        '32': ['data/images/mime/32x32/text-glc.png'],
+        '24': ['data/images/mime/24x24/text-glc.png'],
+        '48': ['data/images/mime/48x48/text-glc.png'],
+        '256': ['data/images/mime/256x256/text-glc.png'],
+
+        '64': ['data/images/mime/64x64/text-glc.png'],
+        '96': ['data/images/mime/96x96/text-glc.png'],
+        '128':['data/images/mime/128x128/text-glc.png'],
+        '512': ['data/images/mime/512x512/text-glc.png']
+    }
 }
+
+mime_sizes = {
+    'yaru': ['16', '32', '24', '48', '256']
+}
+
+mimes = []
+for sizes in icons['mime'].keys():
+    mimes.append((f'share/icons/hicolor/{sizes}x{sizes}/mimetypes', icons['mime'][sizes]))
+    if sizes in mime_sizes['yaru']:
+        mimes.append((f'share/icons/Yaru/{sizes}x{sizes}/mimetypes', icons['mime'][sizes]))
 
 os.system(f'chmod +777 {here}/data/org.astralco.glogic.desktop')
 os.system(f'chmod +777 {here}/bin/glogic')
 
 setup(
     name="glogic",
-    version="3.0.0",
+    version="3.1.0",
     author="Koichi Akabe ",
     author_email='<vbkaisetsu@gmail.com>',
     maintainer='Ekure Edem',
@@ -89,7 +112,9 @@ setup(
     },
     data_files=[
         *help_files,
+        *mimes,
         ("share/applications", ["data/org.astralco.glogic.desktop"]),
+        ("share/mime/packages", ["data/glogic.xml"]),
         ("share/icons/hicolor/96x96/apps", icons["96"]),
         ("share/icons/hicolor/48x48/apps", icons["48"]),
         ("share/icons/hicolor/16x16/apps", icons["16"]),

@@ -4,7 +4,7 @@ import pathlib
 import sys
 
 pkg = 'glogic'
-version='3.0.0'
+version='3.1.0'
 here = pathlib.Path(__file__).parent
 email = 'ekureedem480@gmail.com'
 full_name = 'Ekure Edem'

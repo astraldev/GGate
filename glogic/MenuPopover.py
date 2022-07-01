@@ -86,10 +86,15 @@ class Menu(Gtk.PopoverMenu):
         self.set_parent(parent)
         self.set_has_arrow(False)
     
-    def present(self, x, y):
+    def calculate(self, x, y):
+      parent = self.get_parent()
+      point_x = x - parent.get_hadjustment().get_value()
+      point_y = y - parent.get_vadjustment().get_value()
+      return point_x, point_y
+    
+    def present(self, x, y, *args):
         rectangle = Gdk.Rectangle()
-        rectangle.x = x
-        rectangle.y = y 
+        rectangle.x, rectangle.y = self.calculate(x, y)
         rectangle.width = 1
         rectangle.height = 1
 
@@ -103,7 +108,7 @@ class Menu(Gtk.PopoverMenu):
         has_selected = len(self.get_parent().circuit.selected_components) == 1
 
         def _(clipboard, task):
-          str_data = clipboard.read_text_finish(task)
+          str_data = window.clipboard.read_text_finish(task)
           if str_data != None:
             tmp = string_to_components(str_data)
             if not isinstance(tmp, str) and len(tmp) > 0:
@@ -118,6 +123,7 @@ class Menu(Gtk.PopoverMenu):
             window.action_set_enabled(action, False)
           else:
             window.action_set_enabled(action, True)
+            
         window.clipboard.read_text_async(None, _)
 
         self.set_pointing_to(rectangle)
@@ -132,11 +138,17 @@ class RunningMenu(Gtk.PopoverMenu):
         self.set_menu_model(_menu)
         self.set_parent(parent)
         self.set_has_arrow(False)
+        
+    def calculate(self, x, y):
+      parent = self.get_parent()
+      point_x = x - parent.get_hadjustment().get_value()
+      point_y = y - parent.get_vadjustment().get_value()
+      return point_x, point_y    
 
     def present(self, x, y):
         rectangle = Gdk.Rectangle()
-        rectangle.x = x
-        rectangle.y = y 
+        rectangle.x, rectangle.y = self.calculate(x, y)
+
         rectangle.width = 1
         rectangle.height = 1
 

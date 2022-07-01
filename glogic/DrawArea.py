@@ -27,6 +27,12 @@ class DrawArea(Gtk.ScrolledWindow):
         self.set_child(self.drawingarea)
         self.drawingarea.set_draw_func(self.on_draw)
 
+        self.vadj.set_value(self.height / 2)
+        self.hadj.set_value(self.width / 2)
+
+        # Default : 10
+        self.grid_step = 10
+
         self.actions = [
             'menu.flip_hori', 'menu.flip_verti', 
             'menu.rot_left', 'menu.rot_right', 
@@ -106,9 +112,9 @@ class DrawArea(Gtk.ScrolledWindow):
         self._pushed_component_name = const.component_none
         self._pushed_component = comp_dict[const.component_none]
 
-
     def queue_draw(self, *args):
         self.show()
+        self.drawingarea.queue_draw()
         super().queue_draw(*args)
         self.drawingarea.show()
         self.drawingarea.queue_draw()
@@ -153,9 +159,9 @@ class DrawArea(Gtk.ScrolledWindow):
             if not self.parent.running_mode:
                 # Draw grids
                 mcr.set_source(Preference.grid_color)
-                for x in range(0, self.width, 10):
+                for x in range(0, self.width, self.grid_step):
                     cairo_paths(mcr, (x, 0), (x, self.height))
-                for y in range(0, self.height, 10):
+                for y in range(0, self.height, self.grid_step):
                     cairo_paths(mcr, (0, y), (self.width, y))
                 mcr.stroke()
 
@@ -462,16 +468,16 @@ class DrawArea(Gtk.ScrolledWindow):
                     if c[2] < self.cursor_smooth_y < c[4] or c[4] < self.cursor_smooth_y < c[2]:
                         if min_dist > (self.cursor_smooth_x - c[1]) ** 2:
                             min_dist = (self.cursor_smooth_x - c[1]) ** 2
-                            self.cursor_x = c[1] - c[1] % 10
+                            self.cursor_x = c[1] - c[1] % self.grid_step
                             self.cursor_y = int(
-                                self.cursor_smooth_y - self.cursor_smooth_y % 10)
+                                self.cursor_smooth_y - self.cursor_smooth_y % self.grid_step)
                 if c[2] == c[4]:
                     if c[1] < self.cursor_smooth_x < c[3] or c[3] < self.cursor_smooth_x < c[1]:
                         if min_dist > (self.cursor_smooth_y - c[2]) ** 2:
                             min_dist = (self.cursor_smooth_y - c[2]) ** 2
                             self.cursor_x = int(
-                                self.cursor_smooth_x - self.cursor_smooth_x % 10)
-                            self.cursor_y = c[2] - c[2] % 10
+                                self.cursor_smooth_x - self.cursor_smooth_x % self.grid_step)
+                            self.cursor_y = c[2] - c[2] % self.grid_step
 
             else:
                 for p in c[1].rot_input_pins + c[1].rot_output_pins:
@@ -525,9 +531,9 @@ class DrawArea(Gtk.ScrolledWindow):
 
                     if min_dist == 225:
                         self.cursor_x = int(
-                            self.cursor_smooth_x - self.cursor_smooth_x % 10)
+                            self.cursor_smooth_x - self.cursor_smooth_x % self.grid_step)
                         self.cursor_y = int(
-                            self.cursor_smooth_y - self.cursor_smooth_y % 10)
+                            self.cursor_smooth_y - self.cursor_smooth_y % self.grid_step)
                     if oldcursor_x != self.cursor_x or oldcursor_y != self.cursor_y:
                         self.queue_draw()
 
@@ -542,8 +548,8 @@ class DrawArea(Gtk.ScrolledWindow):
                     oldcursor_x = self.cursor_x
                     oldcursor_y = self.cursor_y
 
-                    self.cursor_x = int(self.cursor_smooth_x - self.cursor_smooth_x % 10)
-                    self.cursor_y = int(self.cursor_smooth_y - self.cursor_smooth_y % 10)
+                    self.cursor_x = int(self.cursor_smooth_x - self.cursor_smooth_x % self.grid_step)
+                    self.cursor_y = int(self.cursor_smooth_y - self.cursor_smooth_y % self.grid_step)
 
                     if oldcursor_x != self.cursor_x or oldcursor_y != self.cursor_y:
                         self.queue_draw()
@@ -577,22 +583,22 @@ class DrawArea(Gtk.ScrolledWindow):
         if self._pushed_component_name == const.component_net:
             # snap cursor to terminals
             min_dist = 225
-            if Gdk.ModifierType.CONTROL_MASK:
+            if not args[0].get_current_event_state() & Gdk.ModifierType.CONTROL_MASK:
                 min_dist = self.set_cursor_to_nearest_terminal(min_dist)
 
             if min_dist == 225:
                 self.cursor_x = int(self.cursor_smooth_x -
-                                    self.cursor_smooth_x % 10)
+                                    self.cursor_smooth_x % self.grid_step)
                 self.cursor_y = int(self.cursor_smooth_y -
-                                    self.cursor_smooth_y % 10)
+                                    self.cursor_smooth_y % self.grid_step)
             if oldcursor_x != self.cursor_x or oldcursor_y != self.cursor_y:
                 self.queue_draw()
 
         else:
             self.cursor_x = int(self.cursor_smooth_x -
-                                self.cursor_smooth_x % 10)
+                                self.cursor_smooth_x % self.grid_step)
             self.cursor_y = int(self.cursor_smooth_y -
-                                self.cursor_smooth_y % 10)
+                                self.cursor_smooth_y % self.grid_step)
             if self._pushed_component_name != const.component_none or self._pasted_components:
                 if oldcursor_x != self.cursor_x or oldcursor_y != self.cursor_y:
                     self.queue_draw()
@@ -604,13 +610,13 @@ class DrawArea(Gtk.ScrolledWindow):
                 old_delta_x = self.drag_delta_x
                 old_delta_y = self.drag_delta_y
                 if ddx >= 0:
-                    self.drag_delta_x = ddx - ddx % 10
+                    self.drag_delta_x = ddx - ddx % self.grid_step
                 else:
-                    self.drag_delta_x = ddx + (-ddx % 10)
+                    self.drag_delta_x = ddx + (-ddx % self.grid_step)
                 if ddy >= 0:
-                    self.drag_delta_y = ddy - ddy % 10
+                    self.drag_delta_y = ddy - ddy % self.grid_step
                 else:
-                    self.drag_delta_y = ddy + (-ddy % 10)
+                    self.drag_delta_y = ddy + (-ddy % self.grid_step)
                 if old_delta_x != self.drag_delta_x or old_delta_y != self.drag_delta_y:
 
                     fix_delta_x = 0
@@ -806,8 +812,6 @@ class DrawArea(Gtk.ScrolledWindow):
 
                     self.preselected_component = None
                     self.circuit.push_history()
-                    # self.parent.action_undo.set_sensitive(True)
-                    # self.parent.action_redo.set_sensitive(False)
                     self.redraw = True
 
                 elif self._pushed_component_name == const.component_none and not self._pasted_components:
@@ -937,9 +941,6 @@ class DrawArea(Gtk.ScrolledWindow):
                         self.refresh_nets()
 
                         self.circuit.push_history()
-
-                        # self.parent.action_undo.set_sensitive(True)
-                        # self.parent.action_redo.set_sensitive(False)
 
                     # Begin to create net
                     self.netstart_x = self.cursor_x
@@ -1088,7 +1089,7 @@ class DrawArea(Gtk.ScrolledWindow):
         if not self.parent.running_mode:
 
             if (not self.parent.action_net.get_active()) and (not self.netstarted) and (not self._pushed_component):
-                self.menu.present(args[2], args[3])
+                self.menu.present(args[2], args[3], args)
 
             if self._pasted_components:
                 self._pasted_components = None
