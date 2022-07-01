@@ -247,8 +247,12 @@ class SaveSchematicsImageDialog(Gtk.Dialog):
 
 		self.set_size_request(200, 150)
 		self.set_resizable(False)
-
+		
+		frame = Gtk.Frame()
 		vbox = Gtk.ListBox()
+		vbox.add_css_class("view")
+
+		frame.set_child(vbox)
 
 		row_box = Gtk.ListBoxRow()
 
@@ -353,17 +357,17 @@ class SaveSchematicsImageDialog(Gtk.Dialog):
 			vbox.append(row_box)
 
 		box = self.get_content_area()
-		vbox.set_vexpand(True)
-		vbox.set_hexpand(True)
-		vbox.set_halign(Gtk.Align.FILL)
-		vbox.set_valign(Gtk.Align.FILL)
+		frame.set_vexpand(True)
+		frame.set_hexpand(True)
+		frame.set_halign(Gtk.Align.FILL)
+		frame.set_valign(Gtk.Align.FILL)
 
-		vbox.set_margin_start(3)
-		vbox.set_margin_bottom(3)
-		vbox.set_margin_top(3)
-		vbox.set_margin_end(3)
+		frame.set_margin_start(3)
+		frame.set_margin_bottom(3)
+		frame.set_margin_top(3)
+		frame.set_margin_end(3)
 
-		box.append(vbox)
+		box.append(frame)
 
 class SaveTimingDiagramDialog(Gtk.Dialog):
 	def __init__(self, parent):
@@ -378,7 +382,11 @@ class SaveTimingDiagramDialog(Gtk.Dialog):
 		self.set_size_request(200, 150)
 		self.set_resizable(False)
 
+		frame = Gtk.Frame()
 		vbox = Gtk.ListBox()
+		vbox.add_css_class("view")
+
+		frame.set_child(vbox)
 
 		row_box = Gtk.ListBoxRow()
 
@@ -417,14 +425,14 @@ class SaveTimingDiagramDialog(Gtk.Dialog):
 		vbox.append(row_box)
 
 		box = self.get_content_area()
-		vbox.set_vexpand(True)
-		vbox.set_hexpand(True)
-		vbox.set_halign(Gtk.Align.FILL)
-		vbox.set_valign(Gtk.Align.FILL)
+		frame.set_vexpand(True)
+		frame.set_hexpand(True)
+		frame.set_halign(Gtk.Align.FILL)
+		frame.set_valign(Gtk.Align.FILL)
 
-		vbox.set_margin_start(3)
-		vbox.set_margin_bottom(3)
-		vbox.set_margin_top(3)
-		vbox.set_margin_end(3)
+		frame.set_margin_start(3)
+		frame.set_margin_bottom(3)
+		frame.set_margin_top(3)
+		frame.set_margin_end(3)
 
-		box.append(vbox)
+		box.append(frame)

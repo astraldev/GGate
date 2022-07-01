@@ -164,7 +164,7 @@ class PropertyWindow(Gtk.Dialog):
 					i += 1
 
 					propbox = Gtk.ListBoxRow()
-					propbox.add_css_class("rich-list")
+					propbox.set_activatable(False)
 
 					ctrl.set_margin_top(3)
 					ctrl.set_margin_bottom(3)
@@ -209,13 +209,18 @@ class PropertyWindow(Gtk.Dialog):
 
 					propbox.set_child(_list_box_row)
 					layout.append(propbox)
+				
+				frame = Gtk.Frame()
+				frame.set_child(layout)
+				layout.add_css_class('view')
+				layout.add_css_class('rich-list')
+				layout.set_selection_mode(Gtk.SelectionMode.NONE)
+				self.vbox.append(frame)
 
-				self.vbox.append(layout)
-
-				layout.set_margin_top(10)
-				layout.set_margin_bottom(10)
-				layout.set_margin_start(10)
-				layout.set_margin_end(10)
+				frame.set_margin_top(10)
+				frame.set_margin_bottom(10)
+				frame.set_margin_start(10)
+				frame.set_margin_end(10)
 
 			else:
 				_label = Gtk.Label(label=_("This component has no property."))

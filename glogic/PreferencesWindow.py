@@ -58,11 +58,14 @@ class PreferencesWindow(Gtk.Dialog):
         self.color_buttons = {}
 
         for key in prefset.keys():
-
+            frame = Gtk.Frame()
             listBox = Gtk.ListBox()
+            listBox.set_selection_mode(Gtk.SelectionMode.NONE)
             listBox.add_css_class("rich-list")
+            listBox.add_css_class("view")
 
             section_row = Gtk.ListBoxRow()
+            section_row.set_activatable(False)
             _label = Gtk.Label()
             _box = Gtk.Box()
 
@@ -95,13 +98,15 @@ class PreferencesWindow(Gtk.Dialog):
                 box.append(color_button)
 
                 row = Gtk.ListBoxRow()
+                row.set_activatable(False)
                 row.set_child(box)
 
                 listBox.append(row)
             
-            table.append(listBox)
-            listBox.set_margin_start(2)
-            listBox.set_margin_end(2)
+            table.append(frame)
+            frame.set_child(listBox)
+            frame.set_margin_start(2)
+            frame.set_margin_end(2)
 
         vbox.append(table)
         table.set_vexpand(True)

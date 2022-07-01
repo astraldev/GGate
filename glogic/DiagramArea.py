@@ -178,6 +178,10 @@ class DiagramArea(Gtk.Box):
         self.cursor_x_old = self.cursor_x
         self.cursor_y_old = self.cursor_y
         self.cursor_x = x_axis
+        try:
+            self.diagram_width
+        except:
+            return
         if self.cursor_x < 0.0:
             self.cursor_x = 0.0
         if self.diagram_width < self.cursor_x:
