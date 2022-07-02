@@ -1,5 +1,12 @@
 # NEWS
 
+2022-07-01: version 3.1.0
+
+* Updated UI
+* Added `.glc` custom mime type
+* Fixed open files from CLI and desktop
+* Icon for `.glc` files ![Icon](data/images/mime/24x24/text-glc.png)
+
 2022-06-26: version 3.0.0
 
 * Port to Gtk4

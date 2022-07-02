@@ -1,5 +1,10 @@
 # ChangeLog
 
+## Version 3.1.0
+
+ Added a frame to all settings
+ Added .glc mime type and icon
+
 ## Version 3.0.0
 
  Added different colors to LED component and 7 Segment display

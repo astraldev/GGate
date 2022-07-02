@@ -10,12 +10,14 @@
 
 ## __Install__
 
-  You can install with the following commands
+* Download the `.deb` package from release and install.
+* Clone the repo and install from source
 
   ```bash
-     sudo python3 setup.py install --install-layout=deb
+  git clone http://github.com/astraldev/GLogic
+  cd GLogic
+  sudo pip install .
   ```
-  
 
 Or install using __snap__
 
