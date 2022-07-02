@@ -28,8 +28,7 @@ apps:
 parts:
   glogic:
     plugin: python
-    source: https://github.com/astraldev/GLogic.git
-    source-type: git
+    source: .
     stage-packages:
       - python3-gi
       - python3-gi-cairo
