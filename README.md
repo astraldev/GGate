@@ -44,3 +44,5 @@ Fork this repo, make your edits and submit a pull request
 ## Donation
 
 GLogic project is open to funding and donation support.
+
+[![Download GLogic](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/glogic/files/latest/download)
