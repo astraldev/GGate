@@ -3,8 +3,8 @@ from subprocess import call
 import pathlib
 import sys
 
-pkg = 'glogic'
-version='3.1.0'
+pkg = 'ggate'
+version='4.0.0-rc'
 here = pathlib.Path(__file__).parent
 email = 'ekureedem480@gmail.com'
 full_name = 'Ekure Edem'

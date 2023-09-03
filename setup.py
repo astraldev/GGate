@@ -5,7 +5,7 @@ import pathlib
 here = pathlib.Path(__file__).parent
 help_translations = []
 translations = []
-pkg_name = 'glogic'
+pkg_name = 'ggate'
 base = 'help'
 help_files = []
 
@@ -28,10 +28,10 @@ for folder in help_translations:
         help_files.append((fd, [folder+'/'+x for x in os.listdir(folder) if os.path.isfile(folder+'/'+x)]))
 
 icons = {
-    "16": ['data/images/glogic-small.ico'],
-    "96": ['data/images/glogic.png'],
-    "48": ['data/images/glogic.ico'],
-    "scalable": ['data/icons/scalable/glogic.svg'],
+    "16": ['data/images/ggate-small.ico'],
+    "96": ['data/images/ggate.png'],
+    "48": ['data/images/ggate.ico'],
+    "scalable": ['data/icons/scalable/ggate.svg'],
 
     "mime": {
         '16': ['data/images/mime/16x16/text-glc.png'],
@@ -57,14 +57,14 @@ for sizes in icons['mime'].keys():
     if sizes in mime_sizes['yaru']:
         mimes.append((f'share/icons/Yaru/{sizes}x{sizes}/mimetypes', icons['mime'][sizes]))
 
-os.system(f'chmod +777 {here}/data/org.astralco.glogic.desktop')
-os.system(f'chmod +777 {here}/bin/glogic')
+os.system(f'chmod +777 {here}/data/org.astralco.ggate.desktop')
+os.system(f'chmod +777 {here}/bin/ggate')
 
 setup(
-    name="glogic",
-    version="3.1.0",
+    name="ggate",
+    version="4.0.0",
     author="Koichi Akabe ",
-    author_email='<vbkaisetsu@gmail.com>',
+    author_email='vbkaisetsu@gmail.com',
     maintainer='Ekure Edem',
     maintainer_email="ekureedem480@gmail.com",
     description='A logic gate simulator for linux developed with Gtk and python',
@@ -73,16 +73,16 @@ setup(
     license="GPL v3",
     keywords="logic circuit simulation simulate gates computers buffers",
     python_requires=">=3",
-    scripts=['bin/glogic'],
-    packages=['glogic', 'glogic.Components'],
+    scripts=['bin/ggate'],
+    packages=['ggate', 'ggate.Components'],
     package_data={
-        'glogic': [
-            'images/glogic.ico', 
+        'ggate': [
+            'images/ggate.ico', 
             'images/add-net.png', 
-            'images/glogic.png', 
+            'images/ggate.png', 
             'images/add-component.png', 
             'images/components', 
-            'images/glogic-small.ico', 
+            'images/ggate-small.ico', 
             'images/components/piso.png', 
             'images/components/siso.png', 
             'images/components/gnd.png', 
@@ -113,8 +113,8 @@ setup(
     data_files=[
         *help_files,
         *mimes,
-        ("share/applications", ["data/org.astralco.glogic.desktop"]),
-        ("share/mime/packages", ["data/glogic.xml"]),
+        ("share/applications", ["data/org.astralco.ggate.desktop"]),
+        ("share/mime/packages", ["data/ggate.xml"]),
         ("share/icons/hicolor/96x96/apps", icons["96"]),
         ("share/icons/hicolor/48x48/apps", icons["48"]),
         ("share/icons/hicolor/16x16/apps", icons["16"]),

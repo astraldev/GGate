@@ -2,10 +2,10 @@
 
 import cairo
 import os
-from glogic import const
-from glogic.Utils import cairo_paths
-from glogic import Preference
-from glogic.Utils import get_components_rect
+from ggate import const
+from ggate.Utils import cairo_paths
+from ggate import Preference
+from ggate.Utils import get_components_rect
 from gi.repository import Gtk, PangoCairo
 from gettext import gettext as _
 
@@ -126,21 +126,21 @@ def _save_schematics_as_image_response(settingsdialog, response, content):
 
 	settingsdialog.parent.statusbar.push(0, "Image schematics saved..")
 
-def save_timingdiagram_as_image(diagramarea, parent):
+def save_timing_diagram_as_image(diagram_area, parent):
 
 	def handler(data):
 		filepath = data[0]
 		filter_name = data[1]
 
 		settingsdialog = SaveTimingDiagramDialog(parent)
-		settingsdialog.connect('response', _save_timingdiagram_as_image_response, (diagramarea, filepath, filter_name))
+		settingsdialog.connect('response', _save_timingdiagram_as_image_response, (diagram_area, filepath, filter_name))
 		settingsdialog.present()
 
 
 	save_image_dialog(parent, handler)
 	
-def _save_timingdiagram_as_image_response(settingsdialog, response, content):
-	diagramarea, filepath, filter_name = content
+def _save_timing_diagram_as_image_response(settingsdialog, response, content):
+	diagram_area, filepath, filter_name = content
 
 	if response == Gtk.ResponseType.CANCEL:
 		settingsdialog.close()
@@ -150,8 +150,8 @@ def _save_timingdiagram_as_image_response(settingsdialog, response, content):
 
 	settingsdialog.close()
 
-	width = (diagramarea.diagram_width + diagramarea.name_width) * scale
-	height = diagramarea.img_height * scale
+	width = (diagram_area.diagram_width + diagram_area.name_width) * scale
+	height = diagram_area.img_height * scale
 	if filter_name == const.pngfile_text:
 		surface = cairo.ImageSurface(cairo.FORMAT_RGB24, int(width), int(height))
 	elif filter_name == const.svgfile_text:
@@ -164,9 +164,9 @@ def _save_timingdiagram_as_image_response(settingsdialog, response, content):
 	cr = cairo.Context(surface)
 	cr.set_line_width(1.0)
 	cr.scale(scale, scale)
-	diagramarea.draw_names(cr)
-	cr.translate(diagramarea.name_width, 0)
-	diagramarea.draw_diagrams(cr)
+	diagram_area.draw_names(cr)
+	cr.translate(diagram_area.name_width, 0)
+	diagram_area.draw_diagrams(cr)
 
 	if filter_name == const.pngfile_text:
 		surface.write_to_png(filepath)

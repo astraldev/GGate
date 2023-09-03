@@ -1,10 +1,10 @@
 [Desktop Entry]
 Comment=Logic circuit simulator for linux
-Exec=glogic %F
-Name=GLogic
+Exec=ggate %F
+Name=GGate
 Terminal=false
 Type=Application
-Icon=glogic
+Icon=ggate
 Categories=Science
 StartupNotify=true
 MimeType=text/glc

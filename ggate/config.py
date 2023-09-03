@@ -2,4 +2,4 @@
 
 
 DATADIR = '/'.join(__file__.split("/")[:-1]) + '/'
-VERSION = "3.1.0"
+VERSION = "4.0.0"

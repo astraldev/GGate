@@ -3,9 +3,9 @@
 import cairo
 import math
 from decimal import Decimal
-from glogic import const
-from glogic.Utils import *
-from glogic import Preference
+from ggate import const
+from ggate.Utils import *
+from ggate import Preference
 from gi.repository import Gtk, Gdk, PangoCairo
 from gettext import gettext as _
 
@@ -29,8 +29,8 @@ class DiagramArea(Gtk.Box):
         self.diagram_scroll = Gtk.ScrolledWindow()
         self.diagram_scroll.set_hexpand(True)
         self.diagram_scroll.set_vexpand(True)
-        self.diagramarea = Gtk.DrawingArea()
-        self.diagram_scroll.set_child(self.diagramarea)
+        self.diagram_area = Gtk.DrawingArea()
+        self.diagram_scroll.set_child(self.diagram_area)
         self.diagram_scroll_hadj = self.diagram_scroll.get_hadjustment()
         self.diagram_scroll_vadj = self.diagram_scroll.get_vadjustment()
 
@@ -55,41 +55,41 @@ class DiagramArea(Gtk.Box):
         self.diagram_pixbuf = None
 
         self.namearea.set_draw_func(self.on_namearea_draw)
-        self.diagramarea.set_draw_func(self.on_diagramarea_draw)
+        self.diagram_area.set_draw_func(self.on_diagram_area_draw)
 
         controller = Gtk.EventControllerMotion()
-        controller.connect('leave', self.on_diagramarea_leave)
-        self.diagramarea.add_controller(controller)
+        controller.connect('leave', self.on_diagram_area_leave)
+        self.diagram_area.add_controller(controller)
 
         controller = Gtk.EventControllerMotion()
-        controller.connect('motion', self.on_diagramarea_motion)
-        self.diagramarea.add_controller(controller)
+        controller.connect('motion', self.on_diagram_area_motion)
+        self.diagram_area.add_controller(controller)
 
-        self.diagramarea.set_draw_func(self.on_diagramarea_draw)
+        self.diagram_area.set_draw_func(self.on_diagram_area_draw)
 
         controller = Gtk.GestureClick()
         # Primary Button
         controller.set_button(Gdk.BUTTON_PRIMARY)
-        controller.connect('pressed', self.on_diagramarea_button_press_primary)
-        self.diagramarea.add_controller(controller)
+        controller.connect('pressed', self.on_diagram_area_button_press_primary)
+        self.diagram_area.add_controller(controller)
 
         controller = Gtk.GestureClick()
         # Secondary click (right click)
         controller.set_button(Gdk.BUTTON_SECONDARY)
-        controller.connect('pressed', self.on_diagramarea_button_press_secondary)
-        self.diagramarea.add_controller(controller)
+        controller.connect('pressed', self.on_diagram_area_button_press_secondary)
+        self.diagram_area.add_controller(controller)
 
         controller = Gtk.GestureClick()
         # Left click release
         controller.set_button(Gdk.BUTTON_PRIMARY)
-        controller.connect('released', self.on_diagramarea_button_release_primary)
-        self.diagramarea.add_controller(controller)
+        controller.connect('released', self.on_diagram_area_button_release_primary)
+        self.diagram_area.add_controller(controller)
 
         controller = Gtk.GestureClick()
         # Right click release
         controller.set_button(Gdk.BUTTON_SECONDARY)
-        controller.connect('released', self.on_diagramarea_button_release_secondary)
-        self.diagramarea.add_controller(controller)
+        controller.connect('released', self.on_diagram_area_button_release_secondary)
+        self.diagram_area.add_controller(controller)
 
         controller = Gtk.GestureClick()
         controller.set_button(Gdk.BUTTON_SECONDARY)
@@ -127,7 +127,7 @@ class DiagramArea(Gtk.Box):
             self.name_scroll_vadj.set_value(
                 self.name_scroll_vadj.get_value() + delta_y)
 
-    def on_diagramarea_button_press_primary(self, widget, *event):
+    def on_diagram_area_button_press_primary(self, widget, *event):
         event_button, x_axis, y_axis = event
 
         if event_button == Gdk.BUTTON_PRIMARY:
@@ -142,14 +142,14 @@ class DiagramArea(Gtk.Box):
                 self.mouse_down = True
                 self.queue_draw()
 
-    def on_diagramarea_button_press_secondary(self, controller, *events):
+    def on_diagram_area_button_press_secondary(self, controller, *events):
         event_button, x_axis, y_axis = events
         if event_button == Gdk.BUTTON_SECONDARY:
             self.middle_move_enabled = True
             self.move_start_x = x_axis
             self.move_start_y = y_axis
 
-    def on_diagramarea_button_release_primary(self, widget, *event):
+    def on_diagram_area_button_release_primary(self, widget, *event):
         
         if event[0] == Gdk.BUTTON_PRIMARY:
             self.mouse_down = False
@@ -159,10 +159,10 @@ class DiagramArea(Gtk.Box):
                 self.drawarea.redraw = True
                 self.drawarea.queue_draw()
 
-    def on_diagramarea_button_release_secondary(self, controller, *event):
+    def on_diagram_area_button_release_secondary(self, controller, *event):
         self.middle_move_enabled = False
 
-    def on_diagramarea_motion(self, controller, x_axis, y_axis, *args):
+    def on_diagram_area_motion(self, controller, x_axis, y_axis, *args):
         widget = controller.get_widget()
 
         if self.middle_move_enabled:
@@ -205,9 +205,9 @@ class DiagramArea(Gtk.Box):
         new_x = (self.circuit.current_time - self.start_time) * self.scale
         left = int(min((old_x, new_x)) - 1)
         width = int(abs(old_x - new_x) + 4)
-        self.diagramarea.queue_draw()
+        self.diagram_area.queue_draw()
 
-    def on_diagramarea_leave(self, controller, *event):
+    def on_diagram_area_leave(self, controller, *event):
 
         widget = controller.get_widget()
 
@@ -219,7 +219,7 @@ class DiagramArea(Gtk.Box):
             cr.set_source_surface(self.name_pixbuf, 0, 0)
             cr.paint()
 
-    def on_diagramarea_draw(self, widget, cr, *args):
+    def on_diagram_area_draw(self, widget, cr, *args):
         if self.diagram_pixbuf is not None:
             cr.set_source_surface(self.diagram_pixbuf, 0, 0)
             cr.paint()
@@ -400,7 +400,7 @@ class DiagramArea(Gtk.Box):
 
         self.diagram_pixbuf = cairo.ImageSurface(
             cairo.FORMAT_RGB24, self.diagram_width, self.img_height)
-        self.diagramarea.set_size_request(self.diagram_width, self.img_height)
+        self.diagram_area.set_size_request(self.diagram_width, self.img_height)
         ccr = cairo.Context(self.diagram_pixbuf)
         ccr.set_line_width(1.0)
         self.draw_diagrams(ccr)

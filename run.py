@@ -3,12 +3,12 @@
 #
 #  Copyright (C) Koichi Akabe 2012 <vbkaisetsu@gmail.com>
 # 
-#  GLogic is free software: you can redistribute it and/or modify it
+#  GGate is free software: you can redistribute it and/or modify it
 #  under the terms of the GNU General Public License as published by the
 #  Free Software Foundation, either version 3 of the License, or
 #  (at your option) any later version.
 # 
-#  GLogic is distributed in the hope that it will be useful, but
+#  GGate is distributed in the hope that it will be useful, but
 #  WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #  See the GNU General Public License for more details.
@@ -22,7 +22,7 @@ import gi
 gi.require_version("Gtk", '4.0')
 gi.require_version('PangoCairo', '1.0')
 
-from glogic.MainFrame import GLogicApplication
+from ggate.MainFrame import GLogicApplication
 
 if __name__ == "__main__":
 	app = GLogicApplication()

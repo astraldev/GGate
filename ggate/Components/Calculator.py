@@ -2,10 +2,10 @@
 
 import math
 from gettext import gettext as _
-from glogic import const
-from glogic.Components.SystemComponents import BaseComponent
-from glogic import Preference
-from glogic.Utils import *
+from ggate import const
+from ggate.Components.SystemComponents import BaseComponent
+from ggate import Preference
+from ggate.Utils import *
 
 class Adder(BaseComponent):
 	def __init__(self, *args, **kwds):

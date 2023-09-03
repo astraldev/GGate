@@ -1,9 +1,9 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
 from gettext import gettext as _
-from glogic import const
-from glogic import Preference
-from glogic.Utils import *
+from ggate import const
+from ggate import Preference
+from ggate.Utils import *
 import math
 
 class BaseComponent():

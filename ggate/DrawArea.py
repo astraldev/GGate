@@ -3,11 +3,11 @@
 import math
 import copy
 import cairo
-from glogic import const
-from glogic.MenuPopover import Menu, RunningMenu
-from glogic.Utils import *
-from glogic.Components import comp_dict
-from glogic import Preference
+from ggate import const
+from ggate.MenuPopover import Menu, RunningMenu
+from ggate.Utils import *
+from ggate.Components import comp_dict
+from ggate import Preference
 from gi.repository import Gtk, Gdk, PangoCairo
 
 
@@ -1071,10 +1071,8 @@ class DrawArea(Gtk.ScrolledWindow):
                                          im[2] * (self.cursor_smooth_x - c[1].pos_x) + im[3] * (
                                              self.cursor_smooth_y - c[1].pos_y) + c[1].pos_y,
                                          self.circuit.current_time):
-                            if self.parent.pause_running_mode:
-                                self.parent.clicked_on_pause = True
-                            elif not self.circuit.analyze_logic():
-                                self.parent.diagram_window.diagramarea.createDiagram()
+                            if not self.parent.pause_running_mode and not self.circuit.analyze_logic():
+                                self.parent.diagram_window.diagram_area.createDiagram()
                             self.queue_draw()
                             break
 

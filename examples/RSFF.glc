@@ -1,3 +1,7 @@
+version
+ author=3.1.0
+ required=3.0
+ 
 nor
  position=70,70
  input_level=0,1

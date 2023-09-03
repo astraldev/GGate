@@ -1,7 +1,7 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
 from gi.repository import Pango, PangoCairo
-from glogic import const
+from ggate import const
 
 def cairo_paths(cr, *points):
 	cr.move_to(points[0][0], points[0][1])

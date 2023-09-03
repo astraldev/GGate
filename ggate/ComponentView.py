@@ -1,6 +1,6 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
-from glogic import config, const
+from ggate import config, const
 from gettext import gettext as _
 from gi.repository import Gtk, GdkPixbuf, GObject
 

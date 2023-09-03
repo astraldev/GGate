@@ -57,7 +57,7 @@ class _Preference(dict):
 
 	def load_settings(self):
 		import os
-		from glogic import const
+		from ggate import const
 		try:
 			fp = open(os.path.join(const.config_path, "preferences"), mode="r", encoding="utf-8")
 		except TypeError:
@@ -74,7 +74,7 @@ class _Preference(dict):
 
 	def save_settings(self):
 		import cairo, os
-		from glogic import const
+		from ggate import const
 		from gi.repository import Pango
 		try:
 			if not os.path.isdir(const.config_path):

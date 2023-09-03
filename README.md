@@ -1,8 +1,12 @@
-# GLogic
+# GGate (fork of GLogic)
 
-![GLogic Logo](./data/images/glogic.png)
+![GGate Logo](./data/images/ggate.png)
 
 A logic gate simulator for linux developed with Gtk and python.
+
+## Requirements
+
+This application requires any linux environment on which **GTK4** is installed. Or **Ubuntu ^22.10** on windows using **WSL**
 
 ## Features
 
@@ -17,25 +21,30 @@ A logic gate simulator for linux developed with Gtk and python.
 * Has display contents like LED, 7 Segments etc
 * File handling support
 
-Check out latest news on glogic [here.](./NEWS)
+Check out the latest changelog on GGate [here.](./NEWS) and [future plans](./TODO)
 
 ## Installation
 
-GLogic can be installed via snap or apt. View [installation](./INSTALL.md) for more details
+To run without installing
+```bash
+python3 run.py
+```
+
+GGate will soon be available on snapcraft, flatpak and normal apt. View [installation](./INSTALL.md) for more details
 
 ## Screenshots
 
 ### Main window
 
-![Main window](./screenshots/glogic-window.png)
+![Main window](./screenshots/ggate-window.png)
 
 ### Tool Bar
 
-![Tool Bar](./screenshots/glogic-toolbar.png)
+![Tool Bar](./screenshots/ggate-toolbar.png)
 
 ## Contribution
 
-GLogic is open to any contributions and translation aid.
+GGate is open to any contributions and translation aid.
 
 ### How To Contribute
 
@@ -43,6 +52,6 @@ Fork this repo, make your edits and submit a pull request
 
 ## Donation
 
-GLogic project is open to funding and donation support.
+GGate project is open to funding and donation support.
 
-[![Download GLogic](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/glogic/files/latest/download)
+[![Download GGate](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/ggate/files/latest/download)

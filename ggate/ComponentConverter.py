@@ -1,12 +1,12 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
-from glogic.Components import comp_dict
-from glogic.Utils import *
-from glogic import const, config
+from ggate.Components import comp_dict
+from ggate.Utils import *
+from ggate import const, config
 from gettext import gettext as _
 import copy
 
-required = [3, 0] 
+required = [3,1] 
 backward_compat = [0]
 
 def components_to_string(components):
@@ -53,7 +53,7 @@ def string_to_components(str_data):
 						this_version += [0] * (m - n)
 					for i, x in enumerate(version_required):
 						if x > this_version[i]:
-							return _("Compatibility error: This circuit requires glogic %s or later.") % ".".join([str(x) for x in version_required])
+							return _("Compatibility error: This circuit requires ggate %s or later.") % ".".join([str(x) for x in version_required])
 						elif x < this_version[i]:
 							break
 					m = len(backward_compat)
@@ -62,7 +62,7 @@ def string_to_components(str_data):
 						version_author += [0] * (m - n)
 					for i, x in enumerate(backward_compat):
 						if x > version_author[i]:
-							return _("Compatibility error: This circuit was created by %(creator)s. glogic %(this)s doesn't support older than %(minimum)s.") % {"creator": ".".join([str(x) for x in version_author]), "this": config.VERSION, "minimum": ".".join([str(x) for x in backward_compat])}
+							return _("Compatibility error: This circuit was created by %(creator)s. ggate %(this)s doesn't support older than %(minimum)s.") % {"creator": ".".join([str(x) for x in version_author]), "this": config.VERSION, "minimum": ".".join([str(x) for x in backward_compat])}
 						elif x < version_author[i]:
 							break
 					versioninfo = False

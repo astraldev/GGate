@@ -1,8 +1,8 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
 from gettext import gettext as _
-from glogic import const
-from glogic.Components import SystemComponents, Standard, FlipFlop, StateViewer, Misc, Counter, Calculator
+from ggate import const
+from ggate.Components import SystemComponents, Standard, FlipFlop, StateViewer, Misc, Counter, Calculator
 
 comp_dict = {
 	const.component_none:    None,

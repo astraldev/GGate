@@ -15,7 +15,7 @@
 
 	<section id="add">
 		<title>Add nets</title>
-		<p>You can add vertical and horizontal nets on GLogic. To add nets:</p>
+		<p>You can add vertical and horizontal nets on GGate. To add nets:</p>
 		<steps>
 			<item>
 				<p>Click <guiseq><gui>Add</gui><gui>Net</gui></guiseq> to change to net mode</p>

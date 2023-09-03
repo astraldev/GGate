@@ -1,6 +1,6 @@
 version
- author=3.0.0
- required=2.6
+ author=3.1.0
+ required=3.0
 
 osc
  position=340,260
@@ -46,17 +46,17 @@ probe
 
 xor
  position=440,410
- input_level=0,1
+ input_level=0,0
  output_level=1
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 and
  position=440,360
- input_level=0,1
+ input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 text
  position=330,220

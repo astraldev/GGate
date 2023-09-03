@@ -1,8 +1,8 @@
 # Installation Instructions
 
-## __Required Packages__
+## __Required Packages__ *optional
 
-  On Debian system, you can install dependencies with the following command:
+  On Debian systems, you can install dependencies with the following command:
 
   ```bash
   sudo apt-get install python3-gi python3-gi-cairo libgtk-4-0
@@ -14,8 +14,8 @@
 * Clone the repo and install from source
 
   ```bash
-  git clone http://github.com/astraldev/GLogic
-  cd GLogic
+  git clone http://github.com/astraldev/GGate
+  cd GGate
   sudo pip install .
   ```
 

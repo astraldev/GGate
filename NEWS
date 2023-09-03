@@ -1,5 +1,12 @@
 # NEWS
 
+2023-09-03: version 4.0.0-rc
+
+* Changed name to aid publishing
+* Revamp Timing Dialog UI
+* Fix missing menu icon on some devices
+* Fix misaligned menu popup on **Windows WSL**
+
 2022-07-01: version 3.1.0
 
 * Updated UI

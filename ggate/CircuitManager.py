@@ -2,11 +2,11 @@
 
 import copy, os
 from gi.repository import GObject
-from glogic import const, Preference
-from glogic.Utils import *
-from glogic.Components import *
+from ggate import const, Preference
+from ggate.Utils import *
+from ggate.Components import *
 from gettext import gettext as _
-from glogic.ComponentConverter import components_to_string, string_to_components
+from ggate.ComponentConverter import components_to_string, string_to_components
 
 class CircuitManager(GObject.GObject):
 

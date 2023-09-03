@@ -1,5 +1,11 @@
 # ChangeLog
 
+## Version 4.0.0-rc
+ Optimized to work on WSL
+ Rename project to aid publishing.
+ Fix TimingDiagram UI
+
+
 ## Version 3.1.0
 
  Added a frame to all settings
