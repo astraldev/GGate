@@ -1,17 +1,17 @@
 # ChangeLog
 
-## Version 4.0.0-rc
+## 2022-09-10 Ekure Edem <ekureedem480@gmail.com>
+ Bump version to 4.0.0
  Optimized to work on WSL
  Rename project to aid publishing.
  Fix TimingDiagram UI
 
-
-## Version 3.1.0
+## 2022-08-10 Ekure Edem <ekureedem480@gmail.com>
 
  Added a frame to all settings
  Added .glc mime type and icon
 
-## Version 3.0.0
+## 2022-07-09 Ekure Edem <ekureedem480@gmail.com>
 
  Added different colors to LED component and 7 Segment display
  Updated UI

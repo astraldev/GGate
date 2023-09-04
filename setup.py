@@ -1,12 +1,13 @@
 import os
 from setuptools import setup
 import pathlib
+import ggate
 
 here = pathlib.Path(__file__).parent
 help_translations = []
 translations = []
 pkg_name = 'ggate'
-base = 'help'
+base = 'data/help'
 help_files = []
 
 os.chdir(here)
@@ -62,7 +63,7 @@ os.system(f'chmod +777 {here}/bin/ggate')
 
 setup(
     name="ggate",
-    version="4.0.0",
+    version=ggate.__version__,
     author="Koichi Akabe ",
     author_email='vbkaisetsu@gmail.com',
     maintainer='Ekure Edem',
