@@ -32,8 +32,13 @@ def main():
     open(f'{here}/dist/{package}-{version}/debian/rules', 'w').write(rules)
     open(f"{here}/dist/{package}-{version}/debian/README.Debian",
          "w").write(readme_debian)
+    
     open(f"{here}/dist/{package}-{version}/debian/changelog",
          "w").write(parsed_changelog)
+    
+    copyright = get_copyright_file(
+        open(f"{here}/dist/{package}-{version}/debian/copyright", "r").read())
+    open(f"{here}/dist/{package}-{version}/debian/copyright", "w").write(copyright)
 
     control = get_control_file(
         open(f"{here}/dist/{package}-{version}/debian/control", "r").read())

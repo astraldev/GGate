@@ -50,15 +50,15 @@ def _parse_changelog(text):
 
 def get_changelog(file):
     changelog_entries = _parse_changelog(file.read())
-    text = f'{package} ({version}{"" if not revision else "-"+revision}) ubuntu 21.10; urgency=medium\n'
+    text = f'{package} ({version}{"" if not revision else "-"+revision}) all; urgency=medium\n'
     for entry in changelog_entries:
         for change in entry['changes']:
             text += f"  * {change}\n"
         if version.find('3.') != -1:
-            text += f'\n  -- {full_name} <{email}> {entry["date"]}'
+            text += f'\n -- {full_name} <{email}>  {entry["date"]}'
         else:
-            text += f'\n  -- Koichi Akabe <vbkaisetsu@gmail.com> {entry["date"]}\n'
-    return text
+            text += f'\n -- Koichi Akabe <vbkaisetsu@gmail.com>  {entry["date"]}\n'
+    return text.strip()
 
 
 def parse_control_text(control_text: str):
@@ -104,6 +104,10 @@ def split_text_by_length(text, max_length):
 
     return text_chunks
 
+def get_copyright_file(text: str):
+    text = text.replace("Source: <url://example.com>", f"Source: {url}.git")
+    text = text.replace("Upstream-Contact: <preferred name and address to reach the upstream project>", f"Upstream-Contact: {url}")
+    return text
 
 def get_control_file(text):
     key_value_pair = parse_control_text(text)
@@ -111,6 +115,7 @@ def get_control_file(text):
     key_value_pair["Description"] = description
     key_value_pair["Homepage"] = url
     key_value_pair["Architecture"] = "amd64"
+    key_value_pair["Build-Depends"] += ", python3-gi, python3-gi-cairo"
     res = ""
     for (key, value) in key_value_pair.items():
         if key == "Package":
