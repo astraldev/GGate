@@ -29,11 +29,19 @@ for folder in help_translations:
         help_files.append((fd, [folder+'/'+x for x in os.listdir(folder) if os.path.isfile(folder+'/'+x)]))
 
 icons = {
-    "16": ['data/images/ggate-small.ico'],
-    "96": ['data/images/ggate.png'],
-    "48": ['data/images/ggate.ico'],
-    "scalable": ['data/icons/scalable/ggate.svg'],
+    "apps": {
+        '16': ['data/images/apps/16x16/ggate.png'],
+        '32': ['data/images/apps/32x32/ggate.png'],
+        '24': ['data/images/apps/24x24/ggate.png'],
+        '48': ['data/images/apps/48x48/ggate.png'],
+        '256': ['data/images/apps/256x256/ggate.png'],
 
+        '64': ['data/images/apps/64x64/ggate.png'],
+        '96': ['data/images/apps/96x96/ggate.png'],
+        '128':['data/images/apps/128x128/ggate.png'],
+        '512': ['data/images/apps/512x512/ggate.png']
+    },
+    "scalable": ['data/images/scalable/ggate.svg'],
     "mime": {
         '16': ['data/images/mime/16x16/text-glc.png'],
         '32': ['data/images/mime/32x32/text-glc.png'],
@@ -57,6 +65,10 @@ for sizes in icons['mime'].keys():
     mimes.append((f'share/icons/hicolor/{sizes}x{sizes}/mimetypes', icons['mime'][sizes]))
     if sizes in mime_sizes['yaru']:
         mimes.append((f'share/icons/Yaru/{sizes}x{sizes}/mimetypes', icons['mime'][sizes]))
+
+apps = []
+for sizes in icons['apps'].keys():
+    apps.append((f'share/icons/hicolor/{sizes}x{sizes}/apps', icons['apps'][sizes]))
 
 os.system(f'chmod +777 {here}/data/org.astralco.ggate.desktop')
 os.system(f'chmod +777 {here}/bin/ggate')
@@ -114,11 +126,9 @@ setup(
     data_files=[
         *help_files,
         *mimes,
+        *apps,
         ("share/applications", ["data/org.astralco.ggate.desktop"]),
         ("share/mime/packages", ["data/ggate.xml"]),
-        ("share/icons/hicolor/96x96/apps", icons["96"]),
-        ("share/icons/hicolor/48x48/apps", icons["48"]),
-        ("share/icons/hicolor/16x16/apps", icons["16"]),
         ("share/icons/hicolor/scalable/apps", icons["scalable"]),
     ]
 )

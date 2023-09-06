@@ -68,6 +68,7 @@ def parse_control_text(control_text: str):
             continue  # Skip empty lines
         try:
             key, value = line.split(':', 1)
+            if line.startswith("\t"): raise ValueError
         except ValueError:
             key = list(control_dict.keys())[-1]
             control_dict[key] += line
@@ -115,7 +116,7 @@ def get_control_file(text):
     key_value_pair["Description"] = description
     key_value_pair["Homepage"] = url
     key_value_pair["Architecture"] = "amd64"
-    key_value_pair["Build-Depends"] += ", python3-gi, python3-gi-cairo"
+    key_value_pair["Depends"] += ", python3-gi, python3-gi-cairo"
     res = ""
     for (key, value) in key_value_pair.items():
         if key == "Package":
@@ -124,10 +125,9 @@ def get_control_file(text):
         split_text = split_text_by_length(value, 150)
         res += split_text[0]
         for text in split_text[1:]:
-            res += f"\n  {text}"
+            res += f"\n {text}"
         res += "\n"
     return res
-
 
 parsed_changelog = get_changelog(open(f"{base_dir}/NEWS"))
 readme_debian = f"""Package: {package}

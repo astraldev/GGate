@@ -1,6 +1,6 @@
 # GGate (fork of GLogic)
 
-![GGate Logo](./data/images/ggate.png)
+![GGate Logo](./data/images/apps/256x256/ggate.png)
 
 A logic gate simulator for linux developed with Gtk and python.
 

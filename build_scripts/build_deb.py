@@ -12,6 +12,7 @@ export DH_VERBOSE=1
 export DH_VERBOSE = 1
 %:
 	dh $@ --with python3 --buildsystem=pybuild
+
 """
 
 os.chdir(here)
