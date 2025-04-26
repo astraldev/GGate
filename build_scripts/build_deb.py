@@ -11,7 +11,7 @@ export PYBUILD_VERBOSE=1
 export DH_VERBOSE=1
 export DH_VERBOSE = 1
 %:
-	dh $@ --with python3 --buildsystem=pybuild
+  dh $@ --with python3 --buildsystem=pybuild
 
 """
 
@@ -46,7 +46,7 @@ def main():
     open(f"{here}/dist/{package}-{version}/debian/control", "w").write(control)
 
     print("\nBegining Build\n")
-    os.system(f'debuild')
+    os.system('debuild')
     print("\nBuild over\n")
 
 def _clean():

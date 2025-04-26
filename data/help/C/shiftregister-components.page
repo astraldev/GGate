@@ -3,199 +3,199 @@
       xmlns:its="http://www.w3.org/2005/11/its"
       type="topic" style="task" id="shiftregister-components">
 
-	<info>
-		<link type="guide" xref="index#components"/>
-		<desc>Shift register components composed of flip-flops</desc>
-		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
-	</info>
+  <info>
+    <link type="guide" xref="index#components"/>
+    <desc>Shift register components composed of flip-flops</desc>
+    <revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
 
-	<title>Shift registers</title>
+  <title>Shift registers</title>
 
-	<section id="siso">
-		<title>SISO shift register</title>
-		<p its:translate="no"><media type="image" src="figures/components/siso.png">SISO shift register</media></p>
-		<p>Serial input and output shift register based on a series of D flip-flop</p>
-		<terms>
-			<item>
-				<title>Truth table:</title>
-				<table frame="all" rules="all" shade="colgroups">
-					<colgroup><col/><col/></colgroup>
-					<colgroup><col/><col/></colgroup>
-					<tr><td colspan="2"><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
-					<tr><td><p its:translate="no">D</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
-					<tr><td colspan="4"><p/></td></tr>
-					<tr><td><p its:translate="no">X</p></td><td><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">D(n-m)</p></td><td><p its:translate="no">~D(n-m)</p></td></tr>
-				</table>
-				<p>m: A number of bits of a shift register</p>
-			</item>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td><p>Number of bits</p></td>
-						<td><p>A number of steps of D flip-flops contained in a shift register</p></td>
-					</tr>
-					<tr>
-						<td><p>Trigger type</p></td>
-						<td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
-					</tr>
-					<tr>
-						<td colspan="2"><p>Propagation delay</p></td>
-					</tr>
-					<tr>
-						<td><p>tPHL</p></td>
-						<td><p>Delays when output is changed from H level to L level</p></td>
-					</tr>
-					<tr>
-						<td><p>tPLH</p></td>
-						<td><p>Delays when output is changed from L level to H level</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-	</section>
+  <section id="siso">
+    <title>SISO shift register</title>
+    <p its:translate="no"><media type="image" src="figures/components/siso.png">SISO shift register</media></p>
+    <p>Serial input and output shift register based on a series of D flip-flop</p>
+    <terms>
+      <item>
+        <title>Truth table:</title>
+        <table frame="all" rules="all" shade="colgroups">
+          <colgroup><col/><col/></colgroup>
+          <colgroup><col/><col/></colgroup>
+          <tr><td colspan="2"><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
+          <tr><td><p its:translate="no">D</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
+          <tr><td colspan="4"><p/></td></tr>
+          <tr><td><p its:translate="no">X</p></td><td><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">D(n-m)</p></td><td><p its:translate="no">~D(n-m)</p></td></tr>
+        </table>
+        <p>m: A number of bits of a shift register</p>
+      </item>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td><p>Number of bits</p></td>
+            <td><p>A number of steps of D flip-flops contained in a shift register</p></td>
+          </tr>
+          <tr>
+            <td><p>Trigger type</p></td>
+            <td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
+          </tr>
+          <tr>
+            <td colspan="2"><p>Propagation delay</p></td>
+          </tr>
+          <tr>
+            <td><p>tPHL</p></td>
+            <td><p>Delays when output is changed from H level to L level</p></td>
+          </tr>
+          <tr>
+            <td><p>tPLH</p></td>
+            <td><p>Delays when output is changed from L level to H level</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+  </section>
 
-	<section id="sipo">
-		<title>SIPO shift register</title>
-		<p its:translate="no"><media type="image" src="figures/components/sipo.png">SIPO shift register</media></p>
-		<p>Serial input and paralell output shift register based on a series of D flip-flop</p>
-		<terms>
-			<item>
-				<title>Equivalent circuit:</title>
-				<p its:translate="no"><media type="image" src="figures/sipo-equiv.png">SIPO shift register</media></p>
-			</item>
-			<item>
-				<title>Truth table:</title>
-				<table frame="all" rules="all" shade="colgroups">
-					<colgroup><col/><col/><col/></colgroup>
-					<colgroup><col/><col/></colgroup>
-					<tr><td colspan="3"><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
-					<tr><td><p its:translate="no">RST</p></td><td><p its:translate="no">D</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q0</p></td><td><p its:translate="no">Q{m}</p></td></tr>
-					<tr><td colspan="5"><p/></td></tr>
-					<tr><td><p its:translate="no">L</p></td><td rowspan="2"><p its:translate="no">X</p></td><td><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">D(n-1)</p></td><td><p its:translate="no">Q{m-1}(n-1)</p></td></tr>
-					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">X</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td></tr>
-				</table>
-			</item>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td><p>Number of bits</p></td>
-						<td><p>A number of steps of D flip-flops contained in a shift register</p></td>
-					</tr>
-					<tr>
-						<td><p>Trigger type</p></td>
-						<td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
-					</tr>
-					<tr>
-						<td colspan="2"><p>Propagation delay</p></td>
-					</tr>
-					<tr>
-						<td><p>tPHL</p></td>
-						<td><p>Delays when output is changed from H level to L level</p></td>
-					</tr>
-					<tr>
-						<td><p>tPLH</p></td>
-						<td><p>Delays when output is changed from L level to H level</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-	</section>
+  <section id="sipo">
+    <title>SIPO shift register</title>
+    <p its:translate="no"><media type="image" src="figures/components/sipo.png">SIPO shift register</media></p>
+    <p>Serial input and paralell output shift register based on a series of D flip-flop</p>
+    <terms>
+      <item>
+        <title>Equivalent circuit:</title>
+        <p its:translate="no"><media type="image" src="figures/sipo-equiv.png">SIPO shift register</media></p>
+      </item>
+      <item>
+        <title>Truth table:</title>
+        <table frame="all" rules="all" shade="colgroups">
+          <colgroup><col/><col/><col/></colgroup>
+          <colgroup><col/><col/></colgroup>
+          <tr><td colspan="3"><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
+          <tr><td><p its:translate="no">RST</p></td><td><p its:translate="no">D</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q0</p></td><td><p its:translate="no">Q{m}</p></td></tr>
+          <tr><td colspan="5"><p/></td></tr>
+          <tr><td><p its:translate="no">L</p></td><td rowspan="2"><p its:translate="no">X</p></td><td><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">D(n-1)</p></td><td><p its:translate="no">Q{m-1}(n-1)</p></td></tr>
+          <tr><td><p its:translate="no">H</p></td><td><p its:translate="no">X</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td></tr>
+        </table>
+      </item>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td><p>Number of bits</p></td>
+            <td><p>A number of steps of D flip-flops contained in a shift register</p></td>
+          </tr>
+          <tr>
+            <td><p>Trigger type</p></td>
+            <td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
+          </tr>
+          <tr>
+            <td colspan="2"><p>Propagation delay</p></td>
+          </tr>
+          <tr>
+            <td><p>tPHL</p></td>
+            <td><p>Delays when output is changed from H level to L level</p></td>
+          </tr>
+          <tr>
+            <td><p>tPLH</p></td>
+            <td><p>Delays when output is changed from L level to H level</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+  </section>
 
-	<section id="piso">
-		<title>PISO shift register</title>
-		<p its:translate="no"><media type="image" src="figures/components/piso.png">PISO shift register</media></p>
-		<p>Paralell input and serial output shift register based on D flip-flop</p>
-		<terms>
-			<item>
-				<title>Truth table:</title>
-				<table frame="all" rules="all" shade="colgroups">
-					<colgroup><col/><col/><col/><col/></colgroup>
-					<colgroup><col/><col/><col/><col/></colgroup>
-					<tr><td rowspan="2"><p>Mode</p></td><td colspan="3"><p>Input</p></td><td colspan="4"><p>Output</p></td></tr>
-					<tr><td><p its:translate="no">W/S</p></td><td><p its:translate="no">D{m}</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q0S</p></td><td><p its:translate="no">Q{m}S</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
-					<tr><td colspan="8"><p/></td></tr>
-					<tr><td><p>Write</p></td><td><p its:translate="no">L</p></td><td rowspan="2"><p its:translate="no">X</p></td><td rowspan="2"><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">D0(n-1)</p></td><td><p its:translate="no">D{m}(n-1)</p></td><td rowspan="2"><p its:translate="no">Q{p-1}S</p></td><td rowspan="2"><p its:translate="no">~Q{p-1}S</p></td></tr>
-					<tr><td><p>Shift</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">Q0S(n-1)</p></td><td><p its:translate="no">Q{m-1}S(n-1)</p></td></tr>
-				</table>
-				<p>p: A number of bits of a shift register</p>
-				<p>Q{m}S are state variables in components, so they don't have output ports</p>
-			</item>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td><p>Number of bits</p></td>
-						<td><p>A number of steps of D flip-flops contained in a shift register</p></td>
-					</tr>
-					<tr>
-						<td><p>Trigger type</p></td>
-						<td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
-					</tr>
-					<tr>
-						<td colspan="2"><p>Propagation delay</p></td>
-					</tr>
-					<tr>
-						<td><p>tPHL</p></td>
-						<td><p>Delays when output is changed from H level to L level</p></td>
-					</tr>
-					<tr>
-						<td><p>tPLH</p></td>
-						<td><p>Delays when output is changed from L level to H level</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-	</section>
+  <section id="piso">
+    <title>PISO shift register</title>
+    <p its:translate="no"><media type="image" src="figures/components/piso.png">PISO shift register</media></p>
+    <p>Paralell input and serial output shift register based on D flip-flop</p>
+    <terms>
+      <item>
+        <title>Truth table:</title>
+        <table frame="all" rules="all" shade="colgroups">
+          <colgroup><col/><col/><col/><col/></colgroup>
+          <colgroup><col/><col/><col/><col/></colgroup>
+          <tr><td rowspan="2"><p>Mode</p></td><td colspan="3"><p>Input</p></td><td colspan="4"><p>Output</p></td></tr>
+          <tr><td><p its:translate="no">W/S</p></td><td><p its:translate="no">D{m}</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q0S</p></td><td><p its:translate="no">Q{m}S</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
+          <tr><td colspan="8"><p/></td></tr>
+          <tr><td><p>Write</p></td><td><p its:translate="no">L</p></td><td rowspan="2"><p its:translate="no">X</p></td><td rowspan="2"><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">D0(n-1)</p></td><td><p its:translate="no">D{m}(n-1)</p></td><td rowspan="2"><p its:translate="no">Q{p-1}S</p></td><td rowspan="2"><p its:translate="no">~Q{p-1}S</p></td></tr>
+          <tr><td><p>Shift</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">Q0S(n-1)</p></td><td><p its:translate="no">Q{m-1}S(n-1)</p></td></tr>
+        </table>
+        <p>p: A number of bits of a shift register</p>
+        <p>Q{m}S are state variables in components, so they don't have output ports</p>
+      </item>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td><p>Number of bits</p></td>
+            <td><p>A number of steps of D flip-flops contained in a shift register</p></td>
+          </tr>
+          <tr>
+            <td><p>Trigger type</p></td>
+            <td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
+          </tr>
+          <tr>
+            <td colspan="2"><p>Propagation delay</p></td>
+          </tr>
+          <tr>
+            <td><p>tPHL</p></td>
+            <td><p>Delays when output is changed from H level to L level</p></td>
+          </tr>
+          <tr>
+            <td><p>tPLH</p></td>
+            <td><p>Delays when output is changed from L level to H level</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+  </section>
 
-	<section id="pipo">
-		<title>PIPO shift register</title>
-		<p its:translate="no"><media type="image" src="figures/components/pipo.png">PIPO shift register</media></p>
-		<p>Paralell input and output shift register based on D flip-flop</p>
-		<terms>
-			<item>
-				<title>Truth table:</title>
-				<table frame="all" rules="all" shade="colgroups">
-					<colgroup><col/><col/><col/><col/><col/><col/><col/></colgroup>
-					<colgroup><col/><col/><col/></colgroup>
-					<tr><td rowspan="2"><p>Mode</p></td><td colspan="6"><p>Input</p></td><td colspan="3"><p>Output</p></td></tr>
-					<tr><td><p its:translate="no">S0</p></td><td><p its:translate="no">S1</p></td><td><p its:translate="no">SR</p></td><td><p its:translate="no">D{m}</p></td><td><p its:translate="no">SL</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q0</p></td><td><p its:translate="no">Q{m}</p></td><td><p its:translate="no">Q{p}</p></td></tr>
-					<tr><td colspan="10"><p/></td></tr>
-					<tr><td><p>Hold</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td rowspan="4"><p its:translate="no">X</p></td><td rowspan="4"><p its:translate="no">X</p></td><td rowspan="4"><p its:translate="no">X</p></td><td rowspan="4"><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">Q0(n-1)</p></td><td><p its:translate="no">Q{m}(n-1)</p></td><td><p its:translate="no">Q{p}(n-1)</p></td></tr>
-					<tr><td><p>Shift left</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">Q1(n-1)</p></td><td><p its:translate="no">Q{m+1}(n-1)</p></td><td><p its:translate="no">SL(n-1)</p></td></tr>
-					<tr><td><p>Shift right</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">SR(n-1)</p></td><td><p its:translate="no">Q{m-1}(n-1)</p></td><td><p its:translate="no">Q{p-1}(n-1)</p></td></tr>
-					<tr><td><p>Write</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">D0(n-1)</p></td><td><p its:translate="no">D{m}(n-1)</p></td><td><p its:translate="no">D{p}(n-1)</p></td></tr>
-				</table>
-				<p>p: A number of bits of a shift register</p>
-			</item>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td><p>Number of bits</p></td>
-						<td><p>A number of steps of D flip-flops contained in a shift register</p></td>
-					</tr>
-					<tr>
-						<td><p>Trigger type</p></td>
-						<td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
-					</tr>
-					<tr>
-						<td colspan="2"><p>Propagation delay</p></td>
-					</tr>
-					<tr>
-						<td><p>tPHL</p></td>
-						<td><p>Delays when output is changed from H level to L level</p></td>
-					</tr>
-					<tr>
-						<td><p>tPLH</p></td>
-						<td><p>Delays when output is changed from L level to H level</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-	</section>
+  <section id="pipo">
+    <title>PIPO shift register</title>
+    <p its:translate="no"><media type="image" src="figures/components/pipo.png">PIPO shift register</media></p>
+    <p>Paralell input and output shift register based on D flip-flop</p>
+    <terms>
+      <item>
+        <title>Truth table:</title>
+        <table frame="all" rules="all" shade="colgroups">
+          <colgroup><col/><col/><col/><col/><col/><col/><col/></colgroup>
+          <colgroup><col/><col/><col/></colgroup>
+          <tr><td rowspan="2"><p>Mode</p></td><td colspan="6"><p>Input</p></td><td colspan="3"><p>Output</p></td></tr>
+          <tr><td><p its:translate="no">S0</p></td><td><p its:translate="no">S1</p></td><td><p its:translate="no">SR</p></td><td><p its:translate="no">D{m}</p></td><td><p its:translate="no">SL</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q0</p></td><td><p its:translate="no">Q{m}</p></td><td><p its:translate="no">Q{p}</p></td></tr>
+          <tr><td colspan="10"><p/></td></tr>
+          <tr><td><p>Hold</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td rowspan="4"><p its:translate="no">X</p></td><td rowspan="4"><p its:translate="no">X</p></td><td rowspan="4"><p its:translate="no">X</p></td><td rowspan="4"><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">Q0(n-1)</p></td><td><p its:translate="no">Q{m}(n-1)</p></td><td><p its:translate="no">Q{p}(n-1)</p></td></tr>
+          <tr><td><p>Shift left</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">Q1(n-1)</p></td><td><p its:translate="no">Q{m+1}(n-1)</p></td><td><p its:translate="no">SL(n-1)</p></td></tr>
+          <tr><td><p>Shift right</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">SR(n-1)</p></td><td><p its:translate="no">Q{m-1}(n-1)</p></td><td><p its:translate="no">Q{p-1}(n-1)</p></td></tr>
+          <tr><td><p>Write</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">D0(n-1)</p></td><td><p its:translate="no">D{m}(n-1)</p></td><td><p its:translate="no">D{p}(n-1)</p></td></tr>
+        </table>
+        <p>p: A number of bits of a shift register</p>
+      </item>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td><p>Number of bits</p></td>
+            <td><p>A number of steps of D flip-flops contained in a shift register</p></td>
+          </tr>
+          <tr>
+            <td><p>Trigger type</p></td>
+            <td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
+          </tr>
+          <tr>
+            <td colspan="2"><p>Propagation delay</p></td>
+          </tr>
+          <tr>
+            <td><p>tPHL</p></td>
+            <td><p>Delays when output is changed from H level to L level</p></td>
+          </tr>
+          <tr>
+            <td><p>tPLH</p></td>
+            <td><p>Delays when output is changed from L level to H level</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+  </section>
 
 </page>

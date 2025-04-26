@@ -13,3 +13,5 @@ build/
 deb_dist/
 **.gz
 **.deb
+.api-keys
+.DS_Store

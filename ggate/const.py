@@ -1,20 +1,18 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
-import sys
 import os
 import gettext
 from gettext import gettext as _
 
 gettext.textdomain("ggate")
 
+class DefinitionError(TypeError):
+    pass
 
-class _const:
-    class ConstError(TypeError):
-        pass
-
+class Definitions(object):
     def __setattr__(self, name, value):
         if name in self.__dict__:
-            raise (self.ConstError, "Can't rebind const(%s)" % name)
+            raise (DefinitionError, "Can't rebind const(%s)" % name)
         self.__dict__[name] = value
 
     # Definitions
@@ -94,5 +92,4 @@ with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
     devel_bug = "https://github.com/astraldev/GGate/issues/new"
 
-
-sys.modules[__name__] = _const()
+definitions = Definitions

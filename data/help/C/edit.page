@@ -3,67 +3,67 @@
       xmlns:its="http://www.w3.org/2005/11/its"
       type="topic" style="task" id="edit">
 
-	<info>
-		<link type="guide" xref="index#edit"/>
-		<desc>You can move or delete components on the select components mode.</desc>
-		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
-	</info>
+  <info>
+    <link type="guide" xref="index#edit"/>
+    <desc>You can move or delete components on the select components mode.</desc>
+    <revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
 
-	<title>Move and delete components</title>
+  <title>Move and delete components</title>
 
-	<section id="add"><title>Select components</title>
-		<p>When you launch GGate, it will be first the select components mode. To change to this mode from the net mode or the add components mode, right-click a few times. There are two ways to select components:</p>
-		<list>
-			<item>
-				<p>Move the cursor on a component and click it when the color is changed.</p>
-			</item>
-			<item>
-				<p>Drag the cursor on the screen and select all components in the rectangle</p>
-			</item>
-		</list>
-		<p>To add selected components, select it with pressing <key>Ctrl</key>. If you want to unselect a component, click it with pressing <key>Ctrl</key>.</p>
-		<p>To unselect all components, click the place outside components.</p>
-	</section>
+  <section id="add"><title>Select components</title>
+    <p>When you launch GGate, it will be first the select components mode. To change to this mode from the net mode or the add components mode, right-click a few times. There are two ways to select components:</p>
+    <list>
+      <item>
+        <p>Move the cursor on a component and click it when the color is changed.</p>
+      </item>
+      <item>
+        <p>Drag the cursor on the screen and select all components in the rectangle</p>
+      </item>
+    </list>
+    <p>To add selected components, select it with pressing <key>Ctrl</key>. If you want to unselect a component, click it with pressing <key>Ctrl</key>.</p>
+    <p>To unselect all components, click the place outside components.</p>
+  </section>
 
-	<section id="move"><title>Move components</title>
-		<p>To move components, put the cursor on a selected component and drag it.</p>
-	</section>
+  <section id="move"><title>Move components</title>
+    <p>To move components, put the cursor on a selected component and drag it.</p>
+  </section>
 
-	<section id="rotate"><title>Rotate and flip components</title>
-		<p>There are 4 methods to transform components:</p>
-		<table frame="all" rules="all">
-			<tr>
-				<td><p>Menu</p></td>
-				<td><p>Key</p></td>
-				<td><p>Description</p></td>
-			</tr>
-			<tr>
-				<td><p>Rotate left 90</p></td>
-				<td its:translate="no"><p><key>L</key></p></td>
-				<td><p>Rotate components 90 degrees counterclockwise.</p></td>
-			</tr>
-			<tr>
-				<td><p>Rotate right 90</p></td>
-				<td its:translate="no"><p><key>R</key></p></td>
-				<td><p>Rotate components 90 degrees clockwise.</p></td>
-			</tr>
-			<tr>
-				<td><p>Flip horizontally</p></td>
-				<td its:translate="no"><p><key>H</key></p></td>
-				<td><p>Flip components left to right.</p></td>
-			</tr>
-			<tr>
-				<td><p>Flip vertically</p></td>
-				<td its:translate="no"><p><key>V</key></p></td>
-				<td><p>Flip components top to bottom.</p></td>
-			</tr>
-		</table>
-	</section>
+  <section id="rotate"><title>Rotate and flip components</title>
+    <p>There are 4 methods to transform components:</p>
+    <table frame="all" rules="all">
+      <tr>
+        <td><p>Menu</p></td>
+        <td><p>Key</p></td>
+        <td><p>Description</p></td>
+      </tr>
+      <tr>
+        <td><p>Rotate left 90</p></td>
+        <td its:translate="no"><p><key>L</key></p></td>
+        <td><p>Rotate components 90 degrees counterclockwise.</p></td>
+      </tr>
+      <tr>
+        <td><p>Rotate right 90</p></td>
+        <td its:translate="no"><p><key>R</key></p></td>
+        <td><p>Rotate components 90 degrees clockwise.</p></td>
+      </tr>
+      <tr>
+        <td><p>Flip horizontally</p></td>
+        <td its:translate="no"><p><key>H</key></p></td>
+        <td><p>Flip components left to right.</p></td>
+      </tr>
+      <tr>
+        <td><p>Flip vertically</p></td>
+        <td its:translate="no"><p><key>V</key></p></td>
+        <td><p>Flip components top to bottom.</p></td>
+      </tr>
+    </table>
+  </section>
 
-	<section id="delete"><title>Delete components</title>
-		<p>Select components and press <key>Delete</key> to delete components.</p>
-	</section>
+  <section id="delete"><title>Delete components</title>
+    <p>Select components and press <key>Delete</key> to delete components.</p>
+  </section>
 
 </page>

@@ -3,42 +3,42 @@
       xmlns:its="http://www.w3.org/2005/11/its"
       type="topic" style="task" id="viewer-components">
 
-	<info>
-		<link type="guide" xref="index#components"/>
-		<desc>LED and seven-segment display</desc>
-		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
-	</info>
+  <info>
+    <link type="guide" xref="index#components"/>
+    <desc>LED and seven-segment display</desc>
+    <revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
 
-	<title>State viewer components</title>
+  <title>State viewer components</title>
 
-	<section id="led">
-		<title>LED</title>
-		<p its:translate="no"><media type="image" src="figures/components/led.png">LED</media></p>
-		<p>View a voltage level of a net</p>
-		<terms>
-			<table frame="all" rules="all">
-				<tr>
-					<td><p>Color</p></td>
-					<td><p>Color to indicate</p></td>
-				</tr>
-			</table>
-		</terms>
-	</section>
+  <section id="led">
+    <title>LED</title>
+    <p its:translate="no"><media type="image" src="figures/components/led.png">LED</media></p>
+    <p>View a voltage level of a net</p>
+    <terms>
+      <table frame="all" rules="all">
+        <tr>
+          <td><p>Color</p></td>
+          <td><p>Color to indicate</p></td>
+        </tr>
+      </table>
+    </terms>
+  </section>
 
-	<section id="seven-seg">
-		<title>Seven-segment display</title>
-		<p its:translate="no"><media type="image" src="figures/components/7seg.png">Seven-segment display</media></p>
-		<p>View 4 bit input as a hex</p>
-		<terms>
-			<table frame="all" rules="all">
-				<tr>
-					<td><p>Color</p></td>
-					<td><p>Color to indicate</p></td>
-				</tr>
-			</table>
-		</terms>
-	</section>
+  <section id="seven-seg">
+    <title>Seven-segment display</title>
+    <p its:translate="no"><media type="image" src="figures/components/7seg.png">Seven-segment display</media></p>
+    <p>View 4 bit input as a hex</p>
+    <terms>
+      <table frame="all" rules="all">
+        <tr>
+          <td><p>Color</p></td>
+          <td><p>Color to indicate</p></td>
+        </tr>
+      </table>
+    </terms>
+  </section>
 
 </page>

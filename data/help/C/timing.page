@@ -3,39 +3,39 @@
       xmlns:its="http://www.w3.org/2005/11/its"
       type="topic" style="task" id="timing">
 
-	<info>
-		<link type="guide" xref="index#simulate"/>
-		<desc>Click <guiseq><gui>Run</gui><gui>Timing diagram</gui></guiseq> in the running mode to show the timing diagram.</desc>
-		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
-	</info>
+  <info>
+    <link type="guide" xref="index#simulate"/>
+    <desc>Click <guiseq><gui>Run</gui><gui>Timing diagram</gui></guiseq> in the running mode to show the timing diagram.</desc>
+    <revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
 
-	<title>Timing diagram</title>
+  <title>Timing diagram</title>
 
-	<section id="probe">
-		<title>Put probes</title>
-		<p>The timing diagram shows voltage levels of probes. To add probes on the circuit, choose <media type="image" src="figures/probe-btn.png" its:translate="no">Probe</media> on the components window.</p>
-		<p>You can change "Name" properties of each probes to change probe's name. This name is shown as graphs' names on the timing diagram.</p>
-	</section>
+  <section id="probe">
+    <title>Put probes</title>
+    <p>The timing diagram shows voltage levels of probes. To add probes on the circuit, choose <media type="image" src="figures/probe-btn.png" its:translate="no">Probe</media> on the components window.</p>
+    <p>You can change "Name" properties of each probes to change probe's name. This name is shown as graphs' names on the timing diagram.</p>
+  </section>
 
-	<section id="show">
-		<title>Show timing diagram</title>
-		<p>To show the timing diagram, click <guiseq><gui>Run</gui><gui>Timing diagram</gui></guiseq> or press <keyseq><key>Ctrl</key><key>T</key></keyseq> on the running mode.</p>
-	</section>
+  <section id="show">
+    <title>Show timing diagram</title>
+    <p>To show the timing diagram, click <guiseq><gui>Run</gui><gui>Timing diagram</gui></guiseq> or press <keyseq><key>Ctrl</key><key>T</key></keyseq> on the running mode.</p>
+  </section>
 
-	<section id="time">
-		<title>Toggle switches at a specified time</title>
-		<p>The current time of the circuit is shown as a red line on the timing diagram. On the other hand, when you move the mouse cursor on the timing diagram, a blue line is shown. To change the current time of the circuit, click the specific position or input "Cursor position" on the upper side of the window manually.</p>
-		<p>If you click switch components to toggle them, the behavior when you toggled at the specified time will be shown.</p>
-	</section>
+  <section id="time">
+    <title>Toggle switches at a specified time</title>
+    <p>The current time of the circuit is shown as a red line on the timing diagram. On the other hand, when you move the mouse cursor on the timing diagram, a blue line is shown. To change the current time of the circuit, click the specific position or input "Cursor position" on the upper side of the window manually.</p>
+    <p>If you click switch components to toggle them, the behavior when you toggled at the specified time will be shown.</p>
+  </section>
 
-	<section id="size">
-		<title>Adjust timing diagram</title>
-		<p>You can adjust a position and a scale using buttons on the top of the window.</p>
-		<note>
-			<p>The maximum width of the timing diagram is 5000 pixels.</p>
-		</note>
-	</section>
+  <section id="size">
+    <title>Adjust timing diagram</title>
+    <p>You can adjust a position and a scale using buttons on the top of the window.</p>
+    <note>
+      <p>The maximum width of the timing diagram is 5000 pixels.</p>
+    </note>
+  </section>
 
 </page>

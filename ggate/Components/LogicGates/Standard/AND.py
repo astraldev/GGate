@@ -1,0 +1,113 @@
+import math
+from ggate import Preference
+from ggate.Utils import cairo_draw_text, cairo_paths
+from ggate.const import definitions
+from ggate.Components.LogicGates.SystemComponents import BaseComponent
+from gettext import gettext as _
+
+class AND(BaseComponent):
+  def __init__(self, *args, **kwds):
+    BaseComponent.__init__(self, *args, **kwds)
+    self.description = _("AND")
+    self.comp_rect = [10, -40, 100, 0]
+    self.input_pins = [(10, -30), (10, -10)]
+    self.output_pins = [(100, -20)]
+
+    self.input_pins_dir = [definitions.direction_E, definitions.direction_E]
+    self.output_pins_dir = [definitions.direction_W]
+
+    self.input_level = [False, False]
+    self.output_level = [False]
+
+    self.tp_hl = 0.0
+    self.tp_lh = 0.0
+
+    self.prop_names = ["inputs", "tphl", "tplh"]
+    self.properties.append((_("Input pins:"), (definitions.property_float, 2, 3, 0, 100), ""))
+    self.values.append(2)
+    self.properties.append((_("Propagation delay:"), None, ""))
+    self.properties.append((_("tPHL:"), (definitions.property_float, 0, 1000, 3, 100), "µs"))
+    self.values.append(0)
+    self.properties.append((_("tPLH:"), (definitions.property_float, 0, 1000, 3, 100), "µs"))
+    self.values.append(0)
+
+  def propertyChanged(self, prop):
+    self.input_pins_dir = [definitions.direction_E, definitions.direction_E]
+    self.input_level = [False, False]
+    self.input_pins = [(10, -30), (10, -10)]
+    if prop[0] == 3:
+      self.input_pins_dir.append(definitions.direction_E)
+      self.input_level.append(False)
+      self.input_pins.append((10, -20))
+      
+    self.tp_hl = prop[1] * 0.000001
+    self.tp_lh = prop[2] * 0.000001
+
+    return False
+
+  def drawComponent(self, cr, layout):
+    if Preference.symbol_type == 0:
+      cairo_paths(cr, (60, 0), (30, 0), (30, -40), (60, -40))
+      cr.arc(60, -20, 20, -0.5 * math.pi, 0.5 * math.pi)
+      cr.stroke()
+
+    elif Preference.symbol_type == 1:
+      cr.rectangle(30, -40, 50, 40)
+      cr.stroke()
+      cairo_draw_text(cr, layout, "&", 55, -40, 0.5, 0.0)
+      cr.fill()
+    
+
+
+  def drawComponentEditOverlap(self, cr, layout):
+    cairo_paths(cr, (10, -30), (30, -30))
+    if self.values[0] == 3:
+      cairo_paths(cr, (10, -20), (30, -20))
+    cairo_paths(cr, (10, -10), (30, -10))
+    cairo_paths(cr, (80, -20), (100, -20))
+    cr.stroke()
+
+
+  def drawComponentRunOverlap(self, cr, layout):
+    if self.input_level[0]:
+      cr.set_source(Preference.highlevel_color)
+    else:
+      cr.set_source(Preference.lowlevel_color)
+    cairo_paths(cr, (10, -30), (30, -30))
+    cr.stroke()
+    if self.input_level[1]:
+      cr.set_source(Preference.highlevel_color)
+    else:
+      cr.set_source(Preference.lowlevel_color)
+    cairo_paths(cr, (10, -10), (30, -10))
+    cr.stroke()
+    if self.values[0] == 3:
+      if self.input_level[2]:
+        cr.set_source(Preference.highlevel_color)
+      else:
+        cr.set_source(Preference.lowlevel_color)
+      cairo_paths(cr, (10, -20), (30, -20))
+      cr.stroke()
+
+    if self.output_level[0]:
+      cr.set_source(Preference.highlevel_color)
+    else:
+      cr.set_source(Preference.lowlevel_color)
+    cairo_paths(cr, (80, -20), (100, -20))
+    cr.stroke()
+
+
+  def isMouseOvered(self, x, y):
+    if self.pos_x + 13 <= x <= self.pos_x + 97 and self.pos_y - 37 <= y <= self.pos_y - 3:
+      return True
+    return False
+
+  def calculate(self, input_datas, time):
+    new_output = input_datas[0] and input_datas[1] if self.values[0] == 2 else input_datas[0] and input_datas[1] and input_datas[2]
+    if new_output != self.output_level[0]:
+      if self.output_level[0]:
+        self.output_stack = [[[time + self.tp_hl, new_output]]]
+      else:
+        self.output_stack = [[[time + self.tp_lh, new_output]]]
+    else:
+      self.output_stack = [[]]

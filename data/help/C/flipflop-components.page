@@ -3,191 +3,191 @@
       xmlns:its="http://www.w3.org/2005/11/its"
       type="topic" style="task" id="flipflop-components">
 
-	<info>
-		<link type="guide" xref="index#components"/>
-		<desc>RS-FF, D-FF and other basic flip-flop components</desc>
-		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
-	</info>
+  <info>
+    <link type="guide" xref="index#components"/>
+    <desc>RS-FF, D-FF and other basic flip-flop components</desc>
+    <revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
 
-	<title>Basic flip-flops</title>
+  <title>Basic flip-flops</title>
 
-	<section id="rsff"><title>RS flip-flop</title>
-		<p its:translate="no"><media type="image" src="figures/components/rsff.png">RS flip-flop</media></p>
-		<p>Store input using an RS flip-flop.</p>
-		<terms>
-			<item>
-				<title>Equivalent circuit:</title>
-				<p its:translate="no"><media type="image" src="figures/rsff-equiv.png">RS flip-flop</media></p>
-			</item>
-			<item>
-				<title>Truth table:</title>
-				<table frame="all" rules="all" shade="colgroups">
-					<colgroup><col/><col/></colgroup>
-					<colgroup><col/><col/></colgroup>
-					<tr><td colspan="2"><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
-					<tr><td><p its:translate="no">S</p></td><td><p its:translate="no">R</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
-					<tr><td colspan="4"><p/></td></tr>
-					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">Q(n-1)</p></td><td><p its:translate="no">~Q(n-1)</p></td></tr>
-					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
-					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
-					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td></tr>
-				</table>
-			</item>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td colspan="2"><p>Propagation delay</p></td>
-					</tr>
-					<tr>
-						<td><p>tPHL</p></td>
-						<td><p>Delays when output is changed from H level to L level</p></td>
-					</tr>
-					<tr>
-						<td><p>tPLH</p></td>
-						<td><p>Delays when output is changed from L level to H level</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-		<note>
-			<p>Strictly, the behavior of RS flip-flops is not defined on R=S=1 and the situation when it's changed to R=S=0, but this component outputs Q=1 and steady.</p>
-		</note>
-	</section>
+  <section id="rsff"><title>RS flip-flop</title>
+    <p its:translate="no"><media type="image" src="figures/components/rsff.png">RS flip-flop</media></p>
+    <p>Store input using an RS flip-flop.</p>
+    <terms>
+      <item>
+        <title>Equivalent circuit:</title>
+        <p its:translate="no"><media type="image" src="figures/rsff-equiv.png">RS flip-flop</media></p>
+      </item>
+      <item>
+        <title>Truth table:</title>
+        <table frame="all" rules="all" shade="colgroups">
+          <colgroup><col/><col/></colgroup>
+          <colgroup><col/><col/></colgroup>
+          <tr><td colspan="2"><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
+          <tr><td><p its:translate="no">S</p></td><td><p its:translate="no">R</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
+          <tr><td colspan="4"><p/></td></tr>
+          <tr><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">Q(n-1)</p></td><td><p its:translate="no">~Q(n-1)</p></td></tr>
+          <tr><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
+          <tr><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
+          <tr><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td></tr>
+        </table>
+      </item>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td colspan="2"><p>Propagation delay</p></td>
+          </tr>
+          <tr>
+            <td><p>tPHL</p></td>
+            <td><p>Delays when output is changed from H level to L level</p></td>
+          </tr>
+          <tr>
+            <td><p>tPLH</p></td>
+            <td><p>Delays when output is changed from L level to H level</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+    <note>
+      <p>Strictly, the behavior of RS flip-flops is not defined on R=S=1 and the situation when it's changed to R=S=0, but this component outputs Q=1 and steady.</p>
+    </note>
+  </section>
 
-	<section id="jkff">
-		<title>JK flip-flop</title>
-		<p its:translate="no"><media type="image" src="figures/components/jkff.png">JK flip-flop</media></p>
-		<p>Store input using an edge triggered JK flip-flop.</p>
-		<terms>
-			<item>
-				<title>Equivalent circuit:</title>
-				<p its:translate="no"><media type="image" src="figures/jkff-equiv.png">JK flip-flop</media></p>
-			</item>
-			<item>
-				<title>Truth table:</title>
-				<table frame="all" rules="all" shade="colgroups">
-					<colgroup><col/><col/><col/></colgroup>
-					<colgroup><col/><col/></colgroup>
-					<tr><td colspan="3"><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
-					<tr><td><p its:translate="no">J</p></td><td><p its:translate="no">K</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
-					<tr><td colspan="5"><p/></td></tr>
-					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td rowspan="4"><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">Q(n-1)</p></td><td><p its:translate="no">~Q(n-1)</p></td></tr>
-					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
-					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
-					<tr><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">~Q(n-1)</p></td><td><p its:translate="no">Q(n-1)</p></td></tr>
-				</table>
-			</item>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td><p>Trigger type</p></td>
-						<td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
-					</tr>
-					<tr>
-						<td colspan="2"><p>Propagation delay</p></td>
-					</tr>
-					<tr>
-						<td><p>tPHL</p></td>
-						<td><p>Delays when output is changed from H level to L level</p></td>
-					</tr>
-					<tr>
-						<td><p>tPLH</p></td>
-						<td><p>Delays when output is changed from L level to H level</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-	</section>
+  <section id="jkff">
+    <title>JK flip-flop</title>
+    <p its:translate="no"><media type="image" src="figures/components/jkff.png">JK flip-flop</media></p>
+    <p>Store input using an edge triggered JK flip-flop.</p>
+    <terms>
+      <item>
+        <title>Equivalent circuit:</title>
+        <p its:translate="no"><media type="image" src="figures/jkff-equiv.png">JK flip-flop</media></p>
+      </item>
+      <item>
+        <title>Truth table:</title>
+        <table frame="all" rules="all" shade="colgroups">
+          <colgroup><col/><col/><col/></colgroup>
+          <colgroup><col/><col/></colgroup>
+          <tr><td colspan="3"><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
+          <tr><td><p its:translate="no">J</p></td><td><p its:translate="no">K</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
+          <tr><td colspan="5"><p/></td></tr>
+          <tr><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td rowspan="4"><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">Q(n-1)</p></td><td><p its:translate="no">~Q(n-1)</p></td></tr>
+          <tr><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
+          <tr><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
+          <tr><td><p its:translate="no">H</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">~Q(n-1)</p></td><td><p its:translate="no">Q(n-1)</p></td></tr>
+        </table>
+      </item>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td><p>Trigger type</p></td>
+            <td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
+          </tr>
+          <tr>
+            <td colspan="2"><p>Propagation delay</p></td>
+          </tr>
+          <tr>
+            <td><p>tPHL</p></td>
+            <td><p>Delays when output is changed from H level to L level</p></td>
+          </tr>
+          <tr>
+            <td><p>tPLH</p></td>
+            <td><p>Delays when output is changed from L level to H level</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+  </section>
 
-	<section id="dff">
-		<title>D flip-flop</title>
-		<p its:translate="no"><media type="image" src="figures/components/dff.png">D flip-flop</media></p>
-		<p>Store input using a D flip-flop.</p>
-		<terms>
-			<item>
-				<title>Equivalent circuit:</title>
-				<p its:translate="no"><media type="image" src="figures/dff-equiv.png">D flip-flop</media></p>
-			</item>
-			<item>
-				<title>Truth table:</title>
-				<table frame="all" rules="all" shade="colgroups">
-					<colgroup><col/><col/></colgroup>
-					<colgroup><col/><col/></colgroup>
-					<tr><td colspan="2"><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
-					<tr><td><p its:translate="no">D</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
-					<tr><td colspan="4"><p/></td></tr>
-					<tr><td><p its:translate="no">H</p></td><td rowspan="2"><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
-					<tr><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
-				</table>
-			</item>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td><p>Trigger type</p></td>
-						<td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
-					</tr>
-					<tr>
-						<td colspan="2"><p>Propagation delay</p></td>
-					</tr>
-					<tr>
-						<td><p>tPHL</p></td>
-						<td><p>Delays when output is changed from H level to L level</p></td>
-					</tr>
-					<tr>
-						<td><p>tPLH</p></td>
-						<td><p>Delays when output is changed from L level to H level</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-	</section>
+  <section id="dff">
+    <title>D flip-flop</title>
+    <p its:translate="no"><media type="image" src="figures/components/dff.png">D flip-flop</media></p>
+    <p>Store input using a D flip-flop.</p>
+    <terms>
+      <item>
+        <title>Equivalent circuit:</title>
+        <p its:translate="no"><media type="image" src="figures/dff-equiv.png">D flip-flop</media></p>
+      </item>
+      <item>
+        <title>Truth table:</title>
+        <table frame="all" rules="all" shade="colgroups">
+          <colgroup><col/><col/></colgroup>
+          <colgroup><col/><col/></colgroup>
+          <tr><td colspan="2"><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
+          <tr><td><p its:translate="no">D</p></td><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
+          <tr><td colspan="4"><p/></td></tr>
+          <tr><td><p its:translate="no">H</p></td><td rowspan="2"><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">H</p></td><td><p its:translate="no">L</p></td></tr>
+          <tr><td><p its:translate="no">L</p></td><td><p its:translate="no">L</p></td><td><p its:translate="no">H</p></td></tr>
+        </table>
+      </item>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td><p>Trigger type</p></td>
+            <td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
+          </tr>
+          <tr>
+            <td colspan="2"><p>Propagation delay</p></td>
+          </tr>
+          <tr>
+            <td><p>tPHL</p></td>
+            <td><p>Delays when output is changed from H level to L level</p></td>
+          </tr>
+          <tr>
+            <td><p>tPLH</p></td>
+            <td><p>Delays when output is changed from L level to H level</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+  </section>
 
-	<section id="tff">
-		<title>T flip-flop</title>
-		<p its:translate="no"><media type="image" src="figures/components/tff.png">T flip-flop</media></p>
-		<p>Toggle output using a T flip-flop.</p>
-		<terms>
-			<item>
-				<title>Equivalent circuit:</title>
-				<p its:translate="no"><media type="image" src="figures/tff-equiv.png">T flip-flop</media></p>
-			</item>
-			<item>
-				<title>Truth table:</title>
-				<table frame="all" rules="all" shade="colgroups">
-					<colgroup><col/></colgroup>
-					<colgroup><col/><col/></colgroup>
-					<tr><td><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
-					<tr><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
-					<tr><td colspan="3"><p/></td></tr>
-					<tr><td><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">~Q(n-1)</p></td><td><p its:translate="no">Q(n-1)</p></td></tr>
-				</table>
-			</item>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td><p>Trigger type</p></td>
-						<td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
-					</tr>
-					<tr>
-						<td colspan="2"><p>Propagation delay</p></td>
-					</tr>
-					<tr>
-						<td><p>tPHL</p></td>
-						<td><p>Delays when output is changed from H level to L level</p></td>
-					</tr>
-					<tr>
-						<td><p>tPLH</p></td>
-						<td><p>Delays when output is changed from L level to H level</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-	</section>
+  <section id="tff">
+    <title>T flip-flop</title>
+    <p its:translate="no"><media type="image" src="figures/components/tff.png">T flip-flop</media></p>
+    <p>Toggle output using a T flip-flop.</p>
+    <terms>
+      <item>
+        <title>Equivalent circuit:</title>
+        <p its:translate="no"><media type="image" src="figures/tff-equiv.png">T flip-flop</media></p>
+      </item>
+      <item>
+        <title>Truth table:</title>
+        <table frame="all" rules="all" shade="colgroups">
+          <colgroup><col/></colgroup>
+          <colgroup><col/><col/></colgroup>
+          <tr><td><p>Input</p></td><td colspan="2"><p>Output</p></td></tr>
+          <tr><td><p its:translate="no">CK</p></td><td><p its:translate="no">Q</p></td><td><p its:translate="no">~Q</p></td></tr>
+          <tr><td colspan="3"><p/></td></tr>
+          <tr><td><p its:translate="no">↑(↓)</p></td><td><p its:translate="no">~Q(n-1)</p></td><td><p its:translate="no">Q(n-1)</p></td></tr>
+        </table>
+      </item>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td><p>Trigger type</p></td>
+            <td><p>Type of clock signals. Positive edge (↑) or Negative edge (↓)</p></td>
+          </tr>
+          <tr>
+            <td colspan="2"><p>Propagation delay</p></td>
+          </tr>
+          <tr>
+            <td><p>tPHL</p></td>
+            <td><p>Delays when output is changed from H level to L level</p></td>
+          </tr>
+          <tr>
+            <td><p>tPLH</p></td>
+            <td><p>Delays when output is changed from L level to H level</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+  </section>
 
 </page>

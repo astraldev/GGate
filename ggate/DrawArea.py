@@ -1,18 +1,24 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+  from ggate.MainFrame import MainFrame
+  from ggate.CircuitManager import CircuitManager
 
 import math
 import copy
 import cairo
-from ggate import const
+from ggate.const import definitions as const
 from ggate.MenuPopover import Menu, RunningMenu
-from ggate.Utils import *
-from ggate.Components import comp_dict
+from ggate.Utils import cairo_paths, inv_matrix, multiply_matrix, create_component_matrix, get_components_rect, draw_rounded_rectangle, clamp
+from ggate.Components.LogicGates import logic_gates
 from ggate import Preference
-from gi.repository import Gtk, Gdk, PangoCairo
+from gi.repository import Gtk, Gdk, Pango, PangoCairo
 
 
 class DrawArea(Gtk.ScrolledWindow):
-    def __init__(self, parent):
+    def __init__(self, parent: MainFrame):
         Gtk.ScrolledWindow.__init__(self)
         self.set_hexpand(True)
         self.set_vexpand(True)
@@ -31,7 +37,9 @@ class DrawArea(Gtk.ScrolledWindow):
         self.hadj.set_value(self.width / 2)
 
         # Default : 10
-        self.grid_step = 10
+        self.grid_step = Preference.grid_step
+        self.min_grid_step = 10
+        self.max_grid_step = 30
 
         self.actions = [
             'menu.flip_hori', 'menu.flip_verti', 
@@ -103,14 +111,13 @@ class DrawArea(Gtk.ScrolledWindow):
         self.middle_move_enabled = False
         self.mouse_down = False
         self.mbitmap = None
-        self.circuit = None
+        self.circuit: CircuitManager = None
         self.redraw = True
         self.netstarted = False
-        self.mpixbuf = cairo.ImageSurface(
-            cairo.FORMAT_RGB24, self.width, self.height)
+        self.mpixbuf = cairo.ImageSurface(cairo.FORMAT_RGB24, self.width, self.height)
         self._pasted_components = None
         self._pushed_component_name = const.component_none
-        self._pushed_component = comp_dict[const.component_none]
+        self._pushed_component = logic_gates[const.component_none]
 
     def queue_draw(self, *args):
         self.show()
@@ -137,9 +144,180 @@ class DrawArea(Gtk.ScrolledWindow):
         elif action == 'properties':
             self.set_selected_component_to_prop_window()
             self.parent.prop_window.present()
+    
+    def draw_net(self, net, mcr: cairo.Context):
+        """
+        This method draws all states of the net.
+        TODO:
+          - Make a curve for net joints.
+          - Include optimizations for animations
+        """
+        if net[0] != const.component_net: return
 
-    def on_draw(self, widget, cr, width, height, *args):
+        matrix = mcr.get_matrix()
+        source = mcr.get_source()
 
+        is_selected = net in self.circuit.selected_components
+        is_hovered = net == self.nearest_component and self.cursor_over \
+            and self._pushed_component_name == const.component_none
+
+        # Get net level
+        if self.parent.running_mode:
+            # Draw net terminal
+            mcr.set_source(Preference.terminal_color_running)
+            if (net[1], net[2]) not in self.circuit.net_no_dot:
+                mcr.rectangle(net[1]-1.5, net[2]-1.5, 3, 3)
+            elif (net[3], net[4]) not in self.circuit.net_no_dot:
+                mcr.rectangle(net[3]-1.5, net[4]-1.5, 3, 3)
+            mcr.fill()
+
+            # Get the color of the net
+            net_level_color = Preference.net_color_running
+            for i, connection in enumerate(self.circuit.net_connections):
+                if (net[1], net[2]) in connection:
+                    if self.circuit.net_levels[i] == 1:
+                        net_level_color = Preference.highlevel_color
+                    elif self.circuit.net_levels[i] == 0:
+                        net_level_color = Preference.lowlevel_color
+                    else:
+                        net_level_color = Preference.net_color_running
+
+            # Draw net
+            mcr.set_source(net_level_color)
+            cairo_paths(mcr, (net[1], net[2]), (net[3], net[4]))
+            mcr.stroke()
+
+        else:
+            # Sets the net color
+            mcr.set_source(Preference.net_color)
+            if self.component_dragged and net in self.circuit.selected_components or is_selected:
+                mcr.set_source(Preference.selected_color)
+            elif is_hovered:
+                mcr.set_source(Preference.net_high_color)
+
+            # Draw net
+            cairo_paths(mcr, (net[1], net[2]), (net[3], net[4]))
+            mcr.stroke()
+
+            # Draw net terminal
+            mcr.set_source(Preference.terminal_color)
+            mcr.rectangle(net[1]-1.5, net[2]-1.5, 3, 3)
+            mcr.rectangle(net[3]-1.5, net[4]-1.5, 3, 3)
+
+        mcr.fill()
+
+        # Context resets
+        mcr.set_source(source)
+        mcr.set_matrix(matrix)
+    
+    def draw_component(self, cmp, mcr: cairo.Context, layout: Pango.Layout):
+        if cmp[0] == const.component_net:
+            self.draw_net(cmp, mcr)
+            return
+
+        matrix = mcr.get_matrix()
+        source = mcr.get_source()
+        is_selected = cmp in self.circuit.selected_components
+        is_hovered = cmp == self.nearest_component and self.cursor_over \
+            and self._pushed_component_name == const.component_none
+
+        if is_selected:
+            mcr.set_source(Preference.selected_color)
+        else:
+            mcr.set_source(Preference.terminal_color)
+
+        # Draw component terminal
+        if not self.parent.running_mode:
+            for p in cmp[1].rot_input_pins + cmp[1].rot_output_pins:
+                mcr.rectangle(cmp[1].pos_x+p[0]-1.5, cmp[1].pos_y+p[1]-1.5, 3, 3)
+            mcr.fill()
+
+        # Draw component
+        mcr.translate(cmp[1].pos_x, cmp[1].pos_y)
+        cmp_matrix = create_component_matrix(cmp)
+        mcr.set_matrix(cmp_matrix.multiply(mcr.get_matrix()))
+
+        if self.parent.running_mode:
+            mcr.set_source(Preference.component_color_running)
+            cmp[1].drawComponent(mcr, layout)
+            cmp[1].drawComponentRunOverlap(mcr, layout)
+        else:
+            mcr.set_source(Preference.component_color)
+            if cmp in self.circuit.selected_components:
+                mcr.set_source(Preference.selected_color)
+            elif is_hovered:
+                mcr.set_source(Preference.component_high_color)
+
+            cmp[1].drawComponent(mcr, layout)
+            cmp[1].drawComponentEditOverlap(mcr, layout)
+
+        mcr.fill()
+
+        mcr.set_source(source)
+        mcr.set_matrix(matrix)
+    
+    def draw_pushed_component(self, where, cmp, cr: cairo.Context, layout: Pango.Layout):
+        name = self._pushed_component_name
+        matrix = cr.get_matrix()
+        source = cr.get_source()
+
+        if name == const.component_net:
+            # Draw net cursor
+            cr.set_source(Preference.cursor_color)
+            cr.arc(self.cursor_x, self.cursor_y, 3, 0, 2 * math.pi)
+            cr.stroke()
+
+            if self.netstarted:
+                cr.set_source(Preference.net_color)
+                moving_right = self.net_right and self.netstart_x < self.cursor_x
+                moving_left = self.net_left and self.cursor_x < self.netstart_x
+
+                if moving_right or moving_left:
+                    cairo_paths(cr, (self.netstart_x, self.netstart_y), (self.cursor_x, self.netstart_y))
+                    self.netstart_y != self.cursor_y and \
+                        cairo_paths(cr, (self.cursor_x, self.netstart_y), (self.cursor_x, self.cursor_y))
+                    
+                    cr.stroke()
+                    cr.set_source(Preference.terminal_color)
+                    cr.rectangle(self.cursor_x-1.5, self.netstart_y-1.5, 3, 3)
+                    cr.fill()
+                else:
+                    self.netstart_y != self.cursor_y and \
+                        cairo_paths(cr, (self.netstart_x, self.netstart_y), (self.netstart_x, self.cursor_y))
+                    self.netstart_x != self.cursor_x and \
+                        cairo_paths(cr, (self.netstart_x, self.cursor_y), (self.cursor_x, self.cursor_y))
+    
+                    cr.stroke()
+                    cr.set_source(Preference.terminal_color)
+                    cr.rectangle(self.netstart_x-1.5, self.cursor_y-1.5, 3, 3)
+                    cr.fill()
+                
+                cr.rectangle(self.netstart_x-1.5, self.netstart_y-1.5, 3, 3)
+                cr.fill()
+        else:
+            if self.preadd:
+                cr.set_source(Preference.preadd_color)
+            else:
+                cr.set_source(Preference.picked_color)
+
+            if cmp[0] != const.component_net:
+                cr.translate(where[0], where[1])
+                cmp_matrix = create_component_matrix(cmp)
+                cr.set_matrix(cmp_matrix.multiply(cr.get_matrix()))
+                cmp[1].drawComponent(cr, layout)
+                cmp[1].drawComponentEditOverlap(cr, layout)
+            else:
+                cairo_paths(cr, (cmp[1], cmp[2]), (cmp[3], cmp[4]))
+                cr.stroke()
+                cr.rectangle(cmp[1]-1.5, cmp[2]-1.5, 3, 3)
+                cr.rectangle(cmp[3]-1.5, cmp[4]-1.5, 3, 3)
+                cr.fill()
+
+        cr.set_source(source)
+        cr.set_matrix(matrix)
+
+    def on_draw(self, widget, cr: cairo.Context, width, height, *args):
+        # Rerender whole screen
         if self.redraw:
             mcr = cairo.Context(self.mpixbuf)
             if self.parent.running_mode:
@@ -147,17 +325,12 @@ class DrawArea(Gtk.ScrolledWindow):
             else:
                 mcr.set_source(Preference.bg_color)
 
+            # Setup the background color
             mcr.rectangle(0, 0, self.width, self.height)
             mcr.fill()
 
-            mcr.translate(0.5, 0.5)
-            matrix = mcr.get_matrix()
-            mcr.set_line_width(1.0)
-            layout = PangoCairo.create_layout(mcr)
-            layout.set_font_description(Preference.drawing_font)
-
+            # Draw grids
             if not self.parent.running_mode:
-                # Draw grids
                 mcr.set_source(Preference.grid_color)
                 for x in range(0, self.width, self.grid_step):
                     cairo_paths(mcr, (x, 0), (x, self.height))
@@ -165,281 +338,67 @@ class DrawArea(Gtk.ScrolledWindow):
                     cairo_paths(mcr, (0, y), (self.width, y))
                 mcr.stroke()
 
-            # Draw component
-            for c in self.circuit.components:
-                if c[0] != const.component_net:
-                    if not c in self.circuit.selected_components:
-                        mcr.translate(c[1].pos_x, c[1].pos_y)
-                        m = cairo.Matrix(
-                            xx=c[1].matrix[0], xy=c[1].matrix[1], yx=c[1].matrix[2], yy=c[1].matrix[3])
-                        mcr.set_matrix(m.multiply(mcr.get_matrix()))
-                        if self.parent.running_mode:
-                            mcr.set_source(Preference.component_color_running)
-                            c[1].drawComponent(mcr, layout)
-                        else:
-                            mcr.set_source(Preference.component_color)
-                            c[1].drawComponent(mcr, layout)
-                            mcr.set_source(Preference.component_color)
-                            c[1].drawComponentEditOverlap(mcr, layout)
-                        mcr.set_matrix(matrix)
-                        
-            if not self.parent.running_mode:
-                # Draw net
-                for c in self.circuit.components:
-                    if c[0] == const.component_net:
-                        if not c in self.circuit.selected_components:
-                            mcr.set_source(Preference.net_color)
-                            cairo_paths(mcr, (c[1], c[2]), (c[3], c[4]))
-                            mcr.stroke()
-
-                # Draw terminal of components
-                mcr.set_source(Preference.terminal_color)
-                for c in self.circuit.components:
-                    if c[0] != const.component_net:
-                        if not c in self.circuit.selected_components:
-                            for p in c[1].rot_input_pins + c[1].rot_output_pins:
-                                mcr.rectangle(c[1].pos_x+p[0]-1.5, c[1].pos_y+p[1]-1.5, 3, 3)
-                mcr.fill()
-
-                # Draw terminal of nets
-                mcr.set_source(Preference.terminal_color)
-                for c in self.circuit.components:
-                    if c[0] == const.component_net:
-                        if not c in self.circuit.selected_components:
-                            mcr.rectangle(c[1]-1.5, c[2]-1.5, 3, 3)
-                            mcr.rectangle(c[3]-1.5, c[4]-1.5, 3, 3)
-                mcr.fill()
-
-                # Draw selected components
-                if not self.component_dragged:
-                    mcr.set_source(Preference.selected_color)
-                    for c in self.circuit.selected_components:
-                        if c[0] == const.component_net:
-                            cairo_paths(mcr, (c[1], c[2]), (c[3], c[4]))
-                    mcr.stroke()
-
-                    for c in self.circuit.selected_components:
-                        if c[0] != const.component_net:
-                            mcr.translate(c[1].pos_x, c[1].pos_y)
-                            m = cairo.Matrix(
-                                xx=c[1].matrix[0], xy=c[1].matrix[1], yx=c[1].matrix[2], yy=c[1].matrix[3])
-                            mcr.set_matrix(m.multiply(mcr.get_matrix()))
-                            c[1].drawComponent(mcr, layout)
-                            c[1].drawComponentEditOverlap(mcr, layout)
-                            mcr.set_matrix(matrix)
-
-                    for c in self.circuit.selected_components:
-                        if c[0] != const.component_net:
-                            for p in c[1].rot_input_pins + c[1].rot_output_pins:
-                                mcr.rectangle(
-                                    c[1].pos_x+p[0]-1.5, c[1].pos_y+p[1]-1.5, 3, 3)
-
-                    for c in self.circuit.selected_components:
-                        if c[0] == const.component_net:
-                            mcr.rectangle(c[1]-1.5, c[2]-1.5, 3, 3)
-                            mcr.rectangle(c[3]-1.5, c[4]-1.5, 3, 3)
-
-                    mcr.fill()
-
             self.redraw = False
 
         cr.set_source_surface(self.mpixbuf, 0, 0)
         cr.paint()
 
         cr.translate(0.5, 0.5)
-        matrix = cr.get_matrix()
         cr.set_line_width(1.0)
+        matrix = cr.get_matrix()
+        source = cr.get_source()
+    
         layout = PangoCairo.create_layout(cr)
         layout.set_font_description(Preference.drawing_font)
+    
+        [self.draw_component(cmp, cr, layout) for cmp in self.circuit.components]
 
+        """
+        Draw rectangle selection
+        """
         if self.rect_select_enabled:
-            cr.set_source_rgba(1, 0.75, 0, 0.25)
-            cr.rectangle(self.select_start_x-0.5, self.select_start_y-0.5, self.cursor_smooth_x -
-                         self.select_start_x, self.cursor_smooth_y - self.select_start_y)
+            x, y = self.select_start_x - 0.5, self.select_start_y - 0.5
+            width = self.cursor_smooth_x - self.select_start_x
+            height = self.cursor_smooth_y - self.select_start_y
+
+            cr.set_source(Preference.selection_box)
+            draw_rounded_rectangle(cr, x, y, width, height)
             cr.fill()
-            cr.set_source_rgb(1, 0.75, 0)
-            cr.set_line_width(1.0)
-            cr.rectangle(self.select_start_x-0.5, self.select_start_y-0.5, self.cursor_smooth_x -
-                         self.select_start_x, self.cursor_smooth_y - self.select_start_y)
+
+            cr.set_source(Preference.selection_box_border)
+            draw_rounded_rectangle(cr, x, y, width, height)
             cr.stroke()
-            cr.set_line_width(1.0)
 
-        if not self.parent.running_mode and not self.added and self.cursor_over and (self._pushed_component_name != const.component_none or self._pasted_components):
-            if self._pushed_component_name == const.component_net:
-                # Draw cursor
-                cr.set_source(Preference.cursor_color)
-                cr.arc(self.cursor_x, self.cursor_y, 3, 0, 2 * math.pi)
-                cr.stroke()
+        cr.set_source(source)
+        cr.set_matrix(matrix)
 
-                if self.netstarted:
-                    # Draw net
-                    cr.set_source(Preference.net_color)
+        """
+        Draw picked or pasted components
+        """
+        if not self.parent.running_mode and \
+            not self.added and self.cursor_over and \
+            (self._pushed_component_name != const.component_none or self._pasted_components):
 
-                    if self.net_right and self.netstart_x < self.cursor_x or self.net_left and self.cursor_x < self.netstart_x:
-                        cairo_paths(cr, (self.netstart_x, self.netstart_y),
-                                    (self.cursor_x, self.netstart_y))
-                        if self.netstart_y != self.cursor_y:
-                            cairo_paths(
-                                cr, (self.cursor_x, self.netstart_y), (self.cursor_x, self.cursor_y))
-                        cr.stroke()
-
-                        cr.set_source(Preference.terminal_color)
-                        cr.rectangle(self.cursor_x-1.5,
-                                     self.netstart_y-1.5, 3, 3)
-                        cr.fill()
-
-                    else:
-                        if self.netstart_y != self.cursor_y:
-                            cairo_paths(
-                                cr, (self.netstart_x, self.netstart_y), (self.netstart_x, self.cursor_y))
-                        if self.netstart_x != self.cursor_x:
-                            cairo_paths(
-                                cr, (self.netstart_x, self.cursor_y), (self.cursor_x, self.cursor_y))
-                        cr.stroke()
-
-                        cr.set_source(Preference.terminal_color)
-                        cr.rectangle(self.netstart_x-1.5,
-                                     self.cursor_y-1.5, 3, 3)
-                        cr.fill()
-
-                    cr.rectangle(self.netstart_x-1.5,
-                                 self.netstart_y-1.5, 3, 3)
-                    cr.fill()
-
-            elif self._pasted_components:
-                # Draw pasted component
-                if self.preadd:
-                    cr.set_source(Preference.preadd_color)
-                else:
-                    cr.set_source(Preference.picked_color)
-
-                for c in self._pasted_components:
-                    cr.translate(self.cursor_x - self._paste_center_x,
-                                 self.cursor_y - self._paste_center_y)
-                    if c[0] != const.component_net:
-                        cr.translate(c[1].pos_x, c[1].pos_y)
-                        m = cairo.Matrix(
-                            xx=c[1].matrix[0], xy=c[1].matrix[1], yx=c[1].matrix[2], yy=c[1].matrix[3])
-                        cr.set_matrix(m.multiply(cr.get_matrix()))
-                        c[1].drawComponent(cr, layout)
-                        c[1].drawComponentEditOverlap(cr, layout)
-                    else:
-                        cairo_paths(cr, (c[1], c[2]), (c[3], c[4]))
-                        cr.stroke()
-                        cr.rectangle(c[1]-1.5, c[2]-1.5, 3, 3)
-                        cr.rectangle(c[3]-1.5, c[4]-1.5, 3, 3)
-                        cr.fill()
-                    cr.set_matrix(matrix)
-
-            else:
-                # Draw picked component
-                if self.preadd:
-                    cr.set_source(Preference.preadd_color)
-                else:
-                    cr.set_source(Preference.picked_color)
-
-                logicand = self._pushed_component
-
-                cr.translate(self.cursor_x, self.cursor_y)
-                m = cairo.Matrix(
-                    xx=logicand.matrix[0], xy=logicand.matrix[1], yx=logicand.matrix[2], yy=logicand.matrix[3])
-                cr.set_matrix(m.multiply(cr.get_matrix()))
-                logicand.drawComponent(cr, layout)
-                logicand.drawComponentEditOverlap(cr, layout)
-                cr.set_matrix(matrix)
-
-        if self.parent.running_mode:
-            # Draw net of components
-            cr.set_source(Preference.component_color_running)
-            for c in self.circuit.components:
-                if c[0] != const.component_net:
-                    if not c in self.circuit.selected_components:
-                        cr.translate(c[1].pos_x, c[1].pos_y)
-                        m = cairo.Matrix(
-                            xx=c[1].matrix[0], xy=c[1].matrix[1], yx=c[1].matrix[2], yy=c[1].matrix[3])
-                        cr.set_matrix(m.multiply(cr.get_matrix()))
-                        cr.set_source(Preference.component_color_running)
-                        c[1].drawComponentRunOverlap(cr, layout)
-                        cr.set_matrix(matrix)
-
-            # Draw net
-            for c in self.circuit.components:
-                if c[0] == const.component_net:
-                    if not c in self.circuit.selected_components:
-                        for i, net in enumerate(self.circuit.net_connections):
-                            if (c[1], c[2]) in net:
-                                if self.circuit.net_levels[i] == 1:
-                                    cr.set_source(Preference.highlevel_color)
-                                elif self.circuit.net_levels[i] == 0:
-                                    cr.set_source(Preference.lowlevel_color)
-                                else:
-                                    cr.set_source(Preference.net_color_running)
-
-                        cairo_paths(cr, (c[1], c[2]), (c[3], c[4]))
-                        cr.stroke()
-
-            # Draw terminal of nets
-            cr.set_source(Preference.terminal_color_running)
-            for c in self.circuit.components:
-                if c[0] == const.component_net:
-                    if not c in self.circuit.selected_components:
-                        if not (c[1], c[2]) in self.circuit.net_no_dot:
-                            cr.rectangle(c[1]-1.5, c[2]-1.5, 3, 3)
-                        elif not (c[3], c[4]) in self.circuit.net_no_dot:
-                            cr.rectangle(c[3]-1.5, c[4]-1.5, 3, 3)
-            cr.fill()
-
-        else:
-            # Draw selected components
-            if self.component_dragged:
-                cr.set_source(Preference.selected_color)
-                for c in self.circuit.selected_components:
-                    if c[0] == const.component_net:
-                        cairo_paths(cr, (c[1], c[2]), (c[3], c[4]))
-                        cr.stroke()
-
-                for c in self.circuit.selected_components:
-                    if c[0] != const.component_net:
-                        cr.translate(c[1].pos_x, c[1].pos_y)
-                        m = cairo.Matrix(
-                            xx=c[1].matrix[0], xy=c[1].matrix[1], yx=c[1].matrix[2], yy=c[1].matrix[3])
-                        cr.set_matrix(m.multiply(cr.get_matrix()))
-                        c[1].drawComponent(cr, layout)
-                        c[1].drawComponentEditOverlap(cr, layout)
-                        cr.set_matrix(matrix)
-
-                for c in self.circuit.selected_components:
-                    if c[0] != const.component_net:
-                        for p in c[1].rot_input_pins + c[1].rot_output_pins:
-                            cr.rectangle(c[1].pos_x+p[0]-1.5,
-                                         c[1].pos_y+p[1]-1.5, 3, 3)
-
-                for c in self.circuit.selected_components:
-                    if c[0] == const.component_net:
-                        cr.rectangle(c[1]-1.5, c[2]-1.5, 3, 3)
-                        cr.rectangle(c[3]-1.5, c[4]-1.5, 3, 3)
-
-                cr.fill()
-
-        # Highlight component
-        if self.nearest_component is not None and self._pushed_component_name == const.component_none:
-            if not self.nearest_component in self.circuit.selected_components and self.cursor_over and not self.parent.running_mode:
-                c = self.nearest_component
-                if c[0] == const.component_net:
-                    cr.set_source(Preference.net_high_color)
-                    cairo_paths(cr, (c[1], c[2]), (c[3], c[4]))
-                    cr.stroke()
-                else:
-                    cr.set_source(Preference.component_high_color)
-                    cr.translate(c[1].pos_x, c[1].pos_y)
-                    m = cairo.Matrix(
-                        xx=c[1].matrix[0], xy=c[1].matrix[1], yx=c[1].matrix[2], yy=c[1].matrix[3])
-                    cr.set_matrix(m.multiply(cr.get_matrix()))
-                    c[1].drawComponent(cr, layout)
-                    c[1].drawComponentEditOverlap(cr, layout)
-                    cr.set_matrix(matrix)
-
+            if self._pasted_components:
+                where = (
+                    self.cursor_x - self._paste_center_x,
+                    self.cursor_y - self._paste_center_y
+                )
+                [
+                    self.draw_pushed_component(where, pasted, cr, layout) \
+                    for pasted in self._pasted_components
+                ]
+            
+            elif self._pushed_component_name:
+                where = [self.cursor_x, self.cursor_y]
+                self.draw_pushed_component(
+                    where, [self._pushed_component_name, self._pushed_component],
+                    cr, layout
+                )
+    
         self.added = False
+        cr.set_source(source)
+        cr.set_matrix(matrix)
 
     def on_leave(self, *args):
         self.cursor_over = False
@@ -494,48 +453,44 @@ class DrawArea(Gtk.ScrolledWindow):
         if self.parent.running_mode:
             return
 
-        if key_val == Gdk.KEY_equal and args[-1] & Gdk.ModifierType.CONTROL_MASK:
-            for components in self.circuit.selected_components:
-                if components[0] != const.component_net:
-                    components[1].enlarge()
-                    self.queue_draw()
-        
-        """Setup ShortCuts for Flip, Rotate"""
+        modifier = args[1]
 
-        # Rotate Right => R
+        # If Ctrl (+) is pressed, enlarge selected components
+        if key_val == Gdk.KEY_plus and (modifier & Gdk.ModifierType.CONTROL_MASK):
+            selected_components = [c for c in self.circuit.selected_components if c[0] != const.component_net]
+
+            # Enlarge selected components
+            if len(selected_components) > 0:
+                for component in self.circuit.selected_components:
+                    if component[0] == const.component_net: continue
+                    component[1].enlarge()
+                    self.queue_draw()
+
+            # Enlarge grid size
+            else:
+                self.grid_step = clamp(self.grid_step + 1, self.min_grid_step, self.max_grid_step)
+                self.redraw = True
+                self.queue_draw()
+
+        # Rotate Right => R | r
         if key_val == Gdk.KEY_R or key_val == Gdk.KEY_r:
             self.parent.on_action_rotate_right_90()
-        # Rotate Left => R
+
+        # Rotate Left => L | l
         if key_val == Gdk.KEY_L or key_val == Gdk.KEY_l:
             self.parent.on_action_rotate_left_90()
-        # Flip Horizontally => H
+
+        # Flip Horizontally => H | h
         if key_val == Gdk.KEY_H or key_val == Gdk.KEY_h:
             self.parent.on_action_flip_horizontally()
-        # Flip Vertically => V
+
+        # Flip Vertically => V | v
         if key_val == Gdk.KEY_V or key_val == Gdk.KEY_v:
             self.parent.on_action_flip_vertically()
 
-
-        if self.cursor_over:
-            
-            if key_val == Gdk.KEY_Delete:
-                self.parent.on_action_delete_pressed()
-
-            if self._pushed_component_name == const.component_net:
-                if key_val == Gdk.KEY_Control_L or key_val == Gdk.KEY_Control_R:
-                    oldcursor_x = self.cursor_x
-                    oldcursor_y = self.cursor_y
-
-                    # snap cursor to terminals
-                    min_dist = self.set_cursor_to_nearest_terminal(225)
-
-                    if min_dist == 225:
-                        self.cursor_x = int(
-                            self.cursor_smooth_x - self.cursor_smooth_x % self.grid_step)
-                        self.cursor_y = int(
-                            self.cursor_smooth_y - self.cursor_smooth_y % self.grid_step)
-                    if oldcursor_x != self.cursor_x or oldcursor_y != self.cursor_y:
-                        self.queue_draw()
+        # Delete => Delete | Backspace
+        if key_val == Gdk.KEY_Delete or key_val == Gdk.KEY_BackSpace:
+            self.parent.on_action_delete_pressed()
 
     def on_key_press(self, *args):
         if self.parent.running_mode:
@@ -1104,7 +1059,6 @@ class DrawArea(Gtk.ScrolledWindow):
         self.queue_draw()
 
     def set_selected_component_to_prop_window(self):
-        
         if len(self.circuit.selected_components) == 1:
             if self.circuit.selected_components[0][0] != const.component_net:
                 self.parent.prop_window.setComponent(
@@ -1117,7 +1071,7 @@ class DrawArea(Gtk.ScrolledWindow):
     def set_component(self, comp_name):
         self._pasted_components = None
         self._pushed_component_name = comp_name
-        self._pushed_component = copy.deepcopy(comp_dict[comp_name])
+        self._pushed_component = copy.deepcopy(logic_gates[comp_name])
 
     def set_pasted_components(self, components):
         self._pasted_components = components
@@ -1136,6 +1090,7 @@ class DrawArea(Gtk.ScrolledWindow):
     def get_component(self):
         return self._pushed_component_name
 
+    "Component rotations: -90deg, 90deg x180deg y180deg"
     def rotate_left_picked_components(self):
         self._pushed_component.matrix = multiply_matrix(
             (0, 1, -1, 0), self._pushed_component.matrix)

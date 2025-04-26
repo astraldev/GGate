@@ -17,7 +17,8 @@
 #  with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import gi, sys
+import gi
+import sys
 
 gi.require_version("Gtk", '4.0')
 gi.require_version('PangoCairo', '1.0')
@@ -26,9 +27,9 @@ from ggate.MainFrame import GLogicApplication
 from ggate import __version__
 
 if __name__ == "__main__":
-	app = GLogicApplication()
-	if len(sys.argv) > 1 and sys.argv[1] == "--version":
-		print(f"GGate {__version__}")
-		sys.exit(0)
+  app = GLogicApplication()
+  if len(sys.argv) > 1 and sys.argv[1] == "--version":
+    print(f"GGate {__version__}")
+    sys.exit(0)
 
-	app.run()
+  app.run()

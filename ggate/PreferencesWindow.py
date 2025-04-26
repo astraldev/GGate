@@ -1,6 +1,6 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
-from ggate import const, Preference
+from ggate import Preference
 from gi.repository import Gtk, Gdk
 from gettext import gettext as _
 
@@ -20,7 +20,9 @@ class PreferencesWindow(Gtk.Dialog):
         font_label = Gtk.Label(label=_("Font:"))
         font_label.set_margin_start(5)
         pref.append(font_label)
-        self.drawing_font_btn = Gtk.FontButton()
+
+        # todo: fix font picker
+        self.drawing_font_btn = Gtk.FontDialogButton()
         self.drawing_font_btn.set_halign(Gtk.Align.END)
         pref.append(self.drawing_font_btn)
         vbox.append(pref)
@@ -162,7 +164,7 @@ class PreferencesWindow(Gtk.Dialog):
     def update_dialog(self):
 
         self.drawing_font_btn.set_use_font(True)
-        self.drawing_font_btn.set_font(Preference.drawing_font.to_string())
+        self.drawing_font_btn.set_font_desc(Preference.drawing_font)
 
         for key in self.color_buttons:
             rgba = Preference.__getattr__(key).get_rgba()
@@ -179,7 +181,7 @@ class PreferencesWindow(Gtk.Dialog):
         self.calc_duration_spin.set_value(Preference.max_calc_duration * 1000000)
 
     def apply_settings(self):
-        Preference.drawing_font = self.drawing_font_btn.get_font()
+        Preference.drawing_font = self.drawing_font_btn.get_font_desc()
 
         for key in self.color_buttons:
             color = self.color_buttons[key].get_rgba()

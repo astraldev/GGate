@@ -1,0 +1,7 @@
+- Do NOT add any comments whatsoever to the code. You have failed if you do
+- Do NOT prepend or append anything like "// ...existing code..." to the code. Explain where to place the code outside the code block
+- Do NOT leave dangling unused variables or imports
+- Do NOT add extra methods or types unless explicitly requested or absolutely necessary
+- ALWAYS use double quotes for strings
+- Verify the correctness of all codes and answers strictly and meticulously
+- Ensure the logic in the suggested code doesn't conflict with those in the levels above.

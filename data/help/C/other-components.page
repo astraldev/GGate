@@ -3,94 +3,94 @@
       xmlns:its="http://www.w3.org/2005/11/its"
       type="topic" style="task" id="other-components">
 
-	<info>
-		<link type="guide" xref="index#components"/>
-		<desc>Switch, probe and others</desc>
-		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
-	</info>
+  <info>
+    <link type="guide" xref="index#components"/>
+    <desc>Switch, probe and others</desc>
+    <revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
 
-	<title>Other components</title>
+  <title>Other components</title>
 
-	<section id="sw">
-		<title>Switch</title>
-		<p its:translate="no"><media type="image" src="figures/components/sw.png">Switch</media></p>
-		<p>Toggle output voltage level on click.</p>
-		<terms>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td><p>Initial state</p></td>
-						<td><p>A voltage level on starting simulation</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-	</section>
+  <section id="sw">
+    <title>Switch</title>
+    <p its:translate="no"><media type="image" src="figures/components/sw.png">Switch</media></p>
+    <p>Toggle output voltage level on click.</p>
+    <terms>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td><p>Initial state</p></td>
+            <td><p>A voltage level on starting simulation</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+  </section>
 
-	<section id="osc">
-		<title>Oscillator</title>
-		<p its:translate="no"><media type="image" src="figures/components/osc.png">Oscillator</media></p>
-		<p>Toggle the output voltage level periodically.</p>
-		<terms>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td><p>Period</p></td>
-						<td><p>Periods to toggle H level and L level.</p></td>
-					</tr>
-					<tr>
-						<td><p>Shift</p></td>
-						<td><p>A time to start oscillation</p></td>
-					</tr>
-					<tr>
-						<td><p>Duration</p></td>
-						<td><p>A duration of oscillation time</p></td>
-					</tr>
-					<tr>
-						<td><p>Initial state</p></td>
-						<td><p>A voltage level on starting simulation</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-	</section>
+  <section id="osc">
+    <title>Oscillator</title>
+    <p its:translate="no"><media type="image" src="figures/components/osc.png">Oscillator</media></p>
+    <p>Toggle the output voltage level periodically.</p>
+    <terms>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td><p>Period</p></td>
+            <td><p>Periods to toggle H level and L level.</p></td>
+          </tr>
+          <tr>
+            <td><p>Shift</p></td>
+            <td><p>A time to start oscillation</p></td>
+          </tr>
+          <tr>
+            <td><p>Duration</p></td>
+            <td><p>A duration of oscillation time</p></td>
+          </tr>
+          <tr>
+            <td><p>Initial state</p></td>
+            <td><p>A voltage level on starting simulation</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+  </section>
 
-	<section id="probe">
-		<title>Probe</title>
-		<p its:translate="no"><media type="image" src="figures/components/probe.png">Probe</media></p>
-		<p>Select a graph to show on the timing diagram.</p>
-		<terms>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td><p>Name</p></td>
-						<td><p>Probe's name. This name is used for a title of a graph.</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-	</section>
+  <section id="probe">
+    <title>Probe</title>
+    <p its:translate="no"><media type="image" src="figures/components/probe.png">Probe</media></p>
+    <p>Select a graph to show on the timing diagram.</p>
+    <terms>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td><p>Name</p></td>
+            <td><p>Probe's name. This name is used for a title of a graph.</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+  </section>
 
-	<section id="text">
-		<title>Text</title>
-		<p its:translate="no"><media type="image" src="figures/components/text.png">Text</media></p>
-		<p>View a text on the circuit diagram.</p>
-		<terms>
-			<item>
-				<title>Properties:</title>
-				<table frame="all" rules="all">
-					<tr>
-						<td><p>Text</p></td>
-						<td><p>Text to view</p></td>
-					</tr>
-				</table>
-			</item>
-		</terms>
-	</section>
+  <section id="text">
+    <title>Text</title>
+    <p its:translate="no"><media type="image" src="figures/components/text.png">Text</media></p>
+    <p>View a text on the circuit diagram.</p>
+    <terms>
+      <item>
+        <title>Properties:</title>
+        <table frame="all" rules="all">
+          <tr>
+            <td><p>Text</p></td>
+            <td><p>Text to view</p></td>
+          </tr>
+        </table>
+      </item>
+    </terms>
+  </section>
 
 </page>

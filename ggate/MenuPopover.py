@@ -1,7 +1,6 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
 from gi.repository import Gtk, Gdk 
-from gettext import gettext as _
 from ggate.ComponentConverter import string_to_components
 
 menu_xml = """
@@ -109,7 +108,7 @@ class Menu(Gtk.PopoverMenu):
 
         def _(clipboard, task):
           str_data = window.clipboard.read_text_finish(task)
-          if str_data != None:
+          if str_data is not None:
             tmp = string_to_components(str_data)
             if not isinstance(tmp, str) and len(tmp) > 0:
               window.action_set_enabled('app.on_action_paste_pressed', True)

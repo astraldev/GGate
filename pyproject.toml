@@ -1,0 +1,29 @@
+[project]
+name = "ggate"
+version = "5.0.0"
+description = "Logic gate simulator"
+authors = [
+    {name = "astraldev",email = "ekureedem480@gmail.com"}
+]
+license = {text = "GPL v3"}
+readme = "README.md"
+requires-python = ">= 3.9,<4.0"
+dependencies = [
+    "pycairo (>=1.27.0,<2.0.0)",
+    "pygobject (>=3.52.3,<4.0.0)",
+    "packaging (>=24.2,<25.0)",
+]
+
+[tool.ruff.lint]
+extend-select = ["W291"]
+
+[tool.poetry]
+
+[tool.poetry.group.dev.dependencies]
+pygobject-stubs = "^2.13.0"
+mypy = "^1.15.0"
+ruff = "^0.11.2"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

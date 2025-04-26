@@ -3,7 +3,7 @@
 import cairo
 import math
 from decimal import Decimal
-from ggate import const
+from ggate.const import definitions as const
 from ggate.Utils import *
 from ggate import Preference
 from gi.repository import Gtk, Gdk, PangoCairo
@@ -188,8 +188,8 @@ class DiagramArea(Gtk.Box):
             self.cursor_x = self.diagram_width
         self.cursor_y = y_axis
         if 39 <= self.cursor_y < self.img_height:
-            left = int(min((self.cursor_x_old, self.cursor_x)) - 1)
-            width = int(abs(self.cursor_x_old - self.cursor_x) + 4)
+            int(min((self.cursor_x_old, self.cursor_x)) - 1)
+            int(abs(self.cursor_x_old - self.cursor_x) + 4)
             if self.show_cursor:
                 widget.queue_draw() # _area(left, 0, width, self.img_height)
             else:
@@ -203,8 +203,10 @@ class DiagramArea(Gtk.Box):
         old_x = (self.circuit.current_time - self.start_time) * self.scale
         self.circuit.current_time = time
         new_x = (self.circuit.current_time - self.start_time) * self.scale
-        left = int(min((old_x, new_x)) - 1)
-        width = int(abs(old_x - new_x) + 4)
+
+        # TODO: Figure out what this is used for
+        int(min((old_x, new_x)) - 1)
+        int(abs(old_x - new_x) + 4)
         self.diagram_area.queue_draw()
 
     def on_diagram_area_leave(self, controller, *event):
@@ -352,13 +354,12 @@ class DiagramArea(Gtk.Box):
             cr.fill()
 
         # plot graphs
-        prev_time = 0
         history = self.circuit.probe_levels_history
         for i, probe_lebels in enumerate(history[:-1]):
             if history[i + 1][0] <= self.start_time or self.end_time < probe_lebels[0]:
                 continue
             for j, data in enumerate(probe_lebels[1:]):
-                if data == True:
+                if data is True:
                     cairo_paths(cr, (round((probe_lebels[0] - self.start_time) * self.scale), j * 40 + 55.5), (round(
                         (history[i + 1][0] - self.start_time) * self.scale) + 1, j * 40 + 55.5))
                 else:
@@ -370,7 +371,7 @@ class DiagramArea(Gtk.Box):
 
         if history[-1][0] < self.end_time:
             for j, data in enumerate(history[-1][1:]):
-                if data == True:
+                if data is True:
                     cairo_paths(cr, (round(
                         (history[-1][0] - self.start_time) * self.scale), j * 40 + 55.5), (self.diagram_width, j * 40 + 55.5))
                 else:

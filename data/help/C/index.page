@@ -3,31 +3,31 @@
       xmlns:its="http://www.w3.org/2005/11/its"
       type="guide" style="task" id="index">
 
-	<info>
-		<desc>Help for GGate</desc>
-		<title type="link" role="trail" its:translate="no"><media type="image" src="figures/ggate-trail.png"/></title>
-		<title type="link">GGate, Logic circuit simulator</title>
-		<title type="text">GGate, Logic circuit simulator</title>
-		<revision pkgversion="2.6" version="0.1" date="2012-10-06" status="final"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
-	</info>
+  <info>
+    <desc>Help for GGate</desc>
+    <title type="link" role="trail" its:translate="no"><media type="image" src="figures/ggate-trail.png"/></title>
+    <title type="link">GGate, Logic circuit simulator</title>
+    <title type="text">GGate, Logic circuit simulator</title>
+    <revision pkgversion="2.6" version="0.1" date="2012-10-06" status="final"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
 
-	<title><media type="image" src="figures/ggate-logo.png" its:translate="no">GGate logo</media> GGate, Logic circuit simulator</title>
-	<section id="edit" style="2column">
-		<title>Edit circuit</title>
-	</section>
+  <title><media type="image" src="figures/ggate-logo.png" its:translate="no">GGate logo</media> GGate, Logic circuit simulator</title>
+  <section id="edit" style="2column">
+    <title>Edit circuit</title>
+  </section>
 
-	<section id="simulate" style="2column">
-		<title>Simulate circuit</title>
-	</section>
+  <section id="simulate" style="2column">
+    <title>Simulate circuit</title>
+  </section>
 
-	<section id="saveimage" style="2column">
-		<title>Save as image</title>
-	</section>
+  <section id="saveimage" style="2column">
+    <title>Save as image</title>
+  </section>
 
-	<section id="components" style="2column">
-		<title>Logic components</title>
-	</section>
+  <section id="components" style="2column">
+    <title>Logic components</title>
+  </section>
 
 </page>

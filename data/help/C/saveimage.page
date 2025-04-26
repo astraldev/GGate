@@ -2,27 +2,27 @@
 <page xmlns="http://projectmallard.org/1.0/"
       type="topic" style="task" id="saveimage">
 
-	<info>
-		<link type="guide" xref="index#saveimage"/>
-		<desc>You can save created circuits and timing diagrams as image files.</desc>
-		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
-	</info>
+  <info>
+    <link type="guide" xref="index#saveimage"/>
+    <desc>You can save created circuits and timing diagrams as image files.</desc>
+    <revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
 
-	<title>Save as image</title>
+  <title>Save as image</title>
 
-	<section id="circuit">
-		<title>Save circuit diagram</title>
-		<p>To save the circuit diagram, click <guiseq><gui>File</gui><gui>Save as image</gui></guiseq>. If you operate it in the editing mode, nets are shown in one color. If you do it in the running mode, you can choose whether or not nets are colored.</p>
-	</section>
+  <section id="circuit">
+    <title>Save circuit diagram</title>
+    <p>To save the circuit diagram, click <guiseq><gui>File</gui><gui>Save as image</gui></guiseq>. If you operate it in the editing mode, nets are shown in one color. If you do it in the running mode, you can choose whether or not nets are colored.</p>
+  </section>
 
-	<section id="timing">
-		<title>Save timing diagram</title>
-		<p>To save a timing diagram, Click <gui>Save diagram</gui> on the upper side of the timing diagram window.</p>
-		<note>
-			<p>There are four formats to save: PNG, PDF, SVG and PS.</p>
-		</note>
-	</section>
+  <section id="timing">
+    <title>Save timing diagram</title>
+    <p>To save a timing diagram, Click <gui>Save diagram</gui> on the upper side of the timing diagram window.</p>
+    <note>
+      <p>There are four formats to save: PNG, PDF, SVG and PS.</p>
+    </note>
+  </section>
 
 </page>

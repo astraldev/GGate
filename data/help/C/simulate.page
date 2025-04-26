@@ -2,62 +2,62 @@
 <page xmlns="http://projectmallard.org/1.0/"
       type="topic" style="task" id="simulate">
 
-	<info>
-		<link type="guide" xref="index#simulate"/>
-		<desc>Click <guiseq><gui>Simulate</gui><gui>Run</gui></guiseq> to simulate a created circuit.</desc>
-		<revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
-		<include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
-	</info>
+  <info>
+    <link type="guide" xref="index#simulate"/>
+    <desc>Click <guiseq><gui>Simulate</gui><gui>Run</gui></guiseq> to simulate a created circuit.</desc>
+    <revision pkgversion="2.6" version="0.1" date="2012-10-08" status="final"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="credit.xml"/>
+    <include xmlns="http://www.w3.org/2001/XInclude" href="legal.xml"/>
+  </info>
 
-	<title>Basis of simulation</title>
+  <title>Basis of simulation</title>
 
-	<section id="run">
-		<title>Run circuit</title>
-		<p>To start the simulation of a created circuit, click <guiseq><gui>Simulate</gui><gui>Run</gui></guiseq> or press <key>F5</key>.</p>
-		<p>Before you simulate the circuit, you must care about the following points.</p>
-		<list>
-			<item>
-				<p>The circuit won't oscillate at infinite frequency (Propagation delays are set properly on an oscillating circuit)</p>
-			</item>
-			<item>
-				<p>Input terminals of components are not open circuit</p>
-			</item>
-			<item>
-				<p>Output terminals of components are not short circuit</p>
-			</item>
-		</list>
-	</section>
+  <section id="run">
+    <title>Run circuit</title>
+    <p>To start the simulation of a created circuit, click <guiseq><gui>Simulate</gui><gui>Run</gui></guiseq> or press <key>F5</key>.</p>
+    <p>Before you simulate the circuit, you must care about the following points.</p>
+    <list>
+      <item>
+        <p>The circuit won't oscillate at infinite frequency (Propagation delays are set properly on an oscillating circuit)</p>
+      </item>
+      <item>
+        <p>Input terminals of components are not open circuit</p>
+      </item>
+      <item>
+        <p>Output terminals of components are not short circuit</p>
+      </item>
+    </list>
+  </section>
 
-	<section id="pause">
-		<title>Pause circuit</title>
-		<p>When you want to toggle two or more switches at the same time, you can use pause mode. To pause the simulation, click <guiseq><gui>Simulate</gui><gui>Pause</gui></guiseq> or press <key>F6</key> to toggle to pause mode.</p>
-		<p>On pause mode, the circuit doesn't work when switches are clicked. You can toggle two or more switches on this mode. To restart the simulation, click the menu or press <key>F6</key> to toggle the mode.</p>
-	</section>
+  <section id="pause">
+    <title>Pause circuit</title>
+    <p>When you want to toggle two or more switches at the same time, you can use pause mode. To pause the simulation, click <guiseq><gui>Simulate</gui><gui>Pause</gui></guiseq> or press <key>F6</key> to toggle to pause mode.</p>
+    <p>On pause mode, the circuit doesn't work when switches are clicked. You can toggle two or more switches on this mode. To restart the simulation, click the menu or press <key>F6</key> to toggle the mode.</p>
+  </section>
 
-	<section id="settle">
-		<title>Run convergent circuit</title>
-		<p>If the circuit doesn't oscillate and it converge, you can click switch components to show its result immediately.</p>
-	</section>
+  <section id="settle">
+    <title>Run convergent circuit</title>
+    <p>If the circuit doesn't oscillate and it converge, you can click switch components to show its result immediately.</p>
+  </section>
 
-	<section id="oscillate">
-		<title>Run oscillating circuit</title>
-		<p>If the circuit oscillate, you can run it only if propagation delays are set properly. In this case, you can know the behavior of the circuit on the timing diagram window. Please refer <link xref="timing"/> about the timing diagram window.</p>
-	</section>
+  <section id="oscillate">
+    <title>Run oscillating circuit</title>
+    <p>If the circuit oscillate, you can run it only if propagation delays are set properly. In this case, you can know the behavior of the circuit on the timing diagram window. Please refer <link xref="timing"/> about the timing diagram window.</p>
+  </section>
 
-	<section id="preference">
-		<title>Preference</title>
-		<p>You can change settings for simulation from <guiseq>Preference</gui></guiseq>.</p>
-		<terms>
-			<item>
-				<title>Max calc iters</title>
-				<p>Maximum number of iterations of calculations in the system. When the counter exceed this value, the simulation will be stopped.</p>
-			</item>
-			<item>
-				<title>Max calc duration</title>
-				<p>If accumulated time containing propagation delays exceed this value, simulations will be stopped.</p>
-			</item>
-		</terms>
-	</section>
+  <section id="preference">
+    <title>Preference</title>
+    <p>You can change settings for simulation from <guiseq>Preference</gui></guiseq>.</p>
+    <terms>
+      <item>
+        <title>Max calc iters</title>
+        <p>Maximum number of iterations of calculations in the system. When the counter exceed this value, the simulation will be stopped.</p>
+      </item>
+      <item>
+        <title>Max calc duration</title>
+        <p>If accumulated time containing propagation delays exceed this value, simulations will be stopped.</p>
+      </item>
+    </terms>
+  </section>
 
 </page>
