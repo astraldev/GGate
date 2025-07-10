@@ -22,6 +22,7 @@ import sys
 
 gi.require_version("Gtk", '4.0')
 gi.require_version('PangoCairo', '1.0')
+gi.require_version("Adw", "1")
 
 from ggate.MainFrame import GLogicApplication
 from ggate import __version__

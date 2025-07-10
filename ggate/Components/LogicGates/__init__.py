@@ -14,8 +14,7 @@ from .StateViewers import STATE_VIEWER_COMPONENTS
 logic_gates: dict[definitions, BaseComponent] = {
   definitions.component_none: None,
   definitions.component_net: None,
-
-  definitions.component_adder:   Calculator.Adder(),
+  definitions.component_adder: Calculator.Adder(),
 }
 
 logic_gates.update(COUNTERS)

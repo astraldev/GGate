@@ -3,7 +3,12 @@
 import os
 import sys
 import webbrowser
-from gi.repository import Gtk, Gdk, GdkPixbuf, Gio
+
+import gi
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
+
+from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, Adw
 from ggate import UserInterfaces, config
 from ggate.const import definitions as const
 from ggate.Exporter import save_schematics_as_image
@@ -23,10 +28,10 @@ from ggate.Components.Managers.Alerts import AlertDialogs
 
 from ggate.StatusDisplay import StatusDisplay
 from ggate.TimingDiagramWindow import TimingDiagramWindow
-from ggate.ComponentConverter import components_to_string, string_to_components
 
 themed_icons = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
 themed_icons.add_search_path(config.DATADIR + "/images")
+
 TOOLTIPS = {
     "simulation": {
         "start": _("Run and simulate this circuit"),
@@ -35,7 +40,6 @@ TOOLTIPS = {
     }
 }
 
-
 class ShortCutWindow:
     def __init__(self, parent):
         shortcut_builder = Gtk.Builder.new_from_string(UserInterfaces.shortcut_ui, -1)
@@ -43,12 +47,12 @@ class ShortCutWindow:
         shortcut_window.set_transient_for(parent)
         shortcut_window.show()
 
-class MainFrame(Gtk.ApplicationWindow):
+class MainFrame(Adw.ApplicationWindow):
     def __init__(self, *args, **kwargs):
-        Gtk.Window.__init__(
+        Adw.ApplicationWindow.__init__(
             self, title="%s - %s" % (const.text_notitle, const.app_name), **kwargs
         )
-        self.application: Gtk.Application = kwargs["application"]
+        self.application: Adw.Application = kwargs["application"]
         self.running_mode = False
         self.pause_running_mode = False
 
@@ -276,7 +280,9 @@ class MainFrame(Gtk.ApplicationWindow):
 
         # Header Bar
         self.header_bar = Gtk.HeaderBar()
-        self.header_bar.set_use_native_controls(True)
+
+        if sys.platform.startswith("win32") or sys.platform.startswith("darwin"):
+            self.header_bar.set_use_native_controls(True)
 
         if self.header_bar.get_use_native_controls():
             self.header_bar.pack_end(self.menu_button)
@@ -502,7 +508,10 @@ class MainFrame(Gtk.ApplicationWindow):
         self.on_action_delete_pressed()
 
     def on_action_copy_pressed(self, *widget):
-        self.clipboard.set(components_to_string(self.circuit.selected_components))
+        self.clipboard.set(
+            self.circuit.converter
+                .components_to_string(self.circuit.selected_components)
+        )
 
     def on_action_paste_pressed(self, *widget):
         def _handler(clipboard, task):
@@ -696,7 +705,7 @@ class MainFrame(Gtk.ApplicationWindow):
             self.action_flipvert.set_sensitive(False)
 
 
-class GLogicApplication(Gtk.Application):
+class GLogicApplication(Adw.Application):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, application_id="org.astralco.ggate", **kwargs)
         self.window = None

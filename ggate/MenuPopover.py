@@ -1,6 +1,5 @@
 import os
 from gi.repository import Gtk, Gdk
-from ggate.ComponentConverter import string_to_components
 from ggate.config import DATADIR
 
 def _get_icon_path(icon: str):
@@ -82,7 +81,6 @@ running_xml = """
   </menu>
 </interface>
 """
-
 
 class ContextMenu(Gtk.PopoverMenu):
     def __init__(self, parent):
