@@ -15,3 +15,5 @@ deb_dist/
 **.deb
 .api-keys
 .DS_Store
+.ruff_cache
+.mypy_cache

@@ -133,7 +133,11 @@ class MainFrame(Gtk.ApplicationWindow):
                     "app.on_action_redo_pressed",
                     ["<Ctrl><Shift>Z"],
                 ),
-                (self.on_action_cut_pressed, "app.on_action_cut_pressed", ["<Ctrl>X"]),
+                (
+                    self.on_action_cut_pressed,
+                    "app.on_action_cut_pressed",
+                    ["<Ctrl>X"]
+                ),
                 (
                     self.on_action_copy_pressed,
                     "app.on_action_copy_pressed",
@@ -143,6 +147,11 @@ class MainFrame(Gtk.ApplicationWindow):
                     self.on_action_paste_pressed,
                     "app.on_action_paste_pressed",
                     ["<Ctrl>V"],
+                ),
+                (
+                    self.on_action_delete_pressed,
+                    "app.on_action_delete_pressed",
+                    ["BackSpace"],
                 ),
                 (
                     self.on_action_diagram_pressed,
@@ -433,7 +442,7 @@ class MainFrame(Gtk.ApplicationWindow):
         self.drawarea.component_dragged = False
         self.drawarea.drag_enabled = False
         self.drawarea.rect_select_enabled = False
-        self.circuit.analyze_connections()
+        self.circuit.analyze_net_connections()
         self.circuit.initialize_logic()
         if not self.circuit.analyze_logic():
             self.diagram_window.diagram_area.createDiagram()
@@ -667,7 +676,7 @@ class MainFrame(Gtk.ApplicationWindow):
         self.statusbar.update(message)
 
     def on_circuit_item_unselected(self, circuit):
-        self.prop_window.setComponent(None)
+        self.prop_window.set_component(None)
 
     def on_circuit_alert(self, circuit, message):
         dialog = Gtk.MessageDialog(
@@ -698,10 +707,9 @@ class GLogicApplication(Gtk.Application):
                 # Dangerous Call :)
                 try:
                     cmd = f"self.window.{action}"
-                except:
+                    eval(cmd)(*args)
+                except Exception:
                     return _
-                eval(cmd)(*args)
-
         return _
 
     def on_show_shortcut(self, *args):
@@ -741,6 +749,7 @@ class GLogicApplication(Gtk.Application):
         action.connect("activate", self.action_handler("on_action_show_help"))
         self.add_action(action)
 
+        # Report bug
         action = Gio.SimpleAction.new("on_action_bug_pressed", None)
         action.connect("activate", self.action_handler("on_action_bug_pressed"))
         self.add_action(action)
@@ -756,8 +765,7 @@ class GLogicApplication(Gtk.Application):
         action.connect("activate", self.action_handler("on_action_prefs_pressed"))
         self.add_action(action)
 
-        # Shortcut
-
+        # Shortcuts
         action = Gio.SimpleAction.new("on_show_shortcut", None)
         action.connect("activate", self.on_show_shortcut)
         self.add_action(action)

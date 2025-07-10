@@ -1,18 +1,22 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 from __future__ import annotations
+from collections import Counter
 from typing import TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
   from ggate.MainFrame import MainFrame
 
+import igraph
 import copy
 import os
 from gi.repository import GObject
+from shapely.geometry import LineString, Point
+from shapely.ops import split
 from ggate.Components.LogicGates.SystemComponents import BaseComponent
 from ggate.Components.LogicGates import logic_gates
 from ggate.const import definitions
 from ggate import Preference
-from ggate.Utils import encode_text, decode_text, fit_components, get_components_rect, multiply_matrix, rotate_left_90, rotate_right_90
+from ggate.Utils import encode_text, decode_text, fit_components, get_components_rect, get_duplicate_points, multiply_matrix, rotate_left_90, rotate_right_90
 from gettext import gettext as _
 from ggate import config
 
@@ -83,17 +87,17 @@ class CircuitConverter():
     content = self._parse_section_content(lines[1:])
     
     if which == "net":
-      content["position"] = [int(x) for x in content["position"][0].split(",")]
+      content["position"] = [int(x) for x in content["position"]]
       if len(content["position"]) != 4:
         content["position"] = [0, 10, 10, 10]
 
-      return [definitions.component_net, content["position"]]
+      return [definitions.component_net, *content["position"]]
     
     elif which in logic_gates:
       component: CircuitComponent = [which, copy.deepcopy(logic_gates[which])]
       if (position := content.get("position", None)) and len(position) == 2:
-        component[1].pos_x = position[0]
-        component[1].pos_y = position[1]
+        component[1].pos_x = int(position[0])
+        component[1].pos_y = int(position[1])
 
       if (input_level := content.get("input_level", None)):
         component[1].input_level = [
@@ -112,11 +116,13 @@ class CircuitConverter():
       
       if (properties := content.get("properties", None)):
         for property in properties:
+          if property == "":
+            continue
+
           name, value = property.split(":")
           value = decode_text(value)
           if name in component[1].prop_names:
             index = component[1].prop_names.index(name)
-            print(index, name, component[1].properties[index])
 
             if component[1].properties[index][1] == definitions.property_int:
               component[1].values[index] = int(value)
@@ -127,9 +133,9 @@ class CircuitConverter():
             elif component[1].properties[index][1] == definitions.property_select:
               component[1].values[index] = int(value)
 
-            else :
+            else:
               component[1].values[index] = value
-      
+
       return component
 
     elif which == "version":
@@ -200,8 +206,6 @@ class CircuitManager(GObject.GObject):
     data = self.converter.components_to_string()
     success = self.mainframe.io_manager.write_file(filepath, data)
 
-    print(data, success)
-
     if not success:
       self.emit("alert", _("Unable to save file!"))
       return False
@@ -235,99 +239,179 @@ class CircuitManager(GObject.GObject):
     self.emit('message-changed', _('Opened file ' + os.path.basename(filepath)))
 
     return False
+  
+  def __get_nets(self):
+    components = self.components[:]
+    nets = [net for net in components if net[0] == definitions.component_net]
+    return nets
+  
+  def __get_other_components(self):
+    components = self.components[:]
+    other_components = [comp for comp in components if comp[0] != definitions.component_net]
+    return other_components
 
-  def analyze_connections(self):
-    # Analyze connections
+  def __create_index_for_point(self):
+    point_to_index = {}
+    index_to_point = []
+    
+    def get_index(point):
+      if point not in point_to_index:
+        point_to_index[point] = len(index_to_point)
+        index_to_point.append(point)
+      return point_to_index[point]
+    
+    return get_index, index_to_point, point_to_index
+  
+  def analyze_net_connections(self):
+    """This function analyzes net connections"""
+    # Reset net connections
     self.net_connections = []
+
+    # Reset not- broken nets
     self.net_no_dot = []
-    not_added = self.components[:]
-    net_not_empty = True
-    while True:
-      connection = []
-      changed_flag = True
-      net_not_empty = False
-      while changed_flag:
-        changed_flag = False
-        remlist = []
-        for c in not_added:
-          if c[0] == definitions.component_net:
-            net_not_empty = True
-            if len(connection) == 0:
-              connection.append((c[1], c[2]))
-              connection.append((c[3], c[4]))
-              remlist.append(c)
-            else:
-              if (c[1], c[2]) in connection:
-                if (c[3], c[4]) not in connection:
-                  connection.append((c[3], c[4]))
-                  changed_flag = True
-                remlist.append(c)
-              elif (c[3], c[4]) in connection:
-                if (c[1], c[2]) not in connection:
-                  connection.append((c[1], c[2]))
-                  changed_flag = True
-                remlist.append(c)
-        for c in remlist:
-          not_added.remove(c)
 
-      if not net_not_empty:
-        break
+    # Get the list of components
+    components = self.components[:]
 
-      for con_p in connection:
-        cnt = 0
-        for c in self.components:
-          if c[0] == definitions.component_net:
-            if con_p[0] == c[1] and con_p[1] == c[2]:
-              cnt += 1
-            elif con_p[0] == c[3] and con_p[1] == c[4]:
-              cnt += 1
-          else:
-            for p in c[1].rot_input_pins + c[1].rot_output_pins:
-              if con_p[0] == c[1].pos_x + p[0] and con_p[1] == c[1].pos_y + p[1]:
-                cnt += 1
-        if cnt <= 2:
-          self.net_no_dot.append(con_p)
+    # Create an index mapper with cache
+    get_index, index_to_point, _ = self.__create_index_for_point()
 
-      self.net_connections.append(connection)
+    nets = self.__get_nets()
+    other_components = [comp for comp in components if comp not in nets]
 
-    for c in self.components:
-      if c[0] != definitions.component_net:
-        for p in c[1].rot_input_pins + c[1].rot_output_pins:
-          found = False
-          for net in self.net_connections:
-            if (c[1].pos_x + p[0], c[1].pos_y + p[1]) in net:
-              found = True
-              break
-          if not found:
-            self.net_connections.append([(c[1].pos_x + p[0], c[1].pos_y + p[1])])
+    # Get the points of the lines
+    nodes = []
+
+    for _, comp in other_components:
+      for pin in comp.rot_input_pins + comp.rot_output_pins:
+        nodes.append((comp.pos_x + pin[0], comp.pos_y + pin[1]))
+
+    # Parse net points (start(x,y), end(x,y))
+    net_points = [[(x1,y1), (x2, y2)] for _, x1, y1, x2, y2, in nets]
+
+    # Convert net points to edges
+    edges = [(get_index(p1), get_index(p2)) for p1, p2 in net_points]
+
+    # Add the nodes (pins) to the graph vertex list
+    [get_index(node) for node in nodes]
+    
+    # Setup the graph
+    graph = igraph.Graph()
+    graph.add_vertices(len(index_to_point))
+    graph.add_edges(edges)
+
+    # Find connected components in the graph
+    connections = []
+    graph_components = graph.components()
+
+    for comp in graph_components:
+      if len(comp) > 1:
+       connections.append([index_to_point[idx] for idx in comp])
+    
+    # Find pin to pin connections and add them to the connection list
+    pin_to_pin = [[item] for item, count in Counter(nodes).items() if count > 1]
+    connections += pin_to_pin
+
+    # Flatten the connection array
+    flat_connections = [point for connection in connections for point in connection]
+    net_no_dots = []
+
+    # Filter out connections that occur in more than 2 points
+    for connection in flat_connections:
+      count = 0
+      for data in components:
+        name = data[0]
+        component = data[1:] if name == definitions.component_net else data[1]
+        if name == definitions.component_net:
+          x1, y1, x2, y2 = component
+          if connection == (x1, y1) or connection == (x2, y2):
+            count += 1
+        else:
+          for pin in component.rot_input_pins + component.rot_output_pins:
+            x = component.pos_x + pin[0]
+            y = component.pos_y + pin[1]
+            if connection == (x, y):
+              count += 1
+
+      if count <= 2:
+        net_no_dots.append(connection)
+
+    self.net_no_dot = net_no_dots
+    self.net_connections = connections
+  
 
   def split_nets(self, x, y):
-    # Split nets on the specified point
-    spl_list = []
-    for c in self.components:
-      if c[0] == definitions.component_net:
-        if (y - c[2]) * (c[3] - c[1]) == (x - c[1]) * (c[4] - c[2]):
-          if (c[1] <= x <= c[3] and c[2] <= y <= c[4]) or (c[3] <= x <= c[1] and c[4] <= y <= c[2]):
-            spl_list.append(c)
+    """Splits nets at a certain point"""
+    # Get component data
+    components = self.components[:]
+    nets = self.__get_nets()
+    nets_with_point = []
 
-    for c in spl_list:
-      self.components.remove(c)
-      net_selected = False
-      if c in self.selected_components:
-        self.selected_components.remove(c)
-        net_selected = True
-      if x != c[1] or y != c[2]:
-        if [definitions.component_net, c[1], c[2], x, y] not in self.components and [definitions.component_net, x, y, c[1], c[2]] not in self.components:
-          component_data = [definitions.component_net, c[1], c[2], x, y]
-          self.components.append(component_data)
-          if net_selected:
-            self.selected_components.append(component_data)
-      if x != c[3] or y != c[4]:
-        if [definitions.component_net, c[3], c[4], x, y] not in self.components and [definitions.component_net, x, y, c[3], c[4]] not in self.components:
-          component_data = [definitions.component_net, x, y, c[3], c[4]]
-          self.components.append(component_data)
-          if net_selected:
-            self.selected_components.append(component_data)
+    # Select nets to split
+    for net in nets:
+      _, x1, y1, x2, y2 = net
+      point = Point(x, y)
+      segment = LineString([(x1, y1), (x2, y2)])
+      if segment.contains(point) or segment.touches(point):
+        nets_with_point.append(net)
+
+    for net in nets_with_point:
+      _, x1, y1, x2, y2 = net
+      was_selected = net in self.selected_components
+
+      if was_selected:
+        self.selected_components.remove(net)
+      self.components.remove(net)
+
+      split_net_left = [[_, x1, y1, x, y], [_, x, y, x1, y1]]
+      split_net_right = [[_, x2, y2, x, y], [_, x, y, x2, y2]]
+
+      already_split_left = all(net in components for net in split_net_left)
+      already_split_right = all(net in components for net in split_net_right)
+
+      if x != x1 or y != y1:
+        if not already_split_left:
+          net_data = split_net_left[0]
+          self.components.append(net_data)
+          was_selected and self.selected_components.append(net_data)
+
+      if x != x2 or y != y2:
+        if not already_split_right:
+          net_data = split_net_right[0]
+          self.components.append(net_data)
+          was_selected and self.selected_components.append(net_data)
+
+
+  # def split_nets(self, x, y):
+  #   # Split nets on the specified point
+  #   # self.split_nets_at_point(x, y)
+  #   spl_list = []
+  #   for c in self.components:
+  #     if c[0] == definitions.component_net:
+  #       if (y - c[2]) * (c[3] - c[1]) == (x - c[1]) * (c[4] - c[2]):
+  #         if (c[1] <= x <= c[3] and c[2] <= y <= c[4]) or (c[3] <= x <= c[1] and c[4] <= y <= c[2]):
+  #           spl_list.append(c)
+
+  #   for c in spl_list:
+  #     self.components.remove(c)
+  #     net_selected = False
+  #     if c in self.selected_components:
+  #       self.selected_components.remove(c)
+  #       net_selected = True
+  #     if x != c[1] or y != c[2]:
+  #       if [definitions.component_net, c[1], c[2], x, y] not in self.components and [definitions.component_net, x, y, c[1], c[2]] not in self.components:
+  #         component_data = [definitions.component_net, c[1], c[2], x, y]
+  #         print("legacy spln (left): ", component_data)
+  #         self.components.append(component_data)
+  #         if net_selected:
+  #           self.selected_components.append(component_data)
+  #     if x != c[3] or y != c[4]:
+  #       if [definitions.component_net, c[3], c[4], x, y] not in self.components and [definitions.component_net, x, y, c[3], c[4]] not in self.components:
+  #         component_data = [definitions.component_net, x, y, c[3], c[4]]
+  #         print("legacy spln (right): ", component_data)
+  #         self.components.append(component_data)
+  #         if net_selected:
+  #           self.selected_components.append(component_data)
 
   def connect_nets(self, x, y, lock_selected = False):
     nets = []

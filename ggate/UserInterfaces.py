@@ -142,6 +142,12 @@ shortcut_ui = """
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Delete</property>
+                <property name="accelerator">BackSpace</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Redo </property>
                 <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;z</property>
               </object>
@@ -157,7 +163,7 @@ menu_xml = """
     <?xml version="1.0" encoding="UTF-8"?>
     <interface>
         <menu id="app-menu">
-            <section> 
+            <section>
                 <item>
                     <attribute name="label">_New</attribute>
                     <attribute name="action">app.on_action_new_pressed</attribute>

@@ -2,12 +2,13 @@
 
 import cairo
 import sys
+import os
 from gi.repository import Pango
+from ggate.Components.Managers.FileManager import FileIOManager
+from ggate.const import definitions
 
 class _Preference(dict,object):
   def __setattr__(self, name, value):
-    import cairo
-    from gi.repository import Pango
     if isinstance(self.pref_dict[name], Pango.FontDescription):
       self.pref_dict[name] = Pango.FontDescription(value)
     elif isinstance(self.pref_dict[name], cairo.Pattern):
@@ -61,33 +62,25 @@ class _Preference(dict,object):
   }
 
   def load_settings(self):
-    import os
-    from ggate.const import definitions as const
-    try:
-      fp = open(os.path.join(const.config_path, "preferences"), mode="r", encoding="utf-8")
-    except TypeError:
-      import codecs
-      fp = codecs.open(os.path.join(const.config_path, "preferences"), mode="r", encoding="utf-8")
-    except IOError:
+    path = os.path.join(definitions.config_path, "preferences")
+    success, data = FileIOManager.read_file(path)
+    if not success or not data:
       return
-    for l in fp:
-      pref = l.split("=")
-      if len(pref) != 2:
-        continue
-      if pref[0] in self.pref_dict:
+
+    for line in data:
+      pref = line.split("=")
+
+      if len(pref) == 2 and pref[0] in self.pref_dict:
         self.__setattr__(pref[0], pref[1])
 
   def save_settings(self):
-    import cairo
-    import os
-    from ggate.const import definitions as const
-    from gi.repository import Pango
     try:
-      if not os.path.isdir(const.config_path):
-        os.makedirs(const.config_path)
-      fp = open(os.path.join(const.config_path, "preferences"), mode="w", encoding="utf-8")
+      if not os.path.isdir(definitions.config_path):
+        os.makedirs(definitions.config_path)
+      fp = open(os.path.join(definitions.config_path, "preferences"), mode="w", encoding="utf-8")
     except IOError:
       return
+
     for key in self.pref_dict:
       if isinstance(self.pref_dict[key], Pango.FontDescription):
         fp.write("%s=%s\n" % (key, self.pref_dict[key].to_string()))

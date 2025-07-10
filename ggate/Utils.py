@@ -1,5 +1,6 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
+from collections import Counter
 from gi.repository import Pango, PangoCairo
 from ggate.const import definitions as const
 import cairo
@@ -72,6 +73,9 @@ def decode_text(text):
     else:
       t_text += c
   return t_text
+
+def get_duplicate_points(points, instance = 2):
+  return [point for point, count in Counter(points).items() if count == instance]
 
 def stack_with_tphl_lh(time, current, stacks, newdatas, tp_hl, tp_lh):
   for i, dat in enumerate(current):

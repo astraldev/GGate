@@ -1,3 +1,38 @@
 # Todo
 
 * Animate logic circuit
+
+
+### Icons
+
+> Done
+
+- tff
+- rsff
+- jkff
+- counter
+- dff
+- 7seg
+- PIPO
+- PISO
+- SISO
+- SIPO
+- counter
+- dff
+- adder
+- and
+- nand
+- gnd
+- not
+- or
+- xor
+- nor
+
+> To convert 
+
+- vdd
+- tribuff
+- sw
+- probe
+- osc
+- led

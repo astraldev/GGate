@@ -1,0 +1,14 @@
+<svg version="1.1" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(2.2356365,1.1999999)">
+    <g transform="matrix(1.09375,0,0,1.09375,-47.694333,116.03462)" stroke-width=".914286">
+      <g fill="none" stroke="#000" stroke-linejoin="round">
+        <path d="m41.562235-99.66717h3.196272" stroke-width="1.57714"/>
+        <path d="m41.562235-88.907269h3.196272" stroke-width="1.57714"/>
+        <path d="m46.258508-105.09647h16.207453c0.831 0 1.5 0.66899 1.5 1.5v18.421079c0 0.831-0.669 1.5-1.5 1.5h-16.207453c-0.831 0-1.5-0.669-1.5-1.5v-18.421079c0-0.83101 0.669-1.5 1.5-1.5z" stroke-width="2.05714"/>
+        <path d="m63.965962-99.66717h3.196272" stroke-width="1.57714"/>
+        <path d="m63.965962-88.83495h3.196272" stroke-width="1.57714"/>
+      </g>
+      <text x="46.556583" y="-90.724113" fill="#000000" font-family="'Gujarati MT'" font-size="10.0731px" font-weight="bold" stroke-width=".555044" xml:space="preserve"><tspan x="46.556583" y="-90.724113" stroke-width=".555044">RS</tspan></text>
+    </g>
+  </g>
+</svg>

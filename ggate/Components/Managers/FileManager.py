@@ -51,7 +51,7 @@ class FileManager(Gtk.FileDialog):
     self.type = FileManager.GLC
 
   @classmethod
-  def for_glc(cls, mainframe: MainFrame):  
+  def for_glc(cls, mainframe: MainFrame):
     glc_filters = Gtk.FileFilter()
     glc_filters.set_name(definitions.glcfile_text)
     glc_filters.add_pattern("*.glc")
@@ -99,6 +99,10 @@ class FileManager(Gtk.FileDialog):
     fm.type = cls.IMG
 
     return fm
+  
+  def for_schematics(cls, mainframe: MainFrame):
+    # TODO: Implement schematics
+    pass
   
   def open_activated(self, *args):
     self.state = FileManager.OPEN

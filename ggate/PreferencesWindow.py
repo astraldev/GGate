@@ -7,8 +7,9 @@ from gettext import gettext as _
 
 class PreferencesWindow(Gtk.Dialog):
     def __init__(self, parent):
-
-        Gtk.Dialog.__init__(self, title=_("Preferences"), use_header_bar=True, transient_for=parent)
+        Gtk.Dialog.__init__(
+            self, title=_("Preferences"), use_header_bar=True, transient_for=parent
+        )
         self.set_resizable(False)
         self.set_modal(True)
         self.set_destroy_with_parent(True)
@@ -32,28 +33,28 @@ class PreferencesWindow(Gtk.Dialog):
         table.set_margin_bottom(5)
 
         prefset = {
-            'net colors: ': [
-                    ("net_color", _("Net:")),
-                    ("net_high_color", _("Net (highlighted):")),
-                    ("net_color_running", _("Net (running):")),
-                    ("highlevel_color", _("Net (high level):")), 
-                    ("lowlevel_color", _("Net (low level):"))
-                   ],
-            'component colors': [
-                ("component_color", _("Component:")),        
-                ("component_high_color", _("Component (highlighted):")), 
-                ("component_color_running", _("Component (running):")),
-                ("picked_color", _("Component (picked):")),  
-                ("preadd_color", _("Component (pre added):")),           
-                ("selected_color", _("Component (selected):"))
+            "net colors: ": [
+                ("net_color", _("Net:")),
+                ("net_high_color", _("Net (highlighted):")),
+                ("net_color_running", _("Net (running):")),
+                ("highlevel_color", _("Net (high level):")),
+                ("lowlevel_color", _("Net (low level):")),
             ],
-            'terminals color': [
-                ("terminal_color", _("Terminal:")),          
-                ("terminal_color_running", _("Terminal (running):")),    
+            "component colors": [
+                ("component_color", _("Component:")),
+                ("component_high_color", _("Component (highlighted):")),
+                ("component_color_running", _("Component (running):")),
+                ("picked_color", _("Component (picked):")),
+                ("preadd_color", _("Component (pre added):")),
+                ("selected_color", _("Component (selected):")),
+            ],
+            "terminals color": [
+                ("terminal_color", _("Terminal:")),
+                ("terminal_color_running", _("Terminal (running):")),
                 ("cursor_color", _("Cursor:")),
-                ("bg_color", _("Background:")),              
-                ("bg_color_running", _("Background (running):")),        
-                ("grid_color", _("Grid:"))
+                ("bg_color", _("Background:")),
+                ("bg_color_running", _("Background (running):")),
+                ("grid_color", _("Grid:")),
             ],
         }
 
@@ -61,6 +62,7 @@ class PreferencesWindow(Gtk.Dialog):
 
         for key in prefset.keys():
             frame = Gtk.Frame()
+
             listBox = Gtk.ListBox()
             listBox.set_selection_mode(Gtk.SelectionMode.NONE)
             listBox.add_css_class("rich-list")
@@ -68,13 +70,14 @@ class PreferencesWindow(Gtk.Dialog):
 
             section_row = Gtk.ListBoxRow()
             section_row.set_activatable(False)
+
             _label = Gtk.Label()
+            _label.set_markup(f"<b>{key.capitalize()}</b>")
+
             _box = Gtk.Box()
-
-            _label.set_markup(f'<b>{key.capitalize()}</b>')
-
             _box.append(_label)
             _box.set_size_request(-1, 35)
+
             section_row.set_selectable(False)
 
             section_row.set_child(_box)
@@ -88,10 +91,10 @@ class PreferencesWindow(Gtk.Dialog):
                 caption.set_size_request(180, -1)
                 caption.set_halign(Gtk.Align.START)
                 caption.set_hexpand(True)
-                
+
                 caption.append(caption_label)
                 caption.set_margin_start(7)
-                
+
                 color_button = Gtk.ColorButton()
                 self.color_buttons[prefpair[0]] = color_button
 
@@ -104,7 +107,7 @@ class PreferencesWindow(Gtk.Dialog):
                 row.set_child(box)
 
                 listBox.append(row)
-            
+
             table.append(frame)
             frame.set_child(listBox)
             frame.set_margin_start(2)
@@ -156,13 +159,11 @@ class PreferencesWindow(Gtk.Dialog):
 
         box.show()
 
-
         self.add_button("Cancel", Gtk.ResponseType.CANCEL)
         apply_button = self.add_button("Apply", Gtk.ResponseType.APPLY)
         apply_button.add_css_class("suggested-action")
 
     def update_dialog(self):
-
         self.drawing_font_btn.set_use_font(True)
         self.drawing_font_btn.set_font_desc(Preference.drawing_font)
 
@@ -185,7 +186,9 @@ class PreferencesWindow(Gtk.Dialog):
 
         for key in self.color_buttons:
             color = self.color_buttons[key].get_rgba()
-            Preference.__setattr__(key, "%f,%f,%f" % (color.red , color.green , color.blue ))
+            Preference.__setattr__(
+                key, "%f,%f,%f" % (color.red, color.green, color.blue)
+            )
 
         Preference.symbol_type = self.symbol_type_combo.get_active()
         Preference.max_calc_iters = self.calc_iter_spin.get_value()

@@ -19,7 +19,6 @@ class LED(BaseComponent):
     self.output_level = []
 
     self.prop_names = ['_red', '_blue', '_green', '_yellow']
-    self.properties.append((_("Color of LED :"), None, ''))
     self.properties.append((_("Color :"), (definitions.property_select, _('Red'), _('Blue'), _('Green'), _('Yellow')), ''))
     self.values.append(2)
 
@@ -28,11 +27,9 @@ class LED(BaseComponent):
     cr.rectangle(30, -40, 40, 40)
     cr.stroke()
 
-
   def drawComponentEditOverlap(self, cr, layout):
     cairo_paths(cr, (10, -20), (30, -20))
     cr.stroke()
-
 
   def drawComponentRunOverlap(self, cr, layout):
     color = self.prop_names[self.values[0]]
@@ -53,7 +50,6 @@ class LED(BaseComponent):
       cr.arc(50, -20, 8, 0, 2 * math.pi)
 
     cr.fill()
-
 
   def isMouseOvered(self, x, y):
     if self.pos_x + 13 <= x <= self.pos_x + 67 and self.pos_y - 37 <= y <= self.pos_y - 3:

@@ -1,5 +1,10 @@
 # ChangeLog
 
+## 2025-04-26 Ekure Edem <ekureedem480@gmail.com>
+ Switch all tabs to spaces
+ Reorganized project structure and split files to seperate parts
+ Updated Some icons
+
 ## 2022-09-10 Ekure Edem <ekureedem480@gmail.com>
  Bump version to 4.0.0
  Optimized to work on WSL

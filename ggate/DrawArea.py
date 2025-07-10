@@ -10,7 +10,7 @@ import math
 import copy
 import cairo
 from ggate.const import definitions as const
-from ggate.MenuPopover import Menu, RunningMenu
+from ggate.MenuPopover import ContextMenu, RunningMenu
 from ggate.Utils import cairo_paths, inv_matrix, multiply_matrix, create_component_matrix, get_components_rect, draw_rounded_rectangle, clamp
 from ggate.Components.LogicGates import logic_gates
 from ggate import Preference
@@ -49,7 +49,7 @@ class DrawArea(Gtk.ScrolledWindow):
         for action in self.actions:
             self.install_action(action, None, self.menu_activated)
 
-        self.menu = Menu(self)
+        self.context_menu = ContextMenu(self)
         self.run_menu = RunningMenu(self)
 
         controller = Gtk.EventControllerMotion()
@@ -148,11 +148,14 @@ class DrawArea(Gtk.ScrolledWindow):
     def draw_net(self, net, mcr: cairo.Context):
         """
         This method draws all states of the net.
+
         TODO:
           - Make a curve for net joints.
           - Include optimizations for animations
         """
-        if net[0] != const.component_net: return
+
+        if net[0] != const.component_net:
+            return
 
         matrix = mcr.get_matrix()
         source = mcr.get_source()
@@ -510,7 +513,7 @@ class DrawArea(Gtk.ScrolledWindow):
                         self.queue_draw()
 
     def on_motion(self,  *args):
-
+        """TODO: Optimize this"""
         x_axis, y_axis = args[1], args[2]
 
         self.cursor_smooth_x = x_axis
@@ -661,7 +664,6 @@ class DrawArea(Gtk.ScrolledWindow):
 
     def on_button_press_primary(self, *args):
 
-        state = args[0].get_current_event_state()
         self.cursor_smooth_x = args[2]
         self.cursor_smooth_y = args[3]
 
@@ -1042,7 +1044,7 @@ class DrawArea(Gtk.ScrolledWindow):
         if not self.parent.running_mode:
 
             if (not self.parent.action_net.get_active()) and (not self.netstarted) and (not self._pushed_component):
-                self.menu.present(args[2], args[3], args)
+                self.context_menu.present(args[2], args[3], args)
 
             if self._pasted_components:
                 self._pasted_components = None
@@ -1061,12 +1063,12 @@ class DrawArea(Gtk.ScrolledWindow):
     def set_selected_component_to_prop_window(self):
         if len(self.circuit.selected_components) == 1:
             if self.circuit.selected_components[0][0] != const.component_net:
-                self.parent.prop_window.setComponent(
+                self.parent.prop_window.set_component(
                     self.circuit.selected_components[0][1])
             else:
-                self.parent.prop_window.setComponent(None)
+                self.parent.prop_window.set_component(None)
         else:
-            self.parent.prop_window.setComponent(None)
+            self.parent.prop_window.set_component(None)
 
     def set_component(self, comp_name):
         self._pasted_components = None
