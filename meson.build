@@ -8,22 +8,18 @@ project(
   ],
 )
 
-dependency('gtk4', version: '>= 4.18.0')
-dependency('libadwaita-1', version: '>= 1.8.alpha')
+dependency('pygobject-3.0')
+dependency('gtk4', version: '>= 4.16.0')
+dependency('libadwaita-1', version: '>= 1.6.8')
 
 gnome = import('gnome')
 python = import('python')
 
 py_installation = python.find_installation('python3',
-  required: true,
-  modules: [
-    ['pycairo', '>= 1.27.0, < 2.0.0'],
-    ['gi', '>= 3.52.3, < 4.0.0'],
-    ['packaging', '>= 24.2, < 25.0'],
-    ['igraph', '>= 0.11.9, < 0.12.0'],
-    ['shapely', '== 2.1.1'],
-  ]
+  modules: ['pycairo', 'pygobject', 'packaging', 'igraph', 'shapely']
 )
+
+py_installation.dependency()
 
 pkgdatadir = get_option('prefix') / get_option('datadir') / meson.project_name()
 
