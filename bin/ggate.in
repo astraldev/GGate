@@ -10,7 +10,12 @@ gi.require_version("Adw", "1")
 from ggate import __version__
 from ggate.MainFrame import GLogicApplication
 
+pkgdatadir = "@pkgdatadir@"
+
 if __name__ == "__main__":
+  resource = Gio.Resource.load(os.path.join(pkgdatadir, "ggate-resources.gresource"))
+  resource._register()
+
   app = GLogicApplication()
   if len(sys.argv) > 1 and sys.argv[1] == "--version":
     print(f"GGate: v{__version__}")

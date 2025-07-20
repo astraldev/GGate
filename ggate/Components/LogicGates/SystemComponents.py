@@ -95,7 +95,7 @@ class BaseComponent(ABC):
   def click(self, x, y, time):
     return False
 
-  def propertyChanged(self, prop) -> False | PropertyError:
+  def propertyChanged(self, prop) -> bool | PropertyError:
     return False
 
   def initialize(self):
