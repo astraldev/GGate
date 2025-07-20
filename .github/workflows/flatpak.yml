@@ -9,7 +9,7 @@ jobs:
   flatpak-builder:
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-45
+      image: bilelmoussaoui/flatpak-github-actions:gnome-47
       options: --privileged
     steps:
       - name: Checkout
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Flatpak environment
         run: |
           flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-          flatpak install -y flathub org.gnome.Platform//45 org.gnome.Sdk//45
+          flatpak install -y flathub org.gnome.Platform//47 org.gnome.Sdk//47
       
       - name: Build Flatpak
         run: |

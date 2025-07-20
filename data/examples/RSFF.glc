@@ -1,0 +1,64 @@
+version
+ author=3.1.0
+ required=3.0
+ 
+nor
+ position=70,70
+ input_level=0,1
+ output_level=0
+ properties=tphl:0.0,tplh:0.0
+
+nor
+ position=70,160
+ input_level=0,0
+ output_level=1
+ properties=tphl:0.0,tplh:0.0
+
+sw
+ position=10,170
+ input_level=
+ output_level=0
+ properties=initstate:0
+
+sw
+ position=10,60
+ input_level=
+ output_level=0
+ properties=initstate:0
+
+led
+ position=180,160
+ input_level=1
+ output_level=
+ properties=
+
+led
+ position=180,70
+ input_level=0
+ output_level=
+ properties=
+
+net
+ position=80,130,80,100
+
+net
+ position=80,60,80,80
+
+net
+ position=190,80,190,140
+
+net
+ position=180,100,180,50
+
+net
+ position=190,80,80,80
+
+net
+ position=190,140,180,140
+
+net
+ position=190,50,180,50
+
+net
+ position=80,100,180,100
+

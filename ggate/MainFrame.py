@@ -21,7 +21,6 @@ from ggate.Components.Windows.Preferences import PreferencesWindow
 from ggate import Preference
 
 from ggate.Components.LogicGates import logic_gates
-
 from ggate.Components.Managers.FileManager import FileIOManager
 from ggate.Components.Managers.FileManager import FileManager
 from ggate.Components.Managers.Alerts import AlertDialogs
@@ -76,10 +75,6 @@ class MainFrame(Adw.ApplicationWindow):
 
         # Property window
         self.prop_window = PropertyWindow()
-        self.prop_window.set_transient_for(self)
-        self.prop_window.set_hide_on_close(True)
-        self.prop_window.set_modal(True)
-
         self.prop_window.connect("window-hidden", self.on_propwindow_hidden)
         self.prop_window.connect("property-changed", self.on_property_changed)
 

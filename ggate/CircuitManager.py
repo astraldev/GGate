@@ -1,4 +1,3 @@
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 from __future__ import annotations
 from collections import Counter
 from typing import TYPE_CHECKING, Tuple
@@ -6,19 +5,18 @@ from typing import TYPE_CHECKING, Tuple
 if TYPE_CHECKING:
   from ggate.MainFrame import MainFrame
 
-import igraph
-import copy
 import os
+import copy
+import igraph
 from gi.repository import GObject
 from shapely.geometry import LineString, Point
-from shapely.ops import split
 from ggate.Components.LogicGates.SystemComponents import BaseComponent
 from ggate.Components.LogicGates import logic_gates
 from ggate.const import definitions
-from ggate import Preference
-from ggate.Utils import encode_text, decode_text, fit_components, get_components_rect, get_duplicate_points, multiply_matrix, rotate_left_90, rotate_right_90
-from gettext import gettext as _
 from ggate import config
+from ggate import Preference
+from ggate.Utils import encode_text, decode_text, fit_components, get_components_rect, multiply_matrix, rotate_left_90, rotate_right_90
+from gettext import gettext as _
 
 CircuitComponent = Tuple[definitions, BaseComponent]
 

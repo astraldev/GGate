@@ -1,5 +1,6 @@
 ./*.py
-**.glc
+*.glc
+!data/examples/*.glc
 ./*.png
 **/__pycache__/
 m4/
