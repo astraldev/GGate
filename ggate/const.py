@@ -3,11 +3,26 @@
 import os
 import gettext
 from gettext import gettext as _
+from gi.repository import Gtk
 
 gettext.textdomain("ggate")
 
 class DefinitionError(TypeError):
     pass
+
+_licence_string = """GGate is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+GGate is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program.  If not, see <http://www.gnu.org/licenses/>."""
+
 
 class Definitions(object):
     def __setattr__(self, name, value):
@@ -67,29 +82,24 @@ class Definitions(object):
     psfile_text = _("Post Script (*.ps)")
     anyfile_text = _("All files")
 
+    developer_name = "Ekure Edem"
+    developer_email = "ekureedem480@gmail.com"
+
     config_path = os.path.join(os.path.expanduser("~"), ".config/ggate")
 
     app_name = _("GGate")
-    description = _(
-        "GGate is a logic circuit simulator developed with GTK+ and Python.")
-    copyright = "Copyright © 2012 - 2022 Koichi Akabe"
-    developer = ["Koichi Akabe <vbkaisetsu@gmail.com>",
-                 'Ekure Edem <ekureedem480@gmail.com>']
-    website = "https://launchpad.net/ggate"
+    description = _("GGate is a logic circuit simulator developed with GTK+ and Python.")
+    copyright = "Copyright © 2022 - 2025 Ekure Edem"
+    developer = [
+        "Koichi Akabe <vbkaisetsu@gmail.com>",
+        f"{developer_name} <{developer_email}>"
+    ]
+
+    website = "https://github.com/astraldev/GGate"
     help = "help:ggate"
-    license = """GGate is free software: you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-GGate is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program.  If not, see <http://www.gnu.org/licenses/>."""
+    license = Gtk.License.GPL_3_0
 
     devel_bug = "https://github.com/astraldev/GGate/issues/new"
+    licence_string = _licence_string
 
 definitions = Definitions

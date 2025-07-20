@@ -9,14 +9,13 @@ from ggate import Preference
 from gi.repository import Gtk, Gdk, PangoCairo
 from gettext import gettext as _
 
-
-class DiagramArea(Gtk.Box):
+class TimingDiagramArea(Gtk.Box):
     def __init__(self, circuit, drawarea):
         Gtk.Box.__init__(self)
 
         self.circuit = circuit
         self.drawarea = drawarea
-        self.scale = 5000000  # pix/sec
+        self.scale = 5_000_000  # pix/sec
         self.start_time = 0.0
         self.end_time = 0.0002
         self.diagram_unit = 1  # 0: ns, 1: µs, 2: ms
@@ -150,7 +149,6 @@ class DiagramArea(Gtk.Box):
             self.move_start_y = y_axis
 
     def on_diagram_area_button_release_primary(self, widget, *event):
-        
         if event[0] == Gdk.BUTTON_PRIMARY:
             self.mouse_down = False
             if 39 <= self.cursor_y < self.img_height:

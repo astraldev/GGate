@@ -1,5 +1,5 @@
 from ggate import Preference
-from ggate.Components.LogicGates.SystemComponents import BaseComponent
+from ggate.Components.LogicGates.SystemComponents import BaseComponent, PropertyError
 from ggate.Utils import cairo_draw_text, cairo_paths, const, stack_with_tphl_lh
 from ggate.const import definitions as const
 
@@ -38,7 +38,8 @@ class ModNCounter(BaseComponent):
 
   def propertyChanged(self, prop):
     if prop[0] > 2 ** prop[1]:
-      return True
+      return PropertyError(f"N must be less than 2^bits (<b>{2 ** prop[1]}</b>)", [0])
+
     self.outpin_t = -40 - (prop[1] - 1) * 10
     self.outpin_b = -40 + (prop[1] - 1) * 10
     self.comp_rect = [10, min((self.outpin_t - 10, -60)), 120, max((self.outpin_b + 10, -20))]

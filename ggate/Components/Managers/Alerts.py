@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
   from ggate.MainFrame import MainFrame
-from gi.repository import Gtk, Adw
+from gi.repository import Adw
 
 # TODO: translations
 

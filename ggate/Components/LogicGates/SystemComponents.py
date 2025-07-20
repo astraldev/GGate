@@ -2,8 +2,14 @@
 
 from abc import ABC, abstractmethod
 from gettext import gettext as _
+from typing import List
 from gi.repository import Pango
 import cairo
+
+class PropertyError:
+  def __init__(self, message: str, positions: List[int] = None):
+    self.positions = positions if positions is not None else []
+    self.message = message
 
 class BaseComponent(ABC):
   def __init__(self, *args, **kwds):
@@ -89,7 +95,7 @@ class BaseComponent(ABC):
   def click(self, x, y, time):
     return False
 
-  def propertyChanged(self, prop):
+  def propertyChanged(self, prop) -> False | PropertyError:
     return False
 
   def initialize(self):

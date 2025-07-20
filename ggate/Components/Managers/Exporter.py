@@ -7,5 +7,3 @@ if TYPE_CHECKING:
 class Exporter:
     def __init__(self, mainframe: MainFrame):
        self.mainframe = mainframe
-
-    

@@ -1,0 +1,7 @@
+<svg viewBox="0 0 24 24" width="24" height="24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#000" stroke-width="1.067" stroke-linejoin="round">
+    <path d="M0 16.884h2.985M4.699 2.637H19.3c.78 0 1.715.988 1.715 1.715v15.296c0 .726-.936 1.714-1.715 1.714H4.7c-.779 0-1.714-.988-1.714-1.714V4.352c0-.727.935-1.715 1.714-1.715zm16.305 4.199H24m-2.996 6.7H24m-2.996-3.35H24m-2.996 6.698H24M0 6.836h2.985" stroke-width="2.5"/>
+    <path d="m3.393 9.067 1.922-2.37-1.922-2.091z" fill="#000" stroke-width=".6" stroke-linecap="round" stroke-miterlimit="4.2" paint-order="stroke fill markers"/>
+  </g>
+  <path d="M12.023 16.125q-1.36 0-2.154-.827-.793-.839-.793-2.414v-1.768q0-1.53.793-2.38.794-.861 2.154-.861 1.416 0 2.153.793.748.793.748 2.153v.204h-1.496v-.204q0-.374-.125-.736-.124-.374-.43-.612t-.85-.238q-.499 0-.828.249-.317.238-.476.646-.147.397-.147.873v1.994q0 .771.329 1.27.328.498 1.122.498.578 0 .884-.226.306-.227.408-.59.113-.362.113-.77v-.204h1.496v.204q0 1.405-.748 2.176-.737.77-2.153.77" style="line-height:.75;-inkscape-font-specification:&quot;Space Mono, Bold&quot;;text-align:center" aria-label="C" font-weight="700" font-size="11.333" font-family="Space Mono" text-anchor="middle"/>
+</svg>

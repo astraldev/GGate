@@ -16,8 +16,8 @@ from gettext import gettext as _
 from ggate.DrawArea import DrawArea
 from ggate.ComponentView import ComponentView
 from ggate.CircuitManager import CircuitManager
-from ggate.PropertyWindow import PropertyWindow
-from ggate.PreferencesWindow import PreferencesWindow
+from ggate.Components.Windows.Properties import PropertyWindow
+from ggate.Components.Windows.Preferences import PreferencesWindow
 from ggate import Preference
 
 from ggate.Components.LogicGates import logic_gates
@@ -88,24 +88,6 @@ class MainFrame(Adw.ApplicationWindow):
 
         # Preferences window
         self.pref_window = PreferencesWindow(self)
-
-        # About dialog
-        self.about_dialog = Gtk.AboutDialog()
-        picture = Gdk.Texture.new_for_pixbuf(
-            GdkPixbuf.Pixbuf.new_from_file(config.DATADIR + "/images/ggate.png")
-        )
-        self.about_dialog.set_logo(picture)
-        self.about_dialog.set_program_name(const.app_name)
-        self.about_dialog.set_version(config.VERSION)
-        self.about_dialog.set_comments(const.description)
-        self.about_dialog.set_copyright(const.copyright)
-        self.about_dialog.set_website(const.website)
-        self.about_dialog.set_license(const.license)
-        self.about_dialog.set_authors(const.developer)
-
-        tr_credits = _("translator-credits")
-        if tr_credits != "translator-credits":
-            self.about_dialog.set_translator_credits(tr_credits)
 
         self.clipboard = self.get_clipboard()
 

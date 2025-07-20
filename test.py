@@ -1,35 +1,63 @@
 import gi
 gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk
+gi.require_version('Adw', '1')
+from gi.repository import Gtk, Adw
+import math
 
-# Create the main application window
-class MyWindow(Gtk.ApplicationWindow):
-    def __init__(self, app):
-        super().__init__(application=app, title="Alert Dialog Example")
-        self.set_default_size(400, 300)
+class CatWindow(Adw.ApplicationWindow):
+    def __init__(self, application=None):
+        super().__init__(title="Cute Cat with Cairo", application=application)
+        self.set_default_size(300, 300)
 
-        # Create a button that will trigger the alert dialog
-        button = Gtk.Button(label="Show Alert")
-        button.connect("clicked", self.on_button_clicked)
-        self.set_child(button)
+        drawing_area = Gtk.DrawingArea()
+        drawing_area.set_draw_func(self.on_draw)
+        self.set_content(drawing_area)
+        self.present()
 
-    def on_button_clicked(self, widget):
-        # Create an AlertDialog instance
-        alert = Gtk.NativeDialog.newv()
-        alert.set_transient_for(self)
-        
-        # Show the alert dialog
-        alert.show(parent=self)
+    def on_draw(self, area, ctx, width, height):
+        # Center and scale
+        ctx.translate(width / 2, height / 2 + 20)
+        scale = min(width, height) / 200.0
+        ctx.scale(scale, scale)
 
-# Create the application
-class MyApplication(Gtk.Application):
+        # Draw head (circle)
+        ctx.set_source_rgb(0.2, 0.2, 0.2)
+        ctx.arc(0, -40, 40, 0, 2 * math.pi)
+        ctx.fill()
+
+        # Draw ears
+        ctx.move_to(-30, -70); ctx.line_to(-60, -110); ctx.line_to(-10, -80)
+        ctx.move_to(30, -70); ctx.line_to(60, -110); ctx.line_to(10, -80)
+        ctx.fill()
+
+        # Draw body
+        ctx.arc(0, 40, 60, 0, math.pi)
+        ctx.fill()
+
+        # Draw tail
+        ctx.set_line_width(12)
+        ctx.move_to(60, 20)
+        ctx.curve_to(110, 0, 110, 80, 60, 60)
+        ctx.stroke()
+
+        # Draw eyes
+        ctx.set_source_rgb(1, 1, 1)
+        for x in (-15, 15):
+            ctx.arc(x, -50, 8, 0, 2 * math.pi)
+            ctx.fill()
+            ctx.set_source_rgb(0, 0, 0)
+            ctx.arc(x, -48, 3, 0, 2 * math.pi)
+            ctx.fill()
+            ctx.set_source_rgb(1, 1, 1)  # reset for next eye
+
+class CatApp(Adw.Application):
     def __init__(self):
-        super().__init__(application_id="com.example.AlertDialogExample")
+        super().__init__(application_id="com.example.CatApp")
 
     def do_activate(self):
-        win = MyWindow(self)
+        win = CatWindow(application=self)
         win.present()
 
-# Run the application
-app = MyApplication()
-app.run()
+if __name__ == "__main__":
+    app = CatApp()
+    app.run()

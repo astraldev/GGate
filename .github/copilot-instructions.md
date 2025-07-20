@@ -5,3 +5,4 @@
 - ALWAYS use double quotes for strings
 - Verify the correctness of all codes and answers strictly and meticulously
 - Ensure the logic in the suggested code doesn't conflict with those in the levels above.
+- When creating commit messages, ensure they follow conventional commits and one liners

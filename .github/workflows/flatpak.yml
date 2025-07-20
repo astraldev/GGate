@@ -1,0 +1,25 @@
+name: Flatpak Build
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+
+jobs:
+  flatpak-builder:
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-45
+      options: --privileged
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Set up Flatpak environment
+        run: |
+          flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak install -y flathub org.gnome.Platform//45 org.gnome.Sdk//45
+      
+      - name: Build Flatpak
+        run: |
+          flatpak-builder --repo=repo --force-clean build-dir build-aux/flatpak/org.astralco.GGate.json

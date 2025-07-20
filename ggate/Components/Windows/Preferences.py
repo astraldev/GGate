@@ -4,7 +4,6 @@ from ggate import Preference
 from gi.repository import Gtk, Gdk
 from gettext import gettext as _
 
-
 class PreferencesWindow(Gtk.Dialog):
     def __init__(self, parent):
         Gtk.Dialog.__init__(

@@ -1,8 +1,8 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
 from gettext import gettext as _
-from ggate.const import definitions as const
 from ggate import Preference
+from ggate.const import definitions as const
 from ggate.Utils import cairo_draw_text, cairo_paths, stack_with_tphl_lh
 from .SystemComponents import BaseComponent
 

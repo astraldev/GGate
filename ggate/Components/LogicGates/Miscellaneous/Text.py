@@ -1,4 +1,4 @@
-from ggate.Components.LogicGates.SystemComponents import BaseComponent
+from ggate.Components.LogicGates.SystemComponents import BaseComponent, PropertyError
 from ggate.Utils import Pango, cairo_draw_text
 from ggate.const import definitions
 from gi.repository import Pango
@@ -19,9 +19,7 @@ class Text(BaseComponent):
     self.height = 12
 
   def propertyChanged(self, prop):
-    if prop[0] == "":
-      return True
-    return False
+    return PropertyError("Name cannot be empty.", [0]) if prop[0] == "" else False
 
   def drawComponent(self, cr, layout):
     cairo_draw_text(cr, layout, self.values[0], 10, -10, 0.0, 0.5)
