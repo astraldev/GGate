@@ -1,27 +1,27 @@
-icon_files = [
+icon_files = files(
   # Components
-  '7seg.svg',
-  'adder.svg',
-  'counter.svg',
-  'dff.svg',
-  'jkff.svg',
-  'pipo.svg',
-  'piso.svg',
-  'rsff.svg',
-  'sipo.svg',
-  'siso.svg',
-  'timer.svg',
+  'components/7seg.svg',
+  'components/adder.svg',
+  'components/counter.svg',
+  'components/dff.svg',
+  'components/jkff.svg',
+  'components/pipo.svg',
+  'components/piso.svg',
+  'components/rsff.svg',
+  'components/sipo.svg',
+  'components/siso.svg',
+  'components/tff.svg',
 
   # Actions
-  'flip-horizontal.svg',
-  'flip-vertical.svg',
-  'rotate-left.svg',
-  'rotate-right.svg',
-]
+  'actions/flip-horizontal.svg',
+  'actions/flip-vertical.svg',
+  'actions/rotate-left.svg',
+  'actions/rotate-right.svg',
+)
 
 icon_files_xml = []
 foreach file: icon_files
-  icon_files_xml += '<file preprocess="xml-stripblanks">' + file + '</file>'
+  icon_files_xml += '<file preprocess="xml-stripblanks">' + file.full_path() + '</file>'
 endforeach
 
 resources_xml = configure_file(
@@ -41,3 +41,6 @@ ggate_resources = gnome.compile_resources(
   install: true,
   install_dir: pkgdatadir,
 )
+
+install_subdir('icons/components',  install_dir: pkgdatadir)
+install_subdir('icons/actions',  install_dir: pkgdatadir)

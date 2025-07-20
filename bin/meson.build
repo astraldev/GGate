@@ -1,6 +1,6 @@
 configure_file(
   input: './ggate.in',
-  output: 'bin',
+  output: 'ggate',
   configuration: conf,
   install: true,
   install_dir: get_option('bindir'),

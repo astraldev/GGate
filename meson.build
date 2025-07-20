@@ -1,7 +1,7 @@
 project(
   'ggate',
   version: '5.0.0',
-  meson_version: '>= 0.62.0',
+  meson_version: '>= 1.4.0',
   default_options: [
     'warning_level=2',
     'werror=false',
@@ -16,7 +16,7 @@ gnome = import('gnome')
 python = import('python')
 
 py_installation = python.find_installation('python3',
-  modules: ['pycairo', 'pygobject', 'packaging', 'igraph', 'shapely']
+  modules: ['gi', 'cairo', 'packaging', 'igraph', 'shapely']
 )
 
 py_installation.dependency()
@@ -40,14 +40,23 @@ conf.set('bindir', get_option('bindir'))
 subdir('bin')
 subdir('data/images')
 
+exclude_pycache_dirs = run_command(
+  'sh', '-c',
+  '''
+  find ggate -type d -name __pycache__ | sed "s|^ggate/||"
+  ''',
+  check: true
+).stdout().strip().split('\n')
+
 # Install the entire ggate package recursively, excluding .pyc files
 install_subdir('ggate',
   install_dir: py_installation.get_install_dir(),
-  exclude_files: ['**/*.pyc', '**/__pycache__']
+  exclude_directories: exclude_pycache_dirs,
+  exclude_files: ['*.pyc']
 )
 
-gnome.post_install(
-  glib_compile_schemas: true,
-  gtk_update_icon_cache: true,
-  update_desktop_database: true,
-)
+# gnome.post_install(
+#   glib_compile_schemas: true,
+#   gtk_update_icon_cache: true,
+#   update_desktop_database: true,
+# )
