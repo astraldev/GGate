@@ -42,6 +42,13 @@ conf.set('VERSION', meson.project_version())
 conf.set('bindir', get_option('bindir'))
 
 subdir('bin')
+subdir('data/images')
+
+# Install the entire ggate package recursively, excluding .pyc files
+install_subdir('ggate',
+  install_dir: py_installation.get_install_dir(),
+  exclude_files: ['**/*.pyc', '**/__pycache__']
+)
 
 gnome.post_install(
   glib_compile_schemas: true,

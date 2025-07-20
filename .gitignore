@@ -5,7 +5,6 @@
 **/__pycache__/
 m4/
 *.cache/
-.vscode/
 debian/
 *.egg-info/
 dist/
