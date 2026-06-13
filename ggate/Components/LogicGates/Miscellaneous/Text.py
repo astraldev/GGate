@@ -1,5 +1,5 @@
 from ggate.Components.LogicGates.SystemComponents import BaseComponent, PropertyError
-from ggate.Utils import Pango, cairo_draw_text
+from ggate.Utils import cairo_draw_text
 from ggate.const import definitions
 from gi.repository import Pango
 

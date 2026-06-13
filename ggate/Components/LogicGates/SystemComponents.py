@@ -1,7 +1,6 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
 from abc import ABC, abstractmethod
-from gettext import gettext as _
 from typing import List
 from gi.repository import Pango
 import cairo
@@ -79,14 +78,14 @@ class BaseComponent(ABC):
                           max((self.rot_comp_rect[1], self.rot_comp_rect[3]))]
     self.rot_input_pins = self.input_pins[:]
     self.rot_input_pins_dir = self.input_pins_dir[:]
-    for i, p in enumerate(self.input_pins):
+    for i, _ in enumerate(self.input_pins):
       self.rot_input_pins[i] = (self.matrix[0] * self.rot_input_pins[i][0] + self.matrix[1] * self.rot_input_pins[i][1],
                                 self.matrix[2] * self.rot_input_pins[i][0] + self.matrix[3] * self.rot_input_pins[i][1])
       self.rot_input_pins_dir[i] = (self.matrix[0] * self.rot_input_pins_dir[i][0] + self.matrix[1] * self.rot_input_pins_dir[i][1],
                                     self.matrix[2] * self.rot_input_pins_dir[i][0] + self.matrix[3] * self.rot_input_pins_dir[i][1])
     self.rot_output_pins = self.output_pins[:]
     self.rot_output_pins_dir = self.output_pins_dir[:]
-    for i, p in enumerate(self.output_pins):
+    for i, _ in enumerate(self.output_pins):
       self.rot_output_pins[i] = (self.matrix[0] * self.rot_output_pins[i][0] + self.matrix[1] * self.rot_output_pins[i][1],
                                  self.matrix[2] * self.rot_output_pins[i][0] + self.matrix[3] * self.rot_output_pins[i][1])
       self.rot_output_pins_dir[i] = (self.matrix[0] * self.rot_output_pins_dir[i][0] + self.matrix[1] * self.rot_output_pins_dir[i][1],

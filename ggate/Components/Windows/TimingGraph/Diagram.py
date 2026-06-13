@@ -1,18 +1,17 @@
-from decimal import Decimal
-import math
+from __future__ import annotations
 from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+  from ggate.MainFrame import MainFrame
+
+import math
 import cairo
 
+from decimal import Decimal
 from ggate import Preference
 from ggate.Utils import cairo_draw_text, cairo_paths, number_in_range
 from ggate.const import Definitions
-
-if TYPE_CHECKING:
-    from ggate.MainFrame import MainFrame
-
 from gi.repository import Gtk, Gdk, PangoCairo, Pango
-
 
 class TimingGraphDiagram(Gtk.ScrolledWindow):
     def __get_timing(self):

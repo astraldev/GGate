@@ -32,7 +32,7 @@ class Probe(BaseComponent):
     cr.stroke()
     cairo_draw_text(cr, layout, "V", 40, -10, 0.5, 0.5)
     cairo_draw_text(cr, layout, self.values[0], 55, -10, 0.0, 0.5)
-    (w, h) = layout.get_size()
+    (w, _) = layout.get_size()
     self.width = w / Pango.SCALE
     if self.width < 12:
       self.width = 12

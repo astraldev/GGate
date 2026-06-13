@@ -1,6 +1,7 @@
 ./*.py
 *.glc
 !data/examples/*.glc
+.flatpak-builder/
 ./*.png
 **/__pycache__/
 m4/
@@ -17,3 +18,5 @@ deb_dist/
 .DS_Store
 .ruff_cache
 .mypy_cache
+dev-*
+.agents/gtk4

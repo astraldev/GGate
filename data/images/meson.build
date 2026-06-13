@@ -1,4 +1,4 @@
-icon_files = files(
+icon_files = [
   # Components
   'components/7seg.svg',
   'components/adder.svg',
@@ -17,11 +17,11 @@ icon_files = files(
   'actions/flip-vertical.svg',
   'actions/rotate-left.svg',
   'actions/rotate-right.svg',
-)
+]
 
 icon_files_xml = []
 foreach file: icon_files
-  icon_files_xml += '<file preprocess="xml-stripblanks">' + file.full_path() + '</file>'
+  icon_files_xml += '<file preprocess="xml-stripblanks">' + file + '</file>'
 endforeach
 
 resources_xml = configure_file(
@@ -42,5 +42,5 @@ ggate_resources = gnome.compile_resources(
   install_dir: pkgdatadir,
 )
 
-install_subdir('icons/components',  install_dir: pkgdatadir)
-install_subdir('icons/actions',  install_dir: pkgdatadir)
+install_subdir('actions',  install_dir: pkgdatadir / 'icons')
+install_subdir('components',  install_dir: pkgdatadir / 'icons')

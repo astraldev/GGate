@@ -1,6 +1,6 @@
 from ggate import Preference
 from ggate.Components.LogicGates.SystemComponents import BaseComponent, PropertyError
-from ggate.Utils import cairo_draw_text, cairo_paths, const, stack_with_tphl_lh
+from ggate.Utils import cairo_draw_text, cairo_paths, stack_with_tphl_lh
 from ggate.const import definitions as const
 
 import math
@@ -44,8 +44,8 @@ class ModNCounter(BaseComponent):
     self.outpin_b = -40 + (prop[1] - 1) * 10
     self.comp_rect = [10, min((self.outpin_t - 10, -60)), 120, max((self.outpin_b + 10, -20))]
     self.output_pins = [(120, y) for y in range(self.outpin_t, self.outpin_b + 1, 20)]
-    self.output_pins_dir = [const.direction_W for i in range(prop[1])]
-    self.output_level = [False for i in range(prop[1])]
+    self.output_pins_dir = [const.direction_W for _ in range(prop[1])]
+    self.output_level = [False for _ in range(prop[1])]
     self.tp_hl = prop[3] * 0.000001
     self.tp_lh = prop[4] * 0.000001
     return False
@@ -103,11 +103,11 @@ class ModNCounter(BaseComponent):
 
   def initialize(self):
     self.store[0] = 0
-    self.output_stack = [[[0.0, False]] for i in range(self.values[1])]
+    self.output_stack = [[[0.0, False]] for _ in range(self.values[1])]
 
   def calculate(self, input_datas, time):
     if input_datas[1]:
-      output_data = [False for i in range(self.values[1])]
+      output_data = [False for _ in range(self.values[1])]
       self.store[0] = 0
     elif (self.values[2] == 0 and not self.input_level[0] and input_datas[0]) or (self.values[2] == 1 and self.input_level[0] and not input_datas[0]): # trigger
       self.store[0] += 1

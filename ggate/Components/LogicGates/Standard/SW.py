@@ -1,6 +1,6 @@
 from ggate import Preference
 from ggate.Components.LogicGates.SystemComponents import BaseComponent
-from ggate.Utils import cairo_draw_text, cairo_paths, const
+from ggate.Utils import cairo_draw_text, cairo_paths
 from ggate.const import definitions as const
 
 

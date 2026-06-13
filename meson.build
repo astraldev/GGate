@@ -36,6 +36,7 @@ conf = configuration_data()
 conf.set('PYTHON', python.find_installation('python3').full_path())
 conf.set('VERSION', meson.project_version())
 conf.set('bindir', get_option('bindir'))
+conf.set('pkgdatadir', pkgdatadir)
 
 subdir('bin')
 subdir('data/images')

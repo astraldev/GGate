@@ -24,10 +24,14 @@ gi.require_version("Gtk", '4.0')
 gi.require_version('PangoCairo', '1.0')
 gi.require_version("Adw", "1")
 
+from gi.repository import Gio
 from ggate.MainFrame import GLogicApplication
 from ggate import __version__
 
 if __name__ == "__main__":
+  resource = Gio.Resource.load("./dev-resources.gresource")
+  resource._register()
+
   app = GLogicApplication()
   if len(sys.argv) > 1 and sys.argv[1] == "--version":
     print(f"GGate {__version__}")

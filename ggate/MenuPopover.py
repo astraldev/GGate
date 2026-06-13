@@ -96,9 +96,9 @@ class ContextMenu(Gtk.PopoverMenu):
     def _get_window(self) -> Gtk.ApplicationWindow:
         return self.get_parent().parent
     
-    def _handle_clipboard(self, clipboard, task, *args):
+    def _handle_clipboard(self, clipboard: Gdk.Clipboard, task, *args):
         window = self._get_window()
-        str_data = window.get_clipboard().read_text_finish(task)
+        str_data = clipboard.read_text_finish(task)
         if str_data is not None:
             components = self._parent.circuit.converter.string_to_components(str_data)
             has_clipboard = not isinstance(components, str) and len(components) > 0

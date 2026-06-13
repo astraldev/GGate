@@ -27,7 +27,7 @@ class PropertyWindow(Adw.Dialog):
         self.banner: Adw.Banner = None
 
         self.set_content_width(350)
-        self.connect("close-request", self.on_window_delete)
+        self.connect("closed", self.on_window_delete)
     
     def _set_invalid_state(self, positions):
         for idx, ctrl in enumerate(self.prop_controls):

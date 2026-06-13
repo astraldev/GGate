@@ -5,6 +5,7 @@ import sys
 import webbrowser
 
 import gi
+
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 
@@ -24,9 +25,8 @@ from ggate.Components.LogicGates import logic_gates
 from ggate.Components.Managers.FileManager import FileIOManager
 from ggate.Components.Managers.FileManager import FileManager
 from ggate.Components.Managers.Alerts import AlertDialogs
-
+from ggate.Components.Windows.TimingGraph.Display import TimingGraphDisplayWindow
 from ggate.StatusDisplay import StatusDisplay
-from ggate.TimingDiagramWindow import TimingDiagramWindow
 
 themed_icons = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
 themed_icons.add_search_path(config.DATADIR + "/images")
@@ -71,6 +71,8 @@ class MainFrame(Adw.ApplicationWindow):
         self.comp_window = ComponentView()
         self.comp_window.connect("component-checked", self.on_comp_checked)
 
+        self.statusbar = StatusDisplay()
+
         self.create_window()
 
         # Property window
@@ -78,11 +80,9 @@ class MainFrame(Adw.ApplicationWindow):
         self.prop_window.connect("window-hidden", self.on_propwindow_hidden)
         self.prop_window.connect("property-changed", self.on_property_changed)
 
-        # Timing diagram window
-        self.diagram_window = TimingDiagramWindow(self)
-
-        # Preferences window
+        # Other Windows
         self.pref_window = PreferencesWindow(self)
+        self.timing_diagram = TimingGraphDisplayWindow(self)
 
         self.clipboard = self.get_clipboard()
 
@@ -203,9 +203,7 @@ class MainFrame(Adw.ApplicationWindow):
 
         # Add Net
         self.action_net = Gtk.ToggleButton()
-        image = Gtk.Image.new_from_pixbuf(
-            GdkPixbuf.Pixbuf.new_from_file(config.DATADIR + "images/add-net.png")
-        )
+        image = Gtk.Image.new_from_icon_name("list-add-symbolic")
         self.action_net.set_child(image)
         self.action_net.connect("toggled", self.on_action_net_toggled)
         self.action_net.set_tooltip_markup(
@@ -219,6 +217,7 @@ class MainFrame(Adw.ApplicationWindow):
 
         paned = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.toast_overlay = Adw.ToastOverlay()
 
         # Menu Button
 
@@ -268,17 +267,17 @@ class MainFrame(Adw.ApplicationWindow):
             self.header_bar.pack_start(self.menu_button)
             self.header_bar.pack_end(_run_pause_box)
 
-        self.set_titlebar(self.header_bar)
-
         # Draw area
         self.drawarea = DrawArea(self)
         self.drawarea.circuit = self.circuit
-        box.append(self.drawarea)
-        self.drawarea.set_vexpand(True)
-        self.drawarea.set_hexpand(True)
+
+        self.toast_overlay.set_child(self.drawarea)
+        self.toast_overlay.set_vexpand(True)
+        self.toast_overlay.set_hexpand(True)
+
+        box.append(self.toast_overlay)
 
         # Status bar
-        self.statusbar = StatusDisplay()
         self.action_bar = Gtk.ActionBar()
 
         self.set_up_action_bar()
@@ -308,7 +307,10 @@ class MainFrame(Adw.ApplicationWindow):
         paned.set_resize_start_child(False)
         paned.set_shrink_start_child(False)
 
-        self.set_child(paned)
+        toolbar_view = Adw.ToolbarView()
+        toolbar_view.add_top_bar(self.header_bar)
+        toolbar_view.set_content(paned)
+        self.set_content(toolbar_view)
 
         # Connect events
         self.connect("close-request", self.on_window_delete)
@@ -329,8 +331,6 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.set_component(const.component_none)
         self.disable_edit_actions()
         self.action_net.set_active(False)
-        self.diagram_window.destroy()
-        self.diagram_window = TimingDiagramWindow(self)
 
     # >> app action handlers >>
 
@@ -427,8 +427,6 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.rect_select_enabled = False
         self.circuit.analyze_net_connections()
         self.circuit.initialize_logic()
-        if not self.circuit.analyze_logic():
-            self.diagram_window.diagram_area.createDiagram()
 
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
@@ -440,9 +438,7 @@ class MainFrame(Adw.ApplicationWindow):
                 self.action_redo.set_sensitive(True)
             self.comp_window.set_all_sensitive(True)
             self.action_net.set_sensitive(True)
-            self.diagram_window.close()
-            self.diagram_window = TimingDiagramWindow(self)
-            self.statusbar.update("")
+
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
 
@@ -453,10 +449,7 @@ class MainFrame(Adw.ApplicationWindow):
             play_image = Gtk.Image.new_from_icon_name("media-playback-pause-symbolic")
             widget.set_tooltip_markup(TOOLTIPS["simulation"]["pause"])
             widget.set_child(play_image)
-
             self.pause_running_mode = False
-            if not self.circuit.analyze_logic():
-                self.diagram_window.diagram_area.createDiagram()
             self.drawarea.queue_draw()
         else:  # if not paused, pause it
             pause_image = Gtk.Image.new_from_icon_name("media-playback-start-symbolic")
@@ -490,34 +483,22 @@ class MainFrame(Adw.ApplicationWindow):
                 .components_to_string(self.circuit.selected_components)
         )
 
-    def on_action_paste_pressed(self, *widget):
-        def _handler(clipboard, task):
+    def on_action_paste_pressed(self, *args):
+        def _handler(clipboard: Gdk.Clipboard, task, *args):
             str_data = clipboard.read_text_finish(task)
-            if str_data is not None:
-                tmp = string_to_components(str_data)
-                if isinstance(tmp, str):
-                    dialog = Gtk.MessageDialog(
-                        transient_for=self,
-                        message_type=Gtk.MessageType.ERROR,
-                        button_type=Gtk.ButtonsType.OK,
-                    )
-                    dialog.set_markup(_("Error"))
-                    dialog.get_message_area().append(Gtk.Label(label=tmp))
-                    dialog.present()
-                    return
-                else:
-                    pasted_components = tmp
+            if str_data is None: return  # noqa: E701
 
-                if not pasted_components:
-                    return
-
+            components = self.circuit.converter.string_to_components(str_data)
+            if isinstance(components, str) or len(components) == 0:
+                # TODO: toast unable to parse clipboard
+                return
+            else:
                 self.drawarea.set_component(const.component_none)
-                self.drawarea.set_pasted_components(pasted_components)
+                self.drawarea.set_pasted_components(components)
 
         self.clipboard.read_text_async(None, _handler)
 
     def on_action_undo_pressed(self, *widget):
-
         if self.circuit.action_count == 0:
             return
 
@@ -527,7 +508,6 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.queue_draw()
 
     def on_action_redo_pressed(self, *widget):
-
         if self.circuit.action_count == len(self.circuit.components_history) - 1:
             return
 
@@ -595,7 +575,7 @@ class MainFrame(Adw.ApplicationWindow):
         webbrowser.open(const.devel_bug)
 
     def on_action_diagram_pressed(self, *widget):
-        self.diagram_window.present()
+        self.timing_diagram.display()
 
     def on_action_save_image(self, *args):
         save_schematics_as_image(self.circuit, self.running_mode, self)
