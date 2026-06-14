@@ -179,11 +179,12 @@ class CircuitConverter():
     elif which == "meta":
       if (zoom_val := content.get("zoom", None)):
         zoom = float(zoom_val[0])
-        self.circuit.mainframe.drawarea.zoom = zoom
-        self.circuit.mainframe.drawarea.drawingarea.set_size_request(
-          int(self.circuit.mainframe.drawarea.width * zoom),
-          int(self.circuit.mainframe.drawarea.height * zoom)
-        )
+        if self.circuit.mainframe:
+          self.circuit.mainframe.drawarea.zoom = zoom
+          self.circuit.mainframe.drawarea.drawingarea.set_size_request(
+            int(self.circuit.mainframe.drawarea.width * zoom),
+            int(self.circuit.mainframe.drawarea.height * zoom)
+          )
       return None
     return None
 
@@ -210,7 +211,7 @@ class CircuitManager(GObject.GObject):
   __gsignals__ = {
     'currenttime-changed': (GObject.SIGNAL_RUN_FIRST, None, (float,)),
     'title-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
-    'message-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
+    'message-changed': (GObject.SIGNAL_RUN_FIRST, None, (str, bool)),
     'item-unselected': (GObject.SIGNAL_RUN_FIRST, None, ()),
     'alert': (GObject.SIGNAL_RUN_FIRST, None, (str,))
   }
@@ -253,7 +254,7 @@ class CircuitManager(GObject.GObject):
     self.simple_change = True
     self.save_point = self.action_count
     self.emit("title-changed", "%s - %s" % (os.path.basename(filepath), definitions.app_name))
-    self.emit('message-changed', _('Saved File ')+os.path.basename(filepath))
+    self.emit('message-changed', _('Saved File ')+os.path.basename(filepath), True)
 
     return True
 
@@ -274,7 +275,7 @@ class CircuitManager(GObject.GObject):
     self.components_history = [copy.deepcopy(self.components)]
     self.filepath = filepath
     self.emit("title-changed", "%s - %s" % (os.path.basename(filepath), definitions.app_name))
-    self.emit('message-changed', _('Opened file ' + os.path.basename(filepath)))
+    self.emit('message-changed', _('Opened file ' + os.path.basename(filepath)), True)
 
     return False
   
@@ -538,7 +539,7 @@ class CircuitManager(GObject.GObject):
           for j,net in enumerate(self.net_connections):
             if (c[1].pos_x + p[0], c[1].pos_y + p[1]) in net:
               if self.net_levels[j] != -1 and self.net_levels[j] != c[1].output_level[i]:
-                self.emit("message-changed", _("Output port is short circuit!"))
+                self.emit("message-changed", _("Output port is short circuit!"), False)
                 return True
               self.net_levels[j] = c[1].output_level[i]
     return False
@@ -626,7 +627,7 @@ class CircuitManager(GObject.GObject):
         continue
       inputs = self._gather_inputs(c[1])
       if inputs is None:
-        self.emit("message-changed", _("Input port is open circuit!"))
+        self.emit("message-changed", _("Input port is open circuit!"), False)
         return True
       c[1].calculate(inputs, self.current_time)
       c[1].input_level = inputs[:]
@@ -686,15 +687,15 @@ class CircuitManager(GObject.GObject):
 
       state = self._settle_state(net_levels_history)
       if state == "settled":
-        self.emit("message-changed", "")
+        self.emit("message-changed", "", False)
         return counter
       if state == "oscillate":
-        self.emit("message-changed", _("This circuit oscillates on infinite frequency!"))
+        self.emit("message-changed", _("This circuit oscillates on infinite frequency!"), False)
         return None
 
       net_levels_history.append(self.net_levels)
       if counter >= max_iters:
-        self.emit("message-changed", _("Calculation exceeded %d iterations — raise the limit in Preferences.") % max_iters)
+        self.emit("message-changed", _("Calculation exceeded %d iterations — raise the limit in Preferences.") % max_iters, False)
         return None
       counter += 1
       yield ("progress", self.current_time)
@@ -747,7 +748,7 @@ class CircuitManager(GObject.GObject):
       return
     self._log_if_slow()
     if not val:
-      self.emit("message-changed", "")
+      self.emit("message-changed", "", False)
     if callback:
       callback(val)
 

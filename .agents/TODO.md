@@ -21,11 +21,8 @@ Companion docs: `reference/build-system-analysis.md`, `reference/delegation-brie
   each row; a saner default zoom for high-frequency signals.
 - [ ] **`Windows/Properties.py`** rebuilds all widgets + re-`present()` on every
   `show_properties` (old children leak). Build once / reuse; consider `Adw.ToolbarView`.
-- [x] **Header bar** — migrated to `Adw.HeaderBar` for better Adwaita/Gnome integration.
 - [ ] **Initial centering gated by resize pref** — when `autocenter_resize` is OFF, first-paint
   centering is also skipped. Split initial-vs-resize if we want it strict.
-- [ ] `Preferences.py:` font picker TODO.
-- [x] `AlertDialogs` single instance re-adds response IDs each open (fixed by dynamic instantiation).
 
 ## P2 — icons & dead code
 
@@ -77,6 +74,12 @@ Companion docs: `reference/build-system-analysis.md`, `reference/delegation-brie
 Earlier work (app launches, dialogs migrated, sim/crash fixes) — see git history
 `a0c0edc`…`a078fb1`. Recent (this development cycle):
 
+- [x] **Header bar migrated to Adw.HeaderBar** — replaced Gtk.HeaderBar with Adw.HeaderBar for standard Adwaita layout, positioning menu buttons and simulation controls on the right.
+- [x] **AlertDialogs duplicate response fixed** — refactored class to dynamically instantiate Adw.AlertDialog instead of subclassing it to avoid registering same response IDs multiple times.
+- [x] **Theme Light/Dark Variants** — renamed existing dark themes (Frappé, Mocha, Space) to (Dark) and created new (Light) variant JSON files: FrappeLight.json (using Catppuccin Latte), MochaLight.json (using Catppuccin Latte/Light variant), and SpaceLight.json (using Space Light variant).
+- [x] **Zoom limit restrictions** — restricted zoom level range on the canvas to between 0.5 and 20.0 (in ggate/DrawArea.py).
+- [x] **GLC file serialization and parsing zoom/positions** — added a `meta` block to output and restore the current canvas zoom level on load, and cleaned up coordinate serialization/parsing using comprehensions and float string handling.
+- [x] **Preferences font picker** — completed typography section with monospace font filtering.
 - [x] **Timing diagram revamp** — `Display.py` (`Adw.Dialog` + `ToolbarView`, scale/range/
   save toolbar) and `Diagram.py` (synced scrolls, pure `set_draw_func` rendering, gesture
   scrubbing, empty-history placeholder) rewritten; renders waveforms theme-aware.

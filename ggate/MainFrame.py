@@ -198,8 +198,6 @@ class MainFrame(Adw.ApplicationWindow):
             _("Rotate component ") + "<b>" + _("Left 90°") + "</b>"
         )
 
-        self.action_bar.pack_start(self.action_rotleft)
-
         # Rotate Right Action
         self.action_rotright = Gtk.Button()
         image = Gtk.Image.new_from_icon_name("object-rotate-right-symbolic")
@@ -209,7 +207,12 @@ class MainFrame(Adw.ApplicationWindow):
             _("Rotate component ") + "<b>" + _("Right 90°") + "</b>"
         )
 
-        self.action_bar.pack_start(self.action_rotright)
+        # Group Rotate Actions
+        _rot_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        _rot_box.add_css_class("linked")
+        _rot_box.append(self.action_rotleft)
+        _rot_box.append(self.action_rotright)
+        self.action_bar.pack_start(_rot_box)
 
         # Flip Horizontal
         self.action_fliphori = Gtk.Button()
@@ -220,8 +223,6 @@ class MainFrame(Adw.ApplicationWindow):
             _("Flip component " + "<b>" + _("horizontally") + "</b>")
         )
 
-        self.action_bar.pack_start(self.action_fliphori)
-
         # Flip Vertical
         self.action_flipvert = Gtk.Button()
         image = Gtk.Image.new_from_icon_name("object-flip-vertical-symbolic")
@@ -231,7 +232,12 @@ class MainFrame(Adw.ApplicationWindow):
             _("Flip component ") + "<b>" + _("vertically") + "</b>"
         )
 
-        self.action_bar.pack_start(self.action_flipvert)
+        # Group Flip Actions
+        _flip_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        _flip_box.add_css_class("linked")
+        _flip_box.append(self.action_fliphori)
+        _flip_box.append(self.action_flipvert)
+        self.action_bar.pack_start(_flip_box)
 
         # Add Net
         self.action_net = Gtk.ToggleButton()
@@ -301,24 +307,15 @@ class MainFrame(Adw.ApplicationWindow):
 
         box.append(self.toast_overlay)
 
-        # Status bar
+        # Status bar / Bottom Action Bar
         self.action_bar = Gtk.ActionBar()
+        self.action_bar.set_hexpand(True)
 
         self.set_up_action_bar()
         self.set_up_shortcuts()
 
-        action_bar_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-
-        _box = Gtk.Box()
-        _box.set_hexpand(False)
-        _box.set_halign(Gtk.Align.START)
-
-        _box.append(self.action_bar)
-        action_bar_box.append(_box)
-        action_bar_box.append(self.statusbar)
-        action_bar_box.set_hexpand(True)
-
-        box.append(action_bar_box)
+        self.action_bar.pack_end(self.statusbar)
+        box.append(self.action_bar)
 
         # Component box
         paned.set_start_child(self.comp_window)
@@ -402,9 +399,6 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
         GLib.idle_add(self.drawarea.center_viewport)
-
-        # todo: translations
-        self.statusbar.update(f"Opened <a href=\"file:///{path}\">{path.split('/')[-1]}</a>")
 
     def save_file__complete(self, path = None):
         "Saves current circuit to the specified path or opened file"
@@ -526,10 +520,10 @@ class MainFrame(Adw.ApplicationWindow):
         self.on_action_delete_pressed()
 
     def on_action_copy_pressed(self, *widget):
-        self.clipboard.set(
-            self.circuit.converter
-                .components_to_string(self.circuit.selected_components)
-        )
+        serialized = self.circuit.converter.components_to_string(self.circuit.selected_components)
+        self.clipboard.set(serialized)
+        if not serialized: return
+        self.show_feedback(_("Copied selected components to clipboard"), is_toast=True)
 
     def on_action_paste_pressed(self, *args):
         def _handler(clipboard: Gdk.Clipboard, task, *args):
@@ -538,7 +532,7 @@ class MainFrame(Adw.ApplicationWindow):
 
             components = self.circuit.converter.string_to_components(str_data)
             if isinstance(components, str) or len(components) == 0:
-                # TODO: toast unable to parse clipboard
+                self.show_feedback(_("Unable to parse clipboard data"), is_toast=True)
                 return
             else:
                 self.drawarea.set_component(const.component_none)
@@ -673,8 +667,16 @@ class MainFrame(Adw.ApplicationWindow):
     def on_circuit_title_changed(self, circuit, title):
         self.set_title(title)
 
-    def on_circuit_message_changed(self, circuit, message):
-        self.statusbar.update(message)
+    def show_feedback(self, message: str, is_toast: bool = False, timeout: int = 3):
+        if is_toast:
+            toast = Adw.Toast.new(message)
+            toast.set_timeout(timeout)
+            self.toast_overlay.add_toast(toast)
+        else:
+            self.statusbar.update(message)
+
+    def on_circuit_message_changed(self, circuit, message, is_toast=False):
+        self.show_feedback(message, is_toast=is_toast)
 
     def on_circuit_item_unselected(self, circuit):
         self.prop_window.show_properties(None)
