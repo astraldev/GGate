@@ -111,8 +111,7 @@ class TimingGraphDiagram(Gtk.ScrolledWindow):
         cr.paint()
         self._draw_cursor(cr)
 
-    def on_timing_diagram_click(self, _, event, *args):
-        if event[0] != Gdk.BUTTON_PRIMARY: return # noqa: E701
+    def on_timing_diagram_click(self, gesture, n_press, x, y, *args):
         if not number_in_range(
             self.visible_cursor["y"],
             self._section_height,
@@ -182,6 +181,7 @@ class TimingGraphDiagram(Gtk.ScrolledWindow):
         # cr.set_source_rgba()
 
         # Draw the names of the probes
+        current_height = self._section_height
         for probe in probes:
             probe_name = probe[1].values[0]
             cairo_draw_text(
@@ -298,6 +298,15 @@ class TimingGraphDiagram(Gtk.ScrolledWindow):
         name_cr_ctx = cairo.Context(name_surface)
         chart_cr_ctx = cairo.Context(chart_surface)
 
+        # Paint background white and reset default stroke/fill color to black
+        name_cr_ctx.set_source_rgb(1.0, 1.0, 1.0)
+        name_cr_ctx.paint()
+        name_cr_ctx.set_source_rgb(0.0, 0.0, 0.0)
+
+        chart_cr_ctx.set_source_rgb(1.0, 1.0, 1.0)
+        chart_cr_ctx.paint()
+        chart_cr_ctx.set_source_rgb(0.0, 0.0, 0.0)
+
         # Set the line width
         name_cr_ctx.set_line_width(1.0)
         chart_cr_ctx.set_line_width(1.0)
@@ -318,7 +327,7 @@ class TimingGraphDiagram(Gtk.ScrolledWindow):
         self._draw_names(name_cr_ctx)
         self._draw_graph(chart_cr_ctx)
 
-        self.queue_draw()
+        self.__queue_draw()
 
 
 

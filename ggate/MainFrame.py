@@ -378,7 +378,7 @@ class MainFrame(Adw.ApplicationWindow):
 
     def on_action_save_pressed(self, *args):
         fpath = self.circuit.filepath
-        if not os.path.exists(fpath) or not self.save_file_complete():
+        if not os.path.exists(fpath) or not self.save_file__complete():
             return self.on_action_saveas_pressed()
 
     def on_action_saveas_pressed(self, *args):
@@ -664,14 +664,12 @@ class MainFrame(Adw.ApplicationWindow):
         self.prop_window.show_properties(None)
 
     def on_circuit_alert(self, circuit, message):
-        dialog = Gtk.MessageDialog(
-            transient_for=self,
-            message_type=Gtk.MessageType.ERROR,
-            buttons=Gtk.ButtonsType.OK,
+        dialog = Adw.AlertDialog(
+            heading=_("Error"),
+            body=_(message),
         )
-        dialog.set_markup(_("Error"))
-        dialog.get_message_area().append(Gtk.Label(label=_(message)))
-        dialog.present()
+        dialog.add_response("ok", _("OK"))
+        dialog.present(self)
 
     def disable_edit_actions(self):
         if logic_gates[self.drawarea.get_component()] is None:

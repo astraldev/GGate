@@ -133,7 +133,7 @@ class ComponentView(Gtk.Box):
             self.category_groups.append((group_label, lb, group_rows))
 
     def set_all_sensitive(self, state, *args):
-        [row.set_selectable(bool(state)) for row in self.components]
+        [row.set_sensitive(bool(state)) for row in self.components]
 
     def on_row_activated(self, listbox, row, *args):
         for lb in self.listboxes:

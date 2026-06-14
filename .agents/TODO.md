@@ -113,6 +113,29 @@ App launches and is usable:
 - [ ] Style inconsistency: 2-space vs 4-space indent; mixed quotes; stale
   `indent-tabs-mode: t` headers. (Convention: double quotes, no comments.)
 
+## Build & packaging
+
+Full analysis in `.agents/build-system-analysis.md`; icon work planned in
+`.agents/plans/icon-creation.md`.
+
+- [x] **`bin/ggate.in` missing imports** (os/Gio) — fixed.
+- [x] **Version mismatch** — config.py/__init__.py bumped to 5.0.0 (match pyproject/meson).
+- [x] **App-id casing** — `GLogicApplication` uses `config.APP_PREFIX` (`org.astralco.GGate`);
+  desktop file renamed to match; setup.py refs updated.
+- [x] **meson.build portability** — non-portable `sh -c find|sed` → portable Python `os.walk`.
+- [ ] **[BLOCKER] Runtime asset paths** — `ComponentView`/`MenuPopover` use filesystem icon
+  paths (the `__file__`/`DATADIR` hacks) that break when installed. Coupled to the icon work
+  below — fix as part of the gresource/icon-theme migration.
+- [ ] **gresource → freedesktop icon-theme layout** — see the P2 icon-asset item + the icon
+  plan; currently double-nested `…/scalable/actions/actions/*` and misfiled `components/*`.
+- [ ] **Generate `config.py` via meson** (`configure_file`) instead of hardcoded VERSION/paths
+  — must keep the dev `run.py` path working (no meson step in dev).
+- [ ] **Desktop file install via meson** — confirm meson actually installs the (renamed)
+  desktop file + AppStream metadata, not just legacy `setup.py`.
+- [ ] **Flatpak** — decouple pip deps from network (`flatpak-pip-generator`) for offline build.
+- [ ] **Snapcraft** — remove remote `curl|python3` scripts; drop hardcoded prefix.
+- [ ] Nice-to-have: relax `shapely` pin; pyproject/meson cleanup.
+
 ## P3 — feature backlog
 
 - [ ] Animate logic circuit.

@@ -124,7 +124,7 @@ def _save_schematics_as_image_response(settingsdialog, response, content):
 
   settingsdialog.close()
 
-  settingsdialog.parent.statusbar.push(0, "Image schematics saved..")
+  settingsdialog.parent.statusbar.update(_("Image schematics saved.."))
 
 def save_timing_diagram_as_image(diagram_area, parent):
 
@@ -178,7 +178,7 @@ def _save_timing_diagram_as_image_response(settingsdialog, response, content):
     surface.finish()
 
   settingsdialog.close()
-  settingsdialog.parent.statusbar.push(0, "Timing diagram saved..")
+  settingsdialog.parent.statusbar.update(_("Timing diagram saved.."))
 
 def draw_schematics_for_file(cr, circuit, withlevels):
 
