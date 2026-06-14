@@ -287,17 +287,9 @@ class MainFrame(Adw.ApplicationWindow):
         _run_pause_box.append(self.action_pause)
 
         # Header Bar
-        self.header_bar = Gtk.HeaderBar()
-
-        if sys.platform.startswith("win32") or sys.platform.startswith("darwin"):
-            self.header_bar.set_use_native_controls(True)
-
-        if self.header_bar.get_use_native_controls():
-            self.header_bar.pack_end(self.menu_button)
-            self.header_bar.pack_end(_run_pause_box)
-        else:
-            self.header_bar.pack_start(self.menu_button)
-            self.header_bar.pack_end(_run_pause_box)
+        self.header_bar = Adw.HeaderBar()
+        self.header_bar.pack_end(self.menu_button)
+        self.header_bar.pack_end(_run_pause_box)
 
         # Draw area
         self.drawarea = DrawArea(self)

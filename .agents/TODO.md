@@ -21,13 +21,11 @@ Companion docs: `reference/build-system-analysis.md`, `reference/delegation-brie
   each row; a saner default zoom for high-frequency signals.
 - [ ] **`Windows/Properties.py`** rebuilds all widgets + re-`present()` on every
   `show_properties` (old children leak). Build once / reuse; consider `Adw.ToolbarView`.
-- [ ] **Header bar** — `Gtk.HeaderBar` + `set_use_native_controls(True)` (native macOS
-  controls) vs `Adw.HeaderBar` (better integration, loses native controls). Design call.
+- [x] **Header bar** — migrated to `Adw.HeaderBar` for better Adwaita/Gnome integration.
 - [ ] **Initial centering gated by resize pref** — when `autocenter_resize` is OFF, first-paint
   centering is also skipped. Split initial-vs-resize if we want it strict.
 - [ ] `Preferences.py:` font picker TODO.
-- [ ] `AlertDialogs` single instance re-adds response IDs each open (possible duplicate-response
-  warning; not a crash).
+- [x] `AlertDialogs` single instance re-adds response IDs each open (fixed by dynamic instantiation).
 
 ## P2 — icons & dead code
 

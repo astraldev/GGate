@@ -1,6 +1,5 @@
 {
-  "name": "Space",
-  "dark_chrome": true,
+  "name": "Space (Dark)",
   "accent_hex": "#00f2fe",
   "colors": {
     "bg_color": "#07080d",

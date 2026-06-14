@@ -17,9 +17,8 @@ def hex_to_pattern(hex_color: str) -> cairo.SolidPattern:
 
 
 class Theme:
-    def __init__(self, name: str, dark_chrome: bool, accent_hex: str, colors: dict):
+    def __init__(self, name: str, accent_hex: str, colors: dict):
         self.name = name
-        self.dark_chrome = dark_chrome
         self.accent_hex = accent_hex
         self.colors = colors
 
@@ -48,7 +47,6 @@ def init_registry(is_dev_mode: bool = False) -> None:
                 data = json.loads(data_str)
                 theme = Theme(
                     name=data["name"],
-                    dark_chrome=bool(data.get("dark_chrome", True)),
                     accent_hex=data.get("accent_hex", "#ffffff"),
                     colors=data["colors"],
                 )
@@ -75,7 +73,6 @@ def _load_user_themes() -> None:
                 data = json.load(fh)
             theme = Theme(
                 name=data["name"],
-                dark_chrome=bool(data.get("dark_chrome", True)),
                 accent_hex=data.get("accent_hex", "#ffffff"),
                 colors=data["colors"],
             )
@@ -103,9 +100,6 @@ def apply_chrome(name: str, display: Gdk.Display) -> None:
     theme = THEME_REGISTRY.get(name)
     if theme is None:
         return
-
-    scheme = Adw.ColorScheme.PREFER_DARK if theme.dark_chrome else Adw.ColorScheme.DEFAULT
-    Adw.StyleManager.get_default().set_color_scheme(scheme)
 
     css = (
         f"@define-color accent_color {theme.accent_hex};"

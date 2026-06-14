@@ -1,0 +1,29 @@
+{
+  "name": "Space (Light)",
+  "accent_hex": "#0d9488",
+  "colors": {
+    "bg_color": "#f4f5f8",
+    "bg_color_running": "#eaecee",
+    "grid_color": "#d1d5db",
+    "cursor_color": "#1b1e2c",
+    "component_color": "#2563eb",
+    "component_high_color": "#06b6d4",
+    "component_color_running": "#4b5563",
+    "picked_color": "#ea580c",
+    "preadd_color": "#db2777",
+    "selected_color": "#16a34a",
+    "net_color": "#6b7280",
+    "net_high_color": "#0d9488",
+    "net_color_running": "#374151",
+    "highlevel_color": "#16a34a",
+    "lowlevel_color": "#2563eb",
+    "terminal_color": "#dc2626",
+    "terminal_color_running": "#e5e7eb",
+    "selection_box": "#06b6d426",
+    "selection_box_border": "#06b6d4",
+    "_red": "#dc2626",
+    "_green": "#16a34a",
+    "_blue": "#2563eb",
+    "_yellow": "#ca8a04"
+  }
+}

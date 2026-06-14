@@ -1,6 +1,5 @@
 {
-  "name": "Mocha",
-  "dark_chrome": true,
+  "name": "Mocha (Dark)",
   "accent_hex": "#cba6f7",
   "colors": {
     "bg_color": "#1e1e2e",

@@ -1,506 +1,508 @@
 version
- author=3.0.0
- required=2.6
+ author=5.0.0
+ required=2.6.0
+
+meta
+ zoom=0.9424371608722886
 
 sw
- position=30,550
- input_level=
+ position=410.0,750.0
+ input_level=0
  output_level=1
  matrix=1,0,0,1
  properties=initstate:0
 
 sw
- position=30,500
- input_level=
+ position=410.0,700.0
+ input_level=0
  output_level=0
  matrix=1,0,0,1
  properties=initstate:1
 
 sw
- position=30,450
- input_level=
+ position=410.0,650.0
+ input_level=0
  output_level=0
  matrix=1,0,0,1
  properties=initstate:1
 
 sw
- position=30,400
- input_level=
+ position=410.0,600.0
+ input_level=0
  output_level=0
  matrix=1,0,0,1
  properties=initstate:0
 
 7seg
- position=50,100
+ position=430.0,300.0
  input_level=0,0,0,1
- output_level=
+ output_level=0
  matrix=1,0,0,1
  properties=_red:2
 
 7seg
- position=180,100
+ position=560.0,300.0
  input_level=0,0,0,1
- output_level=
+ output_level=0
  matrix=1,0,0,1
  properties=_red:1
 
 7seg
- position=610,100
+ position=990.0,300.0
  input_level=0,0,1,0
- output_level=
+ output_level=0
  matrix=1,0,0,1
  properties=_red:0
 
 sw
- position=160,400
- input_level=
+ position=540.0,600.0
+ input_level=0
  output_level=0
  matrix=1,0,0,1
  properties=initstate:0
 
 sw
- position=160,450
- input_level=
+ position=540.0,650.0
+ input_level=0
  output_level=0
  matrix=1,0,0,1
  properties=initstate:1
 
 sw
- position=160,500
- input_level=
+ position=540.0,700.0
+ input_level=0
  output_level=0
  matrix=1,0,0,1
  properties=initstate:0
 
 sw
- position=160,550
- input_level=
+ position=540.0,750.0
+ input_level=0
  output_level=1
  matrix=1,0,0,1
  properties=initstate:1
 
 and
- position=400,220
+ position=780.0,420.0
  input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 and
- position=400,270
+ position=780.0,470.0
  input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 and
- position=400,350
+ position=780.0,550.0
  input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 and
- position=400,400
- input_level=0,1
- output_level=0
- matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
-
-xor
- position=300,260
+ position=780.0,600.0
  input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 xor
- position=300,390
+ position=680.0,460.0
  input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 xor
- position=400,170
+ position=680.0,590.0
  input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 xor
- position=490,180
+ position=780.0,370.0
  input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 xor
- position=490,310
+ position=870.0,380.0
  input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 xor
- position=490,440
- input_level=0,1
+ position=870.0,510.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+xor
+ position=870.0,640.0
+ input_level=0,0
  output_level=1
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 xor
- position=490,550
- input_level=1,1
+ position=870.0,750.0
+ input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 and
- position=490,500
- input_level=1,1
+ position=870.0,700.0
+ input_level=0,0
  output_level=1
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 or
- position=490,390
+ position=870.0,590.0
  input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 or
- position=490,260
+ position=870.0,460.0
  input_level=0,0
  output_level=0
  matrix=1,0,0,1
- properties=inputs:2,tphl:0.0,tplh:0.0
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
 
 text
- position=30,350
- input_level=
- output_level=
+ position=410.0,550.0
+ input_level=0
+ output_level=0
  matrix=1,0,0,1
  properties=text:IN1
 
 text
- position=160,350
- input_level=
- output_level=
+ position=540.0,550.0
+ input_level=0
+ output_level=0
  matrix=1,0,0,1
  properties=text:IN2
 
 text
- position=630,120
- input_level=
- output_level=
+ position=1010.0,320.0
+ input_level=0
+ output_level=0
  matrix=1,0,0,1
  properties=text:OUT \e IN1 + IN2
 
 net
- position=500,410,400,410
+ position=880.0,610.0,780.0,610.0
 
 net
- position=400,370,410,370
+ position=790.0,570.0,780.0,570.0
 
 net
- position=400,410,400,370
+ position=780.0,610.0,780.0,570.0
 
 net
- position=500,360,500,330
+ position=880.0,560.0,880.0,530.0
 
 net
- position=500,230,500,200
+ position=880.0,430.0,880.0,400.0
 
 net
- position=500,280,400,280
+ position=880.0,480.0,780.0,480.0
 
 net
- position=400,280,400,240
+ position=780.0,480.0,780.0,440.0
 
 net
- position=410,240,400,240
+ position=790.0,440.0,780.0,440.0
 
 net
- position=590,480,590,450
+ position=970.0,680.0,970.0,650.0
 
 net
- position=410,430,410,390
+ position=790.0,590.0,790.0,630.0
 
 net
- position=590,450,500,450
+ position=970.0,650.0,880.0,650.0
 
 net
- position=500,430,410,430
+ position=790.0,630.0,880.0,630.0
 
 net
- position=500,450,500,430
+ position=880.0,650.0,880.0,630.0
 
 net
- position=590,370,590,320
+ position=970.0,570.0,970.0,520.0
 
 net
- position=410,300,410,260
+ position=790.0,460.0,790.0,500.0
 
 net
- position=590,320,500,320
+ position=970.0,520.0,880.0,520.0
 
 net
- position=500,300,410,300
+ position=790.0,500.0,880.0,500.0
 
 net
- position=500,320,500,300
+ position=880.0,520.0,880.0,500.0
 
 net
- position=590,240,590,190
+ position=970.0,440.0,970.0,390.0
 
 net
- position=590,190,500,190
+ position=970.0,390.0,880.0,390.0
 
 net
- position=500,190,500,170
+ position=880.0,390.0,880.0,370.0
 
 net
- position=60,50,40,50
+ position=440.0,250.0,420.0,250.0
 
 net
- position=410,210,310,210
+ position=790.0,410.0,690.0,410.0
 
 net
- position=40,180,40,50
+ position=420.0,250.0,420.0,380.0
 
 net
- position=310,210,310,230
+ position=690.0,410.0,690.0,430.0
 
 net
- position=40,180,110,180
+ position=420.0,380.0,490.0,380.0
 
 net
- position=310,230,110,230
+ position=690.0,430.0,490.0,430.0
 
 net
- position=110,180,110,230
+ position=490.0,380.0,490.0,430.0
 
 net
- position=100,430,110,430
+ position=480.0,630.0,490.0,630.0
 
 net
- position=110,230,110,430
+ position=490.0,430.0,490.0,630.0
 
 net
- position=190,50,170,50
+ position=570.0,290.0,570.0,340.0
 
 net
- position=190,90,190,140
+ position=880.0,720.0,880.0,690.0
 
 net
- position=500,520,500,490
+ position=570.0,340.0,640.0,340.0
 
 net
- position=190,140,260,140
+ position=880.0,690.0,640.0,690.0
 
 net
- position=500,490,260,490
+ position=640.0,340.0,640.0,690.0
 
 net
- position=260,140,260,490
+ position=610.0,730.0,640.0,730.0
 
 net
- position=230,530,260,530
+ position=640.0,690.0,640.0,730.0
 
 net
- position=260,490,260,530
+ position=1000.0,230.0,970.0,230.0
 
 net
- position=620,30,590,30
+ position=970.0,230.0,970.0,360.0
 
 net
- position=590,30,590,160
+ position=1000.0,250.0,980.0,250.0
 
 net
- position=620,50,600,50
+ position=980.0,250.0,980.0,490.0
 
 net
- position=600,50,600,290
+ position=980.0,490.0,970.0,490.0
 
 net
- position=600,290,590,290
+ position=1000.0,270.0,990.0,270.0
 
 net
- position=620,70,610,70
+ position=990.0,270.0,990.0,620.0
 
 net
- position=610,70,610,420
+ position=990.0,620.0,970.0,620.0
 
 net
- position=610,420,590,420
+ position=1000.0,290.0,1000.0,730.0
 
 net
- position=620,90,620,530
+ position=1000.0,730.0,970.0,730.0
 
 net
- position=620,530,590,530
+ position=440.0,270.0,430.0,270.0
 
 net
- position=50,70,60,70
+ position=690.0,580.0,680.0,580.0
 
 net
- position=300,380,310,380
+ position=430.0,270.0,430.0,360.0
 
 net
- position=50,70,50,160
+ position=790.0,520.0,680.0,520.0
 
 net
- position=410,320,300,320
+ position=680.0,580.0,680.0,520.0
 
 net
- position=300,320,300,380
+ position=430.0,360.0,500.0,360.0
 
 net
- position=50,160,120,160
+ position=680.0,520.0,500.0,520.0
 
 net
- position=300,320,120,320
+ position=500.0,360.0,500.0,520.0
 
 net
- position=120,160,120,320
+ position=480.0,680.0,500.0,680.0
 
 net
- position=100,480,120,480
+ position=500.0,520.0,500.0,680.0
 
 net
- position=120,320,120,480
+ position=440.0,290.0,440.0,340.0
 
 net
- position=60,140,60,90
+ position=880.0,740.0,870.0,740.0
 
 net
- position=500,540,490,540
+ position=440.0,340.0,510.0,340.0
 
 net
- position=60,140,130,140
+ position=480.0,730.0,510.0,730.0
 
 net
- position=100,530,130,530
+ position=870.0,740.0,870.0,670.0
 
 net
- position=490,540,490,470
+ position=880.0,670.0,870.0,670.0
 
 net
- position=500,470,490,470
+ position=510.0,340.0,510.0,550.0
 
 net
- position=130,140,130,350
+ position=510.0,730.0,510.0,550.0
 
 net
- position=130,350,130,530
+ position=870.0,670.0,660.0,670.0
 
 net
- position=490,470,280,470
+ position=510.0,550.0,660.0,550.0
 
 net
- position=130,350,280,350
+ position=660.0,670.0,660.0,550.0
 
 net
- position=280,470,280,350
+ position=570.0,270.0,560.0,270.0
 
 net
- position=180,70,190,70
+ position=560.0,270.0,560.0,360.0
 
 net
- position=180,160,180,70
+ position=790.0,540.0,690.0,540.0
 
 net
- position=410,340,310,340
+ position=690.0,560.0,690.0,540.0
 
 net
- position=310,340,310,360
+ position=560.0,360.0,630.0,360.0
 
 net
- position=250,160,180,160
+ position=690.0,540.0,630.0,540.0
 
 net
- position=310,340,250,340
+ position=630.0,360.0,630.0,540.0
 
 net
- position=250,160,250,340
+ position=610.0,680.0,630.0,680.0
 
 net
- position=230,480,250,480
+ position=630.0,540.0,630.0,680.0
 
 net
- position=250,340,250,480
+ position=570.0,250.0,550.0,250.0
 
 net
- position=170,50,170,180
+ position=550.0,250.0,550.0,380.0
 
 net
- position=170,180,240,180
+ position=550.0,380.0,620.0,380.0
 
 net
- position=230,430,240,430
+ position=610.0,630.0,620.0,630.0
 
 net
- position=240,180,240,250
+ position=620.0,380.0,620.0,450.0
 
 net
- position=240,250,240,430
+ position=620.0,630.0,620.0,450.0
 
 net
- position=410,190,300,190
+ position=790.0,390.0,680.0,390.0
 
 net
- position=300,250,310,250
+ position=690.0,450.0,680.0,450.0
 
 net
- position=300,250,240,250
+ position=620.0,450.0,680.0,450.0
 
 net
- position=300,190,300,250
+ position=680.0,390.0,680.0,450.0
 
 net
- position=190,30,160,30
+ position=570.0,230.0,540.0,230.0
 
 net
- position=160,30,160,200
+ position=540.0,230.0,540.0,400.0
 
 net
- position=160,200,230,200
+ position=540.0,400.0,610.0,400.0
 
 net
- position=230,200,230,380
+ position=610.0,580.0,610.0,400.0
 
 net
- position=230,200,280,200
+ position=610.0,400.0,660.0,400.0
 
 net
- position=410,140,280,140
+ position=790.0,340.0,660.0,340.0
 
 net
- position=280,200,280,140
+ position=660.0,400.0,660.0,340.0
 
 net
- position=30,30,60,30
+ position=440.0,230.0,410.0,230.0
 
 net
- position=30,30,30,200
+ position=410.0,230.0,410.0,400.0
 
 net
- position=100,200,30,200
+ position=410.0,400.0,480.0,400.0
 
 net
- position=100,200,100,210
+ position=480.0,400.0,480.0,410.0
 
 net
- position=100,210,100,380
+ position=480.0,580.0,480.0,410.0
 
 net
- position=410,160,290,160
+ position=790.0,360.0,670.0,360.0
 
 net
- position=100,210,290,210
+ position=480.0,410.0,670.0,410.0
 
 net
- position=290,160,290,210
-
+ position=670.0,360.0,670.0,410.0

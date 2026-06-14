@@ -1,6 +1,5 @@
 {
   "name": "Classic",
-  "dark_chrome": false,
   "accent_hex": "#ff8000",
   "colors": {
     "bg_color": "#000000",

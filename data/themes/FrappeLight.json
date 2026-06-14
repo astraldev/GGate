@@ -1,0 +1,29 @@
+{
+  "name": "Frappé (Light)",
+  "accent_hex": "#8839ef",
+  "colors": {
+    "bg_color": "#eff1f5",
+    "bg_color_running": "#e6e9ef",
+    "grid_color": "#ccd0da",
+    "cursor_color": "#7287fd",
+    "component_color": "#1e66f5",
+    "component_high_color": "#209fb5",
+    "component_color_running": "#4c4f69",
+    "picked_color": "#fe640b",
+    "preadd_color": "#dc8a78",
+    "selected_color": "#8839ef",
+    "net_color": "#6c6f93",
+    "net_high_color": "#04a5e5",
+    "net_color_running": "#5c5f77",
+    "highlevel_color": "#40a02b",
+    "lowlevel_color": "#1e66f5",
+    "terminal_color": "#d20f39",
+    "terminal_color_running": "#dce0e8",
+    "selection_box": "#8839ef33",
+    "selection_box_border": "#8839ef",
+    "_red": "#d20f39",
+    "_green": "#40a02b",
+    "_blue": "#1e66f5",
+    "_yellow": "#df8e1d"
+  }
+}

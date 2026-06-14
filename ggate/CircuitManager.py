@@ -6,6 +6,7 @@ if TYPE_CHECKING:
   from ggate.MainFrame import MainFrame
 
 import os
+import re
 import copy
 import time
 import igraph
@@ -36,6 +37,11 @@ class CircuitConverter():
       ("required", [config.compatibility["required"]]),
     ])
 
+    zoom = self.circuit.mainframe.drawarea.zoom
+    self._add_data("meta", [
+      ("zoom", [zoom]),
+    ])
+
   def _add_data(self, key: str, attributes: list[tuple[str, list[str]]]) -> None:
     self.data += f"{key}"
 
@@ -47,26 +53,29 @@ class CircuitConverter():
     
     self.data += "\n\n"
 
-  def components_to_string(self):
+  def components_to_string(self, components=None):
+    self.data = ""
     self._start_write()
-    for c in self.circuit.components:
+    target_components = components if components is not None else self.circuit.components
+    for c in target_components:
       if c[0] == definitions.component_net:
         self._add_data("net", [
-          ("position", [c[1], c[2], c[3], c[4]]),
+          ("position", [int(round(float(x))) for x in c[1:5]]),
         ])
       else:
+        formatted_props = []
+        for i, p in enumerate(c[1].values):
+          val_str = str(p)
+          if isinstance(p, float) and p.is_integer():
+            val_str = str(int(p))
+          formatted_props.append(f"{c[1].prop_names[i]}:{encode_text(val_str)}")
+
         self._add_data(c[0], [
-          ("position", [c[1].pos_x, c[1].pos_y]),
+          ("position", [int(round(float(x))) for x in (c[1].pos_x, c[1].pos_y)]),
           ("input_level", [str(int(p)) for p in c[1].input_level]),
           ("output_level", [str(int(p)) for p in c[1].output_level]),
           ("matrix", [str(int(p)) for p in c[1].matrix]),
-          (
-            "properties",
-            [
-              f"{c[1].prop_names[i]}:{encode_text(str(p))}" \
-                for i, p in enumerate(c[1].values)
-            ]
-          ),
+          ("properties", formatted_props),
         ])
     self.data = self.data.strip()
     return self.data
@@ -89,7 +98,7 @@ class CircuitConverter():
     content = self._parse_section_content(lines[1:])
     
     if which == "net":
-      content["position"] = [int(x) for x in content["position"]]
+      content["position"] = [int(float(x)) for x in content["position"]]
       if len(content["position"]) != 4:
         content["position"] = [0, 10, 10, 10]
 
@@ -98,8 +107,8 @@ class CircuitConverter():
     elif which in logic_gates:
       component: CircuitComponent = [which, copy.deepcopy(logic_gates[which])]
       if (position := content.get("position", None)) and len(position) == 2:
-        component[1].pos_x = int(position[0])
-        component[1].pos_y = int(position[1])
+        component[1].pos_x = int(float(position[0]))
+        component[1].pos_y = int(float(position[1]))
 
       if (input_level := content.get("input_level", None)):
         component[1].input_level = [
@@ -166,12 +175,22 @@ class CircuitConverter():
           % { "creator": authored_version, "this": current_version, "minimum": current_required }
 
       return None
+
+    elif which == "meta":
+      if (zoom_val := content.get("zoom", None)):
+        zoom = float(zoom_val[0])
+        self.circuit.mainframe.drawarea.zoom = zoom
+        self.circuit.mainframe.drawarea.drawingarea.set_size_request(
+          int(self.circuit.mainframe.drawarea.width * zoom),
+          int(self.circuit.mainframe.drawarea.height * zoom)
+        )
+      return None
     return None
 
   def string_to_components(self, str_data) -> list[CircuitComponent]:
     components: list[CircuitComponent] = []
 
-    for section in str_data.split("\n\n"):
+    for section in re.split(r'\n[ \t\r]*\n', str_data):
       section = section.strip()
       if not section or section == "":
         continue

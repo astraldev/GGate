@@ -194,7 +194,7 @@ class DrawArea(Gtk.ScrolledWindow):
                 new_zoom = self.zoom / zoom_step
             else:
                 return False
-            new_zoom = clamp(new_zoom, 0.1, 8.0)
+            new_zoom = clamp(new_zoom, 0.5, 5.0)
             if new_zoom != self.zoom:
                 old_zoom = self.zoom
                 cx = self.cursor_smooth_x
@@ -215,7 +215,7 @@ class DrawArea(Gtk.ScrolledWindow):
     def on_zoom_scale_changed(self, gesture, scale):
         if not hasattr(self, "zoom_start_factor"):
             self.zoom_start_factor = self.zoom
-        new_zoom = clamp(self.zoom_start_factor * scale, 0.1, 8.0)
+        new_zoom = clamp(self.zoom_start_factor * scale, 0.5, 20.0)
         if new_zoom != self.zoom:
             success, gx, gy = gesture.get_bounding_box_center()
             if success:
