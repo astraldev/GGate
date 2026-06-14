@@ -1,0 +1,66 @@
+name: Deb Build
+
+on:
+  release:
+    types: [published]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  deb:
+    runs-on: ubuntu-latest
+    container: fedora:41
+    steps:
+      - name: Install dependencies
+        run: >
+          dnf install -y
+          git meson ninja-build glib2-devel
+          gtk4-devel libadwaita-devel
+          python3-gobject-devel python3-devel desktop-file-utils
+          python3-gobject python3-cairo
+          python3-igraph python3-shapely python3-packaging
+          dpkg
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Mark workspace safe for git
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Configure
+        run: meson setup build --prefix=/usr
+
+      - name: Compile
+        run: meson compile -C build
+
+      - name: Install to staging
+        run: DESTDIR=staging meson install -C build
+
+      - name: Create Debian control file
+        run: |
+          VERSION=$(grep -oE "version: '[^']+'" meson.build | head -n1 | cut -d"'" -f2)
+          mkdir -p staging/DEBIAN
+          cat << EOF > staging/DEBIAN/control
+          Package: ggate
+          Version: ${VERSION}
+          Section: utils
+          Priority: optional
+          Architecture: amd64
+          Maintainer: Astraldev <info@astral.co>
+          Depends: python3, python3-gi, python3-gi-cairo, python3-igraph, python3-shapely, python3-packaging, libgtk-4-1 (>= 4.16.0), libadwaita-1-0 (>= 1.6.8)
+          Description: A digital logic circuit simulator and designer
+            GGate is a digital logic circuit simulator that allows you to design
+            and test digital circuits using standard logic gates and components.
+          EOF
+
+      - name: Build Debian package
+        run: |
+          VERSION=$(grep -oE "version: '[^']+'" meson.build | head -n1 | cut -d"'" -f2)
+          dpkg-deb --build staging "ggate_${VERSION}_amd64.deb"
+
+      - name: Upload deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ggate-deb
+          path: ggate_*.deb
