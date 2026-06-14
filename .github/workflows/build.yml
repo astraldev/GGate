@@ -23,7 +23,7 @@ jobs:
           dnf install -y
           git meson ninja-build glib2-devel
           gtk4-devel libadwaita-devel
-          python3-gobject-devel python3-devel
+          python3-gobject-devel python3-devel desktop-file-utils
           python3-gobject python3-cairo
           python3-igraph python3-shapely python3-packaging
 
