@@ -15,7 +15,6 @@ class AboutGGate:
         about_dialog.set_license_type(Definitions.license)
         about_dialog.set_developers(Definitions.developer)
         about_dialog.set_issue_url(Definitions.devel_bug)
-        about_dialog.set_comments(Definitions.description)
         about_dialog.set_developer_name(Definitions.developer_name)
 
         # TODO: Add support for release notes and other features

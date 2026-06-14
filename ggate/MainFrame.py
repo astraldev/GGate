@@ -19,6 +19,7 @@ from ggate.ComponentView import ComponentView
 from ggate.CircuitManager import CircuitManager
 from ggate.Components.Windows.Properties import PropertyWindow
 from ggate.Components.Windows.Preferences import PreferencesWindow
+from ggate.Components.Windows.About import AboutGGate
 from ggate import Preference
 
 from ggate.Components.LogicGates import logic_gates
@@ -336,7 +337,8 @@ class MainFrame(Adw.ApplicationWindow):
     # >> app action handlers >>
 
     def on_action_about_pressed(self, *widget):
-        self.about_dialog.present()
+        about_dialog = AboutGGate.create()
+        about_dialog.present(self)
 
     def on_action_new_pressed(self, *args):
         if self.circuit.need_save:
@@ -742,3 +744,4 @@ class GLogicApplication(Adw.Application):
             self.add_window(self.window)
         self.window.present()
         self.window.show()
+        self.window.set_focus(None)
