@@ -13,14 +13,19 @@ class _Preference(dict,object):
       self.pref_dict[name] = Pango.FontDescription(value)
     elif isinstance(self.pref_dict[name], cairo.Pattern):
       try:
-        rgb = value.split(",")
-        self.pref_dict[name] = cairo.SolidPattern(float(rgb[0]), float(rgb[1]), float(rgb[2]))
-      except ValueError:
+        parts = [float(x) for x in value.split(",")]
+        if len(parts) == 4:
+          self.pref_dict[name] = cairo.SolidPattern(*parts)
+        else:
+          self.pref_dict[name] = cairo.SolidPattern(parts[0], parts[1], parts[2], 1.0)
+      except (ValueError, IndexError):
         self.pref_dict[name] = cairo.SolidPattern(0.0, 0.0, 0.0)
     elif isinstance(self.pref_dict[name], int):
       self.pref_dict[name] = int(value)
     elif isinstance(self.pref_dict[name], float):
       self.pref_dict[name] = float(value)
+    elif isinstance(self.pref_dict[name], str):
+      self.pref_dict[name] = str(value)
 
   def __getattr__(self, name):
     return self.pref_dict[name]
@@ -56,10 +61,11 @@ class _Preference(dict,object):
     "grid_color": cairo.SolidPattern(0.15, 0.12, 0.15),
     "selection_box": cairo.SolidPattern(1, 0.75, 0, 0.25),
     "selection_box_border": cairo.SolidPattern(1, 0.75, 0),
-    "symbol_type": 0, #  0: MIL/ANSI  1: IEC
+    "symbol_type": 0,
     "max_calc_iters": 10000,
     "max_calc_duration": 0.0002,
-    "autocenter_resize": 1
+    "autocenter_resize": 1,
+    "theme": "Classic",
   }
 
   def load_settings(self):
@@ -69,7 +75,7 @@ class _Preference(dict,object):
       return
 
     for line in data:
-      pref = line.split("=")
+      pref = line.split("=", 1)  # maxsplit=1 so string values like theme names survive
 
       if len(pref) == 2 and pref[0] in self.pref_dict:
         self.__setattr__(pref[0], pref[1])
@@ -87,11 +93,16 @@ class _Preference(dict,object):
         fp.write("%s=%s\n" % (key, self.pref_dict[key].to_string()))
       elif isinstance(self.pref_dict[key], cairo.Pattern):
         rgba = self.pref_dict[key].get_rgba()
-        fp.write("%s=%f,%f,%f\n" % (key, rgba[0], rgba[1], rgba[2]))
+        if rgba[3] < 1.0:
+          fp.write("%s=%f,%f,%f,%f\n" % (key, rgba[0], rgba[1], rgba[2], rgba[3]))
+        else:
+          fp.write("%s=%f,%f,%f\n" % (key, rgba[0], rgba[1], rgba[2]))
       elif isinstance(self.pref_dict[key], int):
         fp.write("%s=%d\n" % (key, self.pref_dict[key]))
       elif isinstance(self.pref_dict[key], float):
         fp.write("%s=%.9f\n" % (key, self.pref_dict[key]))
+      elif isinstance(self.pref_dict[key], str):
+        fp.write("%s=%s\n" % (key, self.pref_dict[key]))
     fp.close()
 
 sys.modules[__name__] = _Preference()

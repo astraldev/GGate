@@ -1,0 +1,30 @@
+{
+  "name": "Space",
+  "dark_chrome": true,
+  "accent_hex": "#00f2fe",
+  "colors": {
+    "bg_color": "#07080d",
+    "bg_color_running": "#0c0e16",
+    "grid_color": "#1b1e2c",
+    "cursor_color": "#e5e8f4",
+    "component_color": "#3d64ff",
+    "component_high_color": "#00f2fe",
+    "component_color_running": "#8992a8",
+    "picked_color": "#ff8000",
+    "preadd_color": "#ff007f",
+    "selected_color": "#39ff14",
+    "net_color": "#5b637a",
+    "net_high_color": "#00f2fe",
+    "net_color_running": "#44495b",
+    "highlevel_color": "#39ff14",
+    "lowlevel_color": "#3d64ff",
+    "terminal_color": "#ff3b30",
+    "terminal_color_running": "#07080d",
+    "selection_box": "#00f2fe26",
+    "selection_box_border": "#00f2fe",
+    "_red": "#ff3b30",
+    "_green": "#39ff14",
+    "_blue": "#007aff",
+    "_yellow": "#ffcc00"
+  }
+}

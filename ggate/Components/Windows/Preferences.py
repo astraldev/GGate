@@ -1,14 +1,15 @@
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
-
 from ggate import Preference
+from ggate.Themes import THEME_REGISTRY, apply_theme
 from gi.repository import Gtk, Gdk, Adw, Pango
 from gettext import gettext as _
+
 
 class PreferencesWindow(Adw.PreferencesDialog):
     def __init__(self, parent):
         super().__init__()
         self.main_frame = parent
         self.color_buttons = {}
+        self._suppress_custom = False  # guard: don't mark Custom while theme is loading
 
         self._build_ui()
         self._populate_values()
@@ -24,6 +25,18 @@ class PreferencesWindow(Adw.PreferencesDialog):
         page.set_title(_("Appearance"))
         page.set_icon_name("preferences-desktop-wallpaper-symbolic")
 
+        # ── Theme group ───────────────────────────────────────────────────────
+        group_theme = Adw.PreferencesGroup()
+        group_theme.set_title(_("Theme"))
+
+        theme_names = list(THEME_REGISTRY.keys()) + ["Custom"]
+        self.theme_row = Adw.ComboRow()
+        self.theme_row.set_title(_("Theme Style"))
+        self.theme_row.set_model(Gtk.StringList.new(theme_names))
+        group_theme.add(self.theme_row)
+        page.add(group_theme)
+
+        # ── Typography & Style ────────────────────────────────────────────────
         group_style = Adw.PreferencesGroup()
         group_style.set_title(_("Typography &amp; Style"))
 
@@ -46,9 +59,9 @@ class PreferencesWindow(Adw.PreferencesDialog):
         self.symbol_type_row.set_title(_("Symbol style"))
         self.symbol_type_row.set_model(Gtk.StringList.new([_("MIL/ANSI"), _("IEC")]))
         group_style.add(self.symbol_type_row)
-
         page.add(group_style)
 
+        # ── Canvas Colors ─────────────────────────────────────────────────────
         group_canvas = Adw.PreferencesGroup()
         group_canvas.set_title(_("Canvas Colors"))
         group_canvas.add(self._create_color_row(_("Background (edit mode):"), "bg_color"))
@@ -144,15 +157,16 @@ class PreferencesWindow(Adw.PreferencesDialog):
         self.drawing_font_btn.set_font_desc(Preference.drawing_font)
         self.symbol_type_row.set_selected(Preference.symbol_type)
 
+        # set theme ComboRow to match saved theme name
+        active_theme = Preference.theme
+        theme_names = list(THEME_REGISTRY.keys()) + ["Custom"]
+        idx = theme_names.index(active_theme) if active_theme in theme_names else len(theme_names) - 1
+        self._suppress_custom = True
+        self.theme_row.set_selected(idx)
+        self._suppress_custom = False
+
         for key, btn in self.color_buttons.items():
-            pattern = Preference.__getattr__(key)
-            r, g, b, _ = pattern.get_rgba()
-            rgba = Gdk.RGBA()
-            rgba.red = r
-            rgba.green = g
-            rgba.blue = b
-            rgba.alpha = 1.0
-            btn.set_rgba(rgba)
+            self._sync_button_from_preference(key)
 
         adj_iter = Gtk.Adjustment.new(float(Preference.max_calc_iters), 10.0, 1000000.0, 1.0, 10.0, 0.0)
         self.calc_iter_row.set_adjustment(adj_iter)
@@ -164,7 +178,17 @@ class PreferencesWindow(Adw.PreferencesDialog):
 
         self.autocenter_row.set_active(bool(Preference.autocenter_resize))
 
+    def _sync_button_from_preference(self, key):
+        pattern = Preference.__getattr__(key)
+        r, g, b, a = pattern.get_rgba()
+        rgba = Gdk.RGBA()
+        rgba.red, rgba.green, rgba.blue, rgba.alpha = r, g, b, a
+        btn = self.color_buttons.get(key)
+        if btn:
+            btn.set_rgba(rgba)
+
     def _connect_signals(self):
+        self.theme_row.connect("notify::selected", self._on_theme_changed)
         self.drawing_font_btn.connect("notify::font-desc", self._on_font_changed)
         self.symbol_type_row.connect("notify::selected", self._on_symbol_type_changed)
 
@@ -174,6 +198,28 @@ class PreferencesWindow(Adw.PreferencesDialog):
         self.calc_iter_row.connect("notify::value", self._on_calc_iters_changed)
         self.calc_duration_row.connect("notify::value", self._on_calc_duration_changed)
         self.autocenter_row.connect("notify::active", self._on_autocenter_changed)
+
+    # ── signal handlers ───────────────────────────────────────────────────────
+
+    def _on_theme_changed(self, row, pspec):
+        theme_names = list(THEME_REGISTRY.keys()) + ["Custom"]
+        selected = theme_names[row.get_selected()]
+        if selected == "Custom":
+            Preference.__setattr__("theme", "Custom")
+            Preference.save_settings()
+            return
+
+        # load all palette colors into Preference + save + update chrome
+        self._suppress_custom = True
+        apply_theme(selected, Preference)
+        self._suppress_custom = False
+
+        # update every color button live to reflect the new palette
+        for key in self.color_buttons:
+            self._sync_button_from_preference(key)
+
+        self._apply_chrome(selected)
+        self._trigger_canvas_redraw()
 
     def _on_font_changed(self, button, pspec):
         font_desc = button.get_font_desc()
@@ -188,10 +234,14 @@ class PreferencesWindow(Adw.PreferencesDialog):
         self._trigger_canvas_redraw()
 
     def _on_color_changed(self, button, pspec, key):
+        if self._suppress_custom:
+            return
         rgba = button.get_rgba()
         if rgba:
-            Preference.__setattr__(key, f"{rgba.red},{rgba.green},{rgba.blue}")
+            Preference.__setattr__(key, f"{rgba.red},{rgba.green},{rgba.blue},{rgba.alpha}")
             Preference.save_settings()
+            # any individual tweak → switch combo to "Custom"
+            self._set_theme_row_custom()
             self._trigger_canvas_redraw()
 
     def _on_calc_iters_changed(self, row, pspec):
@@ -208,6 +258,21 @@ class PreferencesWindow(Adw.PreferencesDialog):
         Preference.autocenter_resize = int(row.get_active())
         Preference.save_settings()
         self._trigger_canvas_redraw()
+
+    # ── helpers ───────────────────────────────────────────────────────────────
+
+    def _set_theme_row_custom(self):
+        theme_names = list(THEME_REGISTRY.keys()) + ["Custom"]
+        custom_idx = len(theme_names) - 1
+        self._suppress_custom = True
+        self.theme_row.set_selected(custom_idx)
+        self._suppress_custom = False
+        Preference.__setattr__("theme", "Custom")
+        Preference.save_settings()
+
+    def _apply_chrome(self, theme_name: str):
+        from ggate.Themes import apply_chrome
+        apply_chrome(theme_name, Gdk.Display.get_default())
 
     def _trigger_canvas_redraw(self):
         if self.main_frame and hasattr(self.main_frame, "drawarea"):

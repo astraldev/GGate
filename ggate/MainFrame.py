@@ -21,6 +21,7 @@ from ggate.Components.Windows.Properties import PropertyWindow
 from ggate.Components.Windows.Preferences import PreferencesWindow
 from ggate.Components.Windows.About import AboutGGate
 from ggate import Preference
+from ggate import Themes as _Themes
 
 from ggate.Components.LogicGates import logic_gates
 from ggate.Components.Managers.FileManager import FileIOManager
@@ -93,6 +94,9 @@ class MainFrame(Adw.ApplicationWindow):
 
         Preference.load_settings()
 
+        _Themes.init_registry(config.DEV_MODE)
+        _Themes.apply_chrome(Preference.theme, Gdk.Display.get_default())
+
         # Component window
         self.comp_window = ComponentView()
         self.comp_window.connect("component-checked", self.on_comp_checked)
@@ -117,6 +121,7 @@ class MainFrame(Adw.ApplicationWindow):
             self.drawarea.queue_draw()
 
     def set_up_shortcuts(self, *args):
+
         actions = {
             "application": [
                 ("app.on_action_new_pressed", ["<Ctrl>N"]),

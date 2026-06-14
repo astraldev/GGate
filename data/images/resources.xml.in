@@ -3,4 +3,7 @@
   <gresource prefix="@PREFIX@/data/icons/scalable/actions/">
     @ICON_FILES@
   </gresource>
+  <gresource prefix="@PREFIX@/themes/">
+    @THEME_FILES@
+  </gresource>
 </gresources>

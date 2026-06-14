@@ -1,0 +1,30 @@
+{
+  "name": "Mocha",
+  "dark_chrome": true,
+  "accent_hex": "#cba6f7",
+  "colors": {
+    "bg_color": "#1e1e2e",
+    "bg_color_running": "#181825",
+    "grid_color": "#313244",
+    "cursor_color": "#b4befe",
+    "component_color": "#89b4fa",
+    "component_high_color": "#74c7ec",
+    "component_color_running": "#cdd6f4",
+    "picked_color": "#fab387",
+    "preadd_color": "#f2cdcd",
+    "selected_color": "#cba6f7",
+    "net_color": "#7f849c",
+    "net_high_color": "#89dceb",
+    "net_color_running": "#6c7086",
+    "highlevel_color": "#a6e3a1",
+    "lowlevel_color": "#89b4fa",
+    "terminal_color": "#f38ba8",
+    "terminal_color_running": "#11111b",
+    "selection_box": "#cba6f733",
+    "selection_box_border": "#cba6f7",
+    "_red": "#f38ba8",
+    "_green": "#a6e3a1",
+    "_blue": "#89b4fa",
+    "_yellow": "#f9e2af"
+  }
+}

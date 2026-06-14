@@ -4,23 +4,22 @@ This document outlines the architecture, data structures, UI integration, and im
 
 ## Overview
 
-GGate is a GTK4 + libadwaita application with a Cairo-rendered canvas. Currently, canvas colors are loaded from a flat set of keys in [Preference.py](file:///Users/ekureedem/Documents/Projects/GGate/ggate/Preference.py) and edited individually via the Appearance page in [Preferences.py](file:///Users/ekureedem/Documents/Projects/GGate/ggate/Components/Windows/Preferences.py). 
+GGate is a GTK4 + libadwaita application with a Cairo-rendered canvas. Canvas colors are defined in theme JSON files stored in `data/themes/`, bundled into the gresource at build time, and dynamically loaded at runtime. The Appearance page in [Preferences.py](file:///Users/ekureedem/Documents/Projects/GGate/ggate/Components/Windows/Preferences.py) allows switching between preinstalled and user themes, and editing individual colors.
 
-The goal of this design is to implement a unified **Theming System** containing three preinstalled premium dark/neutral themes:
-1. **Space**: A custom designed dark, deep-space aesthetic.
-2. **Frappé**: The official Catppuccin Frappé palette.
-3. **Mocha**: The official Catppuccin Mocha palette.
+The system includes four built-in themes:
+1. **Classic**: The legacy GGate color scheme (derived from original Preference defaults).
+2. **Space**: A custom designed dark, deep-space aesthetic.
+3. **Frappé**: The official Catppuccin Frappé palette.
+4. **Mocha**: The official Catppuccin Mocha palette.
 
 ---
 
 ## 1. Architecture
 
-The theming system separates **theme definitions** (color palettes) from the active **preference settings**.
+The theming system separates **theme definitions** (static JSON files in `data/themes/`) from the active **preference settings** (in-memory Preference object and on-disk preferences file).
 
-### Theme Representation
-A theme will be represented in code as a dictionary mapping each color-based GGate Preference key to a standard hexadecimal string (e.g., `#1e1e2e` or `#cba6f733` with alpha). 
-
-A new module [ggate/Themes.py](file:///Users/ekureedem/Documents/Projects/GGate/ggate/Themes.py) will house the theme registries, containing the built-in themes and parsing helpers.
+### Theme Representation & Discovery
+Themes are stored as JSON files in `data/themes/` (one per theme). At build time, Meson globs these files and injects them into both dev and installed gresources under `/org/astralco/GGate/Dev/themes/` (dev) and `/org/astralco/GGate/themes/` (installed). At runtime, `ggate/Themes.py` enumerates the gresource directory, parses each JSON file into a `Theme` object, and registers it in a module-level `THEME_REGISTRY` dict. User themes can also be placed in `~/.config/ggate/themes/*.json` and are loaded via filesystem scan after gresource themes.
 
 ```python
 # ggate/Themes.py
@@ -247,48 +246,48 @@ The theme picker will be integrated into the top of the **Appearance** tab of th
 
 ---
 
-## 5. Extensibility
+## 5. Dynamic Theme Pipeline & Extensibility
 
-A future-proof extension architecture will enable users to place custom `.json` themes in their config directory (`~/.config/ggate/themes/`).
+### Built-in Theme Storage
+Built-in themes are stored as JSON files in `data/themes/` and are bundled into the gresource at build time via Meson auto-globbing. No manual XML or hardcoded list is needed — adding a new `*.json` file to `data/themes/` automatically includes it in the build.
 
 ### Theme JSON Schema
+All themes, built-in and user-provided, follow this schema:
 ```json
 {
-  "name": "Nord Void",
+  "name": "Theme Name",
   "dark_chrome": true,
+  "accent_hex": "#00f2fe",
   "colors": {
-    "bg_color": "#2e3440",
-    "bg_color_running": "#242933",
-    "grid_color": "#3b4252",
-    "cursor_color": "#d8dee9",
-    "component_color": "#81a1c1",
-    "component_high_color": "#88c0d0",
-    "component_color_running": "#d8dee9",
-    "picked_color": "#d08770",
-    "preadd_color": "#b48ead",
-    "selected_color": "#a3be8c",
-    "net_color": "#4c566a",
-    "net_high_color": "#88c0d0",
-    "net_color_running": "#434c5e",
-    "highlevel_color": "#a3be8c",
-    "lowlevel_color": "#81a1c1",
-    "terminal_color": "#bf616a",
-    "terminal_color_running": "#2e3440",
-    "selection_box": "#88c0d033",
-    "selection_box_border": "#88c0d0",
-    "_red": "#bf616a",
-    "_green": "#a3be8c",
-    "_blue": "#81a1c1",
-    "_yellow": "#ebcb8b"
+    "bg_color": "#07080d",
+    "bg_color_running": "#0c0e16",
+    "grid_color": "#1b1e2c",
+    "cursor_color": "#e5e8f4",
+    "component_color": "#3d64ff",
+    "component_high_color": "#00f2fe",
+    "component_color_running": "#8992a8",
+    "picked_color": "#ff8000",
+    "preadd_color": "#ff007f",
+    "selected_color": "#39ff14",
+    "net_color": "#5b637a",
+    "net_high_color": "#00f2fe",
+    "net_color_running": "#44495b",
+    "highlevel_color": "#39ff14",
+    "lowlevel_color": "#3d64ff",
+    "terminal_color": "#ff3b30",
+    "terminal_color_running": "#07080d",
+    "selection_box": "#00f2fe26",
+    "selection_box_border": "#00f2fe",
+    "_red": "#ff3b30",
+    "_green": "#39ff14",
+    "_blue": "#007aff",
+    "_yellow": "#ffcc00"
   }
 }
 ```
 
-### Loading Mechanism
-On startup, GGate's preferences loading routine will scan `definitions.config_path + "/themes/"` for `.json` files. For each valid file:
-1. Parse it and instantiate a `Theme` object.
-2. Register it in the theme dictionary in `ggate/Themes.py`.
-3. Dynamically populate the `Adw.ComboRow` with the custom theme names.
+### Runtime Theme Discovery
+`Themes.init_registry(dev_mode)` enumerates the gresource theme prefix (`/org/astralco/GGate/Dev/themes` or `/org/astralco/GGate/themes`) via `Gio.resources_enumerate_children()`, parses each JSON child, and registers themes in `THEME_REGISTRY`. It then scans `~/.config/ggate/themes/` for user-provided JSON files to load and merge. No hardcoded list of theme names exists in the codebase.
 
 ---
 

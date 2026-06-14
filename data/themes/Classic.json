@@ -1,0 +1,30 @@
+{
+  "name": "Classic",
+  "dark_chrome": false,
+  "accent_hex": "#ff8000",
+  "colors": {
+    "bg_color": "#000000",
+    "bg_color_running": "#ffffff",
+    "grid_color": "#261f26",
+    "cursor_color": "#ffffff",
+    "component_color": "#00ff00",
+    "component_high_color": "#80ff80",
+    "component_color_running": "#000000",
+    "picked_color": "#ff8000",
+    "preadd_color": "#ffbf00",
+    "selected_color": "#ffffff",
+    "net_color": "#0000ff",
+    "net_high_color": "#8080ff",
+    "net_color_running": "#000000",
+    "highlevel_color": "#ff0000",
+    "lowlevel_color": "#0000ff",
+    "terminal_color": "#ff0000",
+    "terminal_color_running": "#000000",
+    "selection_box": "#ffbf0040",
+    "selection_box_border": "#ffbf00",
+    "_red": "#ff0000",
+    "_green": "#00ff00",
+    "_blue": "#0000ff",
+    "_yellow": "#ffff00"
+  }
+}
