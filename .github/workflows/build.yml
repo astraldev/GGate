@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: [ "main", "v5(development)" ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: write
 
@@ -20,6 +23,7 @@ jobs:
           dnf install -y
           git meson ninja-build glib2-devel
           gtk4-devel libadwaita-devel
+          pygobject3-devel
           python3-gobject python3-cairo
           python3-igraph python3-shapely python3-packaging
 
