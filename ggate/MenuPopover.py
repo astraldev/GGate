@@ -1,10 +1,9 @@
 import os
 from gi.repository import Gtk, Gdk, GLib
-
-_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from ggate import config
 
 def _get_icon_path(icon: str):
-    return os.path.join(_PROJECT_ROOT, "data", "images", "actions", f"{icon}.svg")
+    return os.path.join(config.ICONDIR, "actions", f"{icon}.svg")
 
 menu_xml = f"""
 <interface>

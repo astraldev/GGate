@@ -106,7 +106,7 @@ class TimingGraphDiagram(Gtk.Box):
     # ── draw callbacks ────────────────────────────────────────────────────────
 
     def name_area_draw_fn(self, drawing_area, cr: cairo.Context, width, height, *args):
-        self.draw_names(cr)
+        self.draw_names(cr, height)
 
     def chart_area_draw_fn(self, drawing_area, cr: cairo.Context, width, height, *args):
         # snapshot so iterating is safe while the worker thread appends frames
@@ -123,7 +123,7 @@ class TimingGraphDiagram(Gtk.Box):
             cr.fill()
             return
 
-        self.draw_diagrams(cr)
+        self.draw_diagrams(cr, width, height)
 
         current_time_x = (self._circuit.current_time - self.start_time) * self.scale
         if 0 <= current_time_x <= self.diagram_width:
@@ -140,14 +140,15 @@ class TimingGraphDiagram(Gtk.Box):
 
     # ── exporter-compatible public draw methods ───────────────────────────────
 
-    def draw_names(self, cr: cairo.Context):
+    def draw_names(self, cr: cairo.Context, allocated_height: int = None):
+        h = allocated_height if allocated_height is not None else self.img_height
         probes = self.__get_probes()
         name_layout = PangoCairo.create_layout(cr)
         name_layout.set_font_description(Preference.drawing_font)
 
         # background
         cr.set_source(Preference.bg_color_running)
-        cr.rectangle(0, 0, self.name_width, self.img_height)
+        cr.rectangle(0, 0, self.name_width, h)
         cr.fill()
 
         # outer border + row separators
@@ -179,29 +180,31 @@ class TimingGraphDiagram(Gtk.Box):
             cairo_draw_text(cr, name_layout, probe[1].values[0], 8, row_mid, 0, 0.5)
         cr.fill()
 
-    def draw_diagrams(self, cr: cairo.Context):
+    def draw_diagrams(self, cr: cairo.Context, allocated_width: int = None, allocated_height: int = None):
+        w = max(self.diagram_width, allocated_width) if allocated_width is not None else self.diagram_width
+        h = allocated_height if allocated_height is not None else self.img_height
         probes = self.__get_probes()
         diagram_layout = PangoCairo.create_layout(cr)
         diagram_layout.set_font_description(Preference.drawing_font)
 
         # background
         cr.set_source(Preference.bg_color_running)
-        cr.rectangle(0, 0, self.diagram_width, self.img_height)
+        cr.rectangle(0, 0, w, h)
         cr.fill()
 
         # outer border
         cr.set_source(Preference.grid_color)
         cr.set_line_width(1.0)
-        cairo_paths(cr, (0, 0.5), (self.diagram_width, 0.5))
-        cairo_paths(cr, (self.diagram_width - 0.5, 0), (self.diagram_width - 0.5, self.img_height))
-        cairo_paths(cr, (0, self.img_height - 0.5), (self.diagram_width, self.img_height - 0.5))
+        cairo_paths(cr, (0, 0.5), (w, 0.5))
+        cairo_paths(cr, (w - 0.5, 0), (w - 0.5, self.img_height))
+        cairo_paths(cr, (0, self.img_height - 0.5), (w, self.img_height - 0.5))
         cr.stroke()
 
         # ruler bottom divider + row separators
-        cairo_paths(cr, (0, _ROW_H - 0.5), (self.diagram_width, _ROW_H - 0.5))
+        cairo_paths(cr, (0, _ROW_H - 0.5), (w, _ROW_H - 0.5))
         for j in range(len(probes)):
             sep_y = _ROW_H + j * _ROW_H + _ROW_H - 0.5
-            cairo_paths(cr, (0, sep_y), (self.diagram_width, sep_y))
+            cairo_paths(cr, (0, sep_y), (w, sep_y))
         cr.stroke()
 
         history = list(self._circuit.probe_levels_history)
@@ -263,9 +266,9 @@ class TimingGraphDiagram(Gtk.Box):
         cr.set_line_width(1.5)
 
         def _row_y(j, high):
-            # each row spans _ROW_H px starting at _ROW_H offset; high at +10, low at +30
+            # each row spans _ROW_H px starting at _ROW_H offset; high at +6, low at +34
             base = _ROW_H + j * _ROW_H
-            return (base + 10 + 0.5) if high else (base + 30 + 0.5)  # +0.5 aligns 1px stroke to pixel grid
+            return (base + 6 + 0.5) if high else (base + 34 + 0.5)  # +0.5 aligns 1px stroke to pixel grid
 
         def _draw_segment(j, x0, x1, data, next_data=None):
             if data == -1:
@@ -280,7 +283,7 @@ class TimingGraphDiagram(Gtk.Box):
                 cr.set_source(Preference.highlevel_color if high else Preference.lowlevel_color)
                 tx = x1 - 0.5  # +0.5 aligns 1px stroke to pixel grid
                 base = _ROW_H + j * _ROW_H
-                cairo_paths(cr, (tx, base + 11), (tx, base + 29))
+                cairo_paths(cr, (tx, base + 7), (tx, base + 33))
                 cr.stroke()
 
         if len(history) > 1:

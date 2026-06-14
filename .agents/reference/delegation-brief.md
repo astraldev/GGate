@@ -7,7 +7,7 @@ task-specific prompt.
 ## Repo
 - Path / working dir: `/Users/ekureedem/Documents/Projects/GGate` (git repo, branch off `main`).
 - Stack: Python `>=3.10`, GTK 4 (`>=4.16`), libadwaita (`>=1.6.8`), Cairo-rendered canvas.
-- App IDs: `org.astralco.GGate` (installed), `org.astralco.GGate.Dev` (dev).
+- App IDs: `org.astralco.ggate` (installed), `org.astralco.ggate.Dev` (dev).
 - Authoritative architecture notes: `CLAUDE.md` (read it). Working backlog: `.agents/TODO.md`.
 
 ## Conventions (enforced in review)
@@ -26,8 +26,8 @@ task-specific prompt.
   - Dev: `run.py` loads `dev-resources.gresource` (from `data/images/dev-resources.xml`).
   - Installed: `ggate-resources.gresource` (from `data/images/resources.xml.in`, via
     `data/images/meson.build` which does dynamic XML generation — reuse that technique).
-- Resource prefixes follow `/org/astralco/GGate/...` (installed) and
-  `/org/astralco/GGate/Dev/...` (dev). Dev-vs-installed detection lives in `config.py`.
+- Resource prefixes follow `/org/astralco/ggate/...` (installed) and
+  `/org/astralco/ggate/Dev/...` (dev). Dev-vs-installed detection lives in `config.py`.
 - New bundled assets MUST go through Meson + both gresource XMLs and load by resource
   path — never an absolute/relative filesystem path (breaks in venv/installed prefixes).
 - Icon/asset gresource conventions are detailed in `.agents/plans/icon-creation.md`.

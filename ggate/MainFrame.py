@@ -1,4 +1,3 @@
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
 import os
 import sys
@@ -31,7 +30,7 @@ from ggate.Components.Windows.TimingGraph.Display import TimingGraphDisplayWindo
 from ggate.StatusDisplay import StatusDisplay
 
 themed_icons = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
-themed_icons.add_search_path(config.DATADIR + "/images")
+themed_icons.add_search_path(config.ICONDIR)
 
 TOOLTIPS = {
     "simulation": {
@@ -340,6 +339,7 @@ class MainFrame(Adw.ApplicationWindow):
 
     def create_new_buffer(self, *args):
         self.set_title("%s - %s" % (const.text_notitle, const.app_name))
+        self.drawarea.reset_initial_centering()
         self.reset_frame()
         self.circuit.reset_circuit()
         self.drawarea.clear_animations()
@@ -393,6 +393,7 @@ class MainFrame(Adw.ApplicationWindow):
         if self.circuit.open_file(path):
             return
 
+        self.drawarea.reset_initial_centering()
         self.reset_frame()
         self.drawarea.clear_animations()
         self.drawarea.zoom = 1.0
@@ -616,8 +617,6 @@ class MainFrame(Adw.ApplicationWindow):
     def on_action_show_help(self, *args):
         Gtk.show_uri(None, const.help, Gdk.CURRENT_TIME)
 
-    # def on_action_translate_pressed(self, *args):
-    #     webbrowser.open(const.devel_translate)
 
     def on_action_bug_pressed(self, *args):
         webbrowser.open(const.devel_bug)

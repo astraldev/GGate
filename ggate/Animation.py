@@ -1,4 +1,3 @@
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
 def ease_out_cubic(t: float) -> float:
 	return 1.0 - (1.0 - t) ** 3

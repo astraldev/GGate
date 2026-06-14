@@ -12,7 +12,7 @@ This document tracks the outstanding build, packaging, and resource issues in GG
   1. This breaks when the application is installed globally (since the source `data/images` path is not present at the python site-packages folder level).
   2. The GResource path layout is non-standard (redundant `data/` subdirectory, missing icon theme folder hierarchy like `hicolor`, and double actions paths).
 * **Recommended Resolution**: 
-  - Restructure the icons folder hierarchy inside both the dev and release GResource bundles to follow the Freedesktop icon theme standards: `/org/astralco/GGate/icons/hicolor/[size]/[context]/[name].[ext]`.
+  - Restructure the icons folder hierarchy inside both the dev and release GResource bundles to follow the Freedesktop icon theme standards: `/org/astralco/ggate/icons/hicolor/[size]/[context]/[name].[ext]`.
   - Use `GResource` aliases to map resource paths cleanly.
   - Load all icons strictly by name using `Gtk.Image.new_from_icon_name` or `resource://` URLs.
 
@@ -20,7 +20,7 @@ This document tracks the outstanding build, packaging, and resource issues in GG
 
 ## 2. Flatpak Build Improvements
 * **Status**: **Still Pending**
-* **Description**: The Flatpak manifest (`build-aux/flatpak/org.astralco.GGate.json`) compiles python modules using pip with active network access (`--share=network`).
+* **Description**: The Flatpak manifest (`build-aux/flatpak/org.astralco.ggate.json`) compiles python modules using pip with active network access (`--share=network`).
 * **Issues**: For official distribution on Flathub, builds must be fully offline and reproducible.
 * **Recommended Resolution**: Use `flatpak-pip-generator` to generate a static list of dependencies with SHA-256 hashes, allowing local offline pip installation.
 

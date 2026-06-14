@@ -6,8 +6,8 @@ from gettext import gettext as _
 from gi.repository import Gtk, GdkPixbuf, GObject
 
 def _get_icon_path(icon: str):
-    svg_path = os.path.join(config.DATADIR, "images", "components", f"{icon}.svg")
-    png_path = os.path.join(config.DATADIR, "images", "components", f"{icon}.png")
+    svg_path = os.path.join(config.ICONDIR, "components", f"{icon}.svg")
+    png_path = os.path.join(config.ICONDIR, "components", f"{icon}.png")
     return svg_path if os.path.exists(svg_path) else png_path
 
 class ComponentViewListBoxRow(Gtk.ListBoxRow):

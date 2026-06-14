@@ -87,6 +87,8 @@ class TimingGraphDisplayWindow(Adw.Dialog):
         self.connect("closed", self.on_closed)
 
     def on_parameters_changed(self, *args):
+        if getattr(self, "_blocking_updates", False):
+            return
         # spin value is in display-unit (ns/μs/ms); divide by seconds-per-unit to get px/s
         multipliers = {0: 1e-9, 1: 1e-6, 2: 1e-3}
         scale_val = self.scale_spin.get_value()
@@ -110,6 +112,38 @@ class TimingGraphDisplayWindow(Adw.Dialog):
 
     def display(self):
         self._is_presented = True
+        
+        history = self._parent.circuit.probe_levels_history
+        if not history or len(history) <= 1:
+            self.on_parameters_changed()
+            self.present(self._parent)
+            return
+
+        start_t = history[0][0]
+        end_t = history[-1][0]
+        duration = end_t - start_t
+        if duration <= 1e-12:
+            self.on_parameters_changed()
+            self.present(self._parent)
+            return
+
+        self._blocking_updates = True
+        
+        multipliers = {0: 1e9, 1: 1e6, 2: 1e3}
+        selected_unit = self.range_unit.get_selected()
+        mult = multipliers.get(selected_unit, 1e6)
+        
+        self.from_spin.set_value(start_t * mult)
+        self.to_spin.set_value(end_t * mult)
+        
+        # Saner default zoom: scale so that the duration fits ~500 pixels wide
+        scale_unit_mult = multipliers.get(self.scale_unit.get_selected(), 1e6)
+        ideal_scale_val = (500.0 / duration) / scale_unit_mult
+        clamped_scale_val = max(0.1, min(ideal_scale_val, 1000.0))
+        self.scale_spin.set_value(clamped_scale_val)
+        
+        self._blocking_updates = False
+        
         self.on_parameters_changed()
         self.present(self._parent)
 

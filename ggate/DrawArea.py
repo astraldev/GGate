@@ -1,4 +1,3 @@
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
@@ -129,11 +128,15 @@ class DrawArea(Gtk.ScrolledWindow):
         self._pushed_component = logic_gates[const.component_none]
         self._last_pw = 0
         self._last_ph = 0
+        self._initial_centering_done = False
         self.hadj.connect("changed", self._on_adjustment_changed)
         self.vadj.connect("changed", self._on_adjustment_changed)
         self.glide_duration_ms = 150
         self.animation_controller = CanvasAnimationController(self)
         self.drag_initial_offsets = {}
+
+    def reset_initial_centering(self):
+        self._initial_centering_done = False
 
     def _on_adjustment_changed(self, adj):
         pw = self.hadj.get_page_size()
@@ -142,7 +145,7 @@ class DrawArea(Gtk.ScrolledWindow):
             if pw != self._last_pw or ph != self._last_ph:
                 self._last_pw = pw
                 self._last_ph = ph
-                if Preference.autocenter_resize:
+                if not self._initial_centering_done or Preference.autocenter_resize:
                     self.center_viewport()
 
     def center_viewport(self):
@@ -159,6 +162,7 @@ class DrawArea(Gtk.ScrolledWindow):
             c_y = (self.height / 2) * self.zoom
         self.hadj.set_value(c_x - pw / 2)
         self.vadj.set_value(c_y - ph / 2)
+        self._initial_centering_done = True
         return False
 
 

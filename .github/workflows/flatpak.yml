@@ -24,4 +24,4 @@ jobs:
       
       - name: Build Flatpak
         run: |
-          flatpak-builder --disable-rofiles-fuse --repo=repo --force-clean build-dir build-aux/flatpak/org.astralco.GGate.json
+          flatpak-builder --disable-rofiles-fuse --repo=repo --force-clean build-dir build-aux/flatpak/org.astralco.ggate.json

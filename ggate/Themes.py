@@ -35,7 +35,7 @@ THEME_REGISTRY: dict[str, Theme] = {}
 def init_registry(is_dev_mode: bool = False) -> None:
     THEME_REGISTRY.clear()
 
-    prefix = "/org/astralco/GGate/Dev/themes" if is_dev_mode else "/org/astralco/GGate/themes"
+    prefix = "/org/astralco/ggate/Dev/themes" if is_dev_mode else "/org/astralco/ggate/themes"
 
     try:
         children = Gio.resources_enumerate_children(prefix, Gio.ResourceLookupFlags.NONE)

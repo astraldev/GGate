@@ -11,7 +11,7 @@ and simulate. Circuit files are `.glc` (examples in `data/examples/`).
 
 Requires: Python `>=3.10,<4`, `gtk4 >= 4.16`, `libadwaita-1 >= 1.6.8`. Runtime deps
 (`pyproject.toml`): `pygobject`, `pycairo`, `python-igraph`, `shapely`, `packaging`,
-`meson-python`. App ID `org.astralco.GGate` (dev: `org.astralco.GGate.Dev`).
+`meson-python`. App ID `org.astralco.ggate` (dev: `org.astralco.ggate.Dev`).
 
 ## Working model
 
@@ -94,7 +94,7 @@ These dialogs are the **current cleanup focus** — details and the grounded bug
 
 - **Meson**: `meson.build` (deps, resource compile → `ggate-resources.gresource`,
   `install_subdir('ggate')`), `meson_options.txt`, `bin/ggate.in`, `data/images/` gresource.
-- **Flatpak**: `build-aux/flatpak/org.astralco.GGate.json` (GNOME 47 runtime, pip deps).
+- **Flatpak**: `build-aux/flatpak/org.astralco.ggate.json` (GNOME 47 runtime, pip deps).
 - **Snap**: `build-aux/snapcraft/snapcraft.yaml` (`core22`, poetry deps, meson plugin).
 - **Dev resources**: `run.py` loads `./dev-resources.gresource`. This bundle is a build
   artifact (git-ignored) and must be recompiled from `data/images/dev-resources.xml`

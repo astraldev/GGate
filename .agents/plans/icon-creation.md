@@ -70,8 +70,8 @@ Standard system integration assets.
 
 | Icon Role | Target Name | Size Directory | Current State | Target State |
 |---|---|---|---|---|
-| **App Launcher Icon** | `org.astralco.GGate.svg` | `scalable/apps` | SVG (`scalable/ggate.svg`) | Scalable SVG (high-res compliant) |
-| **App Launcher Icon** | `org.astralco.GGate.png` | `apps/[size]x[size]` | PNGs (`apps/[size]/ggate.png`) | Regenerated from scalable target |
+| **App Launcher Icon** | `org.astralco.ggate.svg` | `scalable/apps` | SVG (`scalable/ggate.svg`) | Scalable SVG (high-res compliant) |
+| **App Launcher Icon** | `org.astralco.ggate.png` | `apps/[size]x[size]` | PNGs (`apps/[size]/ggate.png`) | Regenerated from scalable target |
 | **GGate Document Icon** | `application-x-ggate-circuit-symbolic.svg` | `scalable/mimetypes` | **Missing** (only PNGs exist) | Scalable SVG representing circuit file |
 | **GGate Document Icon** | `application-x-ggate-circuit.png` | `mimetypes/[size]x[size]` | PNGs (`mime/[size]/text-glc.png`) | Rename & regenerate to match MIME spec |
 
@@ -554,7 +554,7 @@ Instead of reorganizing the physical file structure in git, we will map files in
 
 ```xml
 <!-- Proposed dev-resources.xml structure -->
-<gresource prefix="/org/astralco/GGate/Dev/icons/">
+<gresource prefix="/org/astralco/ggate/Dev/icons/">
   <!-- Actions -->
   <file alias="hicolor/scalable/actions/flip-horizontal-symbolic.svg">actions/flip-horizontal.svg</file>
   <file alias="hicolor/scalable/actions/flip-vertical-symbolic.svg">actions/flip-vertical.svg</file>
@@ -615,7 +615,7 @@ display = Gdk.Display.get_default()
 if display:
     theme = Gtk.IconTheme.get_for_display(display)
     # Register the GResource path prefix where GTK will search for icons
-    resource_prefix = "/org/astralco/GGate/Dev/icons" if config.RUNNING_FROM_SOURCE else "/org/astralco/GGate/icons"
+    resource_prefix = "/org/astralco/ggate/Dev/icons" if config.RUNNING_FROM_SOURCE else "/org/astralco/ggate/icons"
     theme.add_resource_path(resource_prefix)
 ```
 
@@ -654,7 +654,7 @@ if display:
 ### Phase 3: Hand-Authored Assets & System Files
 1. **Action Icons:** Update `flip-horizontal.svg`, `flip-vertical.svg`, `rotate-left.svg`, and `rotate-right.svg` to be 16x16 symbolic SVGs.
 2. **Net Icon:** Design the missing `add-net-symbolic.svg` showing a clean vector wire segment.
-3. **App & MIME Icons:** Modernize `org.astralco.GGate.svg` and `application-x-ggate-circuit-symbolic.svg`, then update Meson file installers and setup configs to deploy them to standard directories.
+3. **App & MIME Icons:** Modernize `org.astralco.ggate.svg` and `application-x-ggate-circuit-symbolic.svg`, then update Meson file installers and setup configs to deploy them to standard directories.
 
 ### Phase 4: Verification & Testing
 1. **Theme Switch Verification:** Verify that toggling between ANSI and IEC symbols updates the ComponentView icons on the fly.

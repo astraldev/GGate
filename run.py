@@ -58,10 +58,10 @@ def build_dev_resources():
   xml_content = (
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<gresources>\n"
-    "  <gresource prefix=\"/org/astralco/GGate/Dev/data/icons/scalable/actions/\">\n"
+    "  <gresource prefix=\"/org/astralco/ggate/Dev/data/icons/scalable/actions/\">\n"
     + "\n".join(icon_lines)
     + "\n  </gresource>\n"
-    "  <gresource prefix=\"/org/astralco/GGate/Dev/themes/\">\n"
+    "  <gresource prefix=\"/org/astralco/ggate/Dev/themes/\">\n"
     + "\n".join(theme_lines)
     + "\n  </gresource>\n"
     "</gresources>\n"
