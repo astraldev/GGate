@@ -107,6 +107,8 @@ From `.vscode/copilot-instructions.md`, as amended by PM direction:
   docstrings, NOT line-by-line narration. Keep it sparse. Still no `// ...existing code...`
   placeholder markers.
 - **No unused/dangling** imports or variables. **No extra** methods/types unless necessary.
+- **Avoid deep nesting:** ~3 levels of nesting is the signal to extract a helper function.
+  Prefer small focused functions + early returns over pyramids of `if`/`for`.
 - **Double quotes** for strings, always. Match surrounding style; verify meticulously.
 - Commits: **Conventional Commits, one-line subject.**
 

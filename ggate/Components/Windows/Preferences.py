@@ -1,203 +1,215 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
 from ggate import Preference
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, Adw, Pango
 from gettext import gettext as _
 
-class PreferencesWindow(Gtk.Dialog):
+class PreferencesWindow(Adw.PreferencesDialog):
     def __init__(self, parent):
-        Gtk.Dialog.__init__(
-            self, title=_("Preferences"), use_header_bar=True, transient_for=parent
-        )
-        self.set_resizable(False)
-        self.set_modal(True)
-        self.set_destroy_with_parent(True)
-
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-
-        pref = Gtk.Box(spacing=5)
-
-        font_label = Gtk.Label(label=_("Font:"))
-        font_label.set_margin_start(5)
-        pref.append(font_label)
-
-        # todo: fix font picker
-        self.drawing_font_btn = Gtk.FontDialogButton()
-        self.drawing_font_btn.set_halign(Gtk.Align.END)
-        pref.append(self.drawing_font_btn)
-        vbox.append(pref)
-
-        table = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        table.set_margin_top(5)
-        table.set_margin_bottom(5)
-
-        prefset = {
-            "net colors: ": [
-                ("net_color", _("Net:")),
-                ("net_high_color", _("Net (highlighted):")),
-                ("net_color_running", _("Net (running):")),
-                ("highlevel_color", _("Net (high level):")),
-                ("lowlevel_color", _("Net (low level):")),
-            ],
-            "component colors": [
-                ("component_color", _("Component:")),
-                ("component_high_color", _("Component (highlighted):")),
-                ("component_color_running", _("Component (running):")),
-                ("picked_color", _("Component (picked):")),
-                ("preadd_color", _("Component (pre added):")),
-                ("selected_color", _("Component (selected):")),
-            ],
-            "terminals color": [
-                ("terminal_color", _("Terminal:")),
-                ("terminal_color_running", _("Terminal (running):")),
-                ("cursor_color", _("Cursor:")),
-                ("bg_color", _("Background:")),
-                ("bg_color_running", _("Background (running):")),
-                ("grid_color", _("Grid:")),
-            ],
-        }
-
+        super().__init__()
+        self.main_frame = parent
         self.color_buttons = {}
 
-        for key in prefset.keys():
-            frame = Gtk.Frame()
+        self._build_ui()
+        self._populate_values()
+        self._connect_signals()
 
-            listBox = Gtk.ListBox()
-            listBox.set_selection_mode(Gtk.SelectionMode.NONE)
-            listBox.add_css_class("rich-list")
-            listBox.add_css_class("view")
+    def _build_ui(self):
+        self.add(self._build_appearance_page())
+        self.add(self._build_simulation_page())
+        self.add(self._build_canvas_page())
 
-            section_row = Gtk.ListBoxRow()
-            section_row.set_activatable(False)
+    def _build_appearance_page(self):
+        page = Adw.PreferencesPage()
+        page.set_title(_("Appearance"))
+        page.set_icon_name("preferences-desktop-wallpaper-symbolic")
 
-            _label = Gtk.Label()
-            _label.set_markup(f"<b>{key.capitalize()}</b>")
+        group_style = Adw.PreferencesGroup()
+        group_style.set_title(_("Typography &amp; Style"))
 
-            _box = Gtk.Box()
-            _box.append(_label)
-            _box.set_size_request(-1, 35)
+        font_row = Adw.ActionRow()
+        font_row.set_title(_("Font"))
 
-            section_row.set_selectable(False)
+        font_dialog = Gtk.FontDialog()
+        monospace_filter = Gtk.CustomFilter.new(self._monospace_filter_func)
+        font_dialog.set_filter(monospace_filter)
 
-            section_row.set_child(_box)
-            listBox.append(section_row)
-
-            for prefpair in prefset[key]:
-                caption_label = Gtk.Label()
-                caption = Gtk.Box()
-
-                caption_label.set_text(prefpair[1])
-                caption.set_size_request(180, -1)
-                caption.set_halign(Gtk.Align.START)
-                caption.set_hexpand(True)
-
-                caption.append(caption_label)
-                caption.set_margin_start(7)
-
-                color_button = Gtk.ColorButton()
-                self.color_buttons[prefpair[0]] = color_button
-
-                box = Gtk.Box()
-                box.append(caption)
-                box.append(color_button)
-
-                row = Gtk.ListBoxRow()
-                row.set_activatable(False)
-                row.set_child(box)
-
-                listBox.append(row)
-
-            table.append(frame)
-            frame.set_child(listBox)
-            frame.set_margin_start(2)
-            frame.set_margin_end(2)
-
-        vbox.append(table)
-        table.set_vexpand(True)
-        table.set_hexpand(True)
-
-        pref = Gtk.Box(spacing=5)
-        pref.append(Gtk.Label(label=_("Symbol type:")))
-        self.symbol_type_combo = Gtk.ComboBoxText()
-        self.symbol_type_combo.set_entry_text_column(0)
-        self.symbol_type_combo.append_text(_("MIL/ANSI"))
-        self.symbol_type_combo.append_text(_("IEC"))
-        pref.append(self.symbol_type_combo)
-
-        # vbox.append(pref)
-        # pref.set_vexpand(True)
-        # pref.set_hexpand(True)
-
-        # pref = Gtk.Box(spacing=5)
-
-        pref.append(Gtk.Label(label=_("Max calc iters:")))
-        self.calc_iter_spin = Gtk.SpinButton()
-        self.calc_iter_spin.set_hexpand(True)
-        self.calc_iter_spin.set_increments(1, 10)
-        self.calc_iter_spin.set_range(10, 1000000)
-        pref.append(self.calc_iter_spin)
-        pref.append(Gtk.Label(label=_("Max calc duration [µs]:")))
-        self.calc_duration_spin = Gtk.SpinButton()
-        self.calc_duration_spin.set_increments(1, 10)
-        self.calc_duration_spin.set_range(0, 100000)
-        self.calc_duration_spin.set_digits(3)
-        pref.append(self.calc_duration_spin)
-
-        vbox.append(pref)
-
-        pref2 = Gtk.Box(spacing=5)
-        pref2.set_margin_top(5)
-        pref2.append(Gtk.Label(label=_("Auto-center content on resize:")))
-        self.autocenter_resize_switch = Gtk.Switch()
-        pref2.append(self.autocenter_resize_switch)
-        vbox.append(pref2)
-
-        vbox.set_margin_start(10)
-        vbox.set_margin_top(10)
-        vbox.set_margin_bottom(10)
-        vbox.set_margin_end(10)
-
-        pref.set_vexpand(True)
-        pref.set_hexpand(True)
-
-        box = self.get_content_area()
-        box.append(vbox)
-
-        box.show()
-
-        self.add_button("Cancel", Gtk.ResponseType.CANCEL)
-        apply_button = self.add_button("Apply", Gtk.ResponseType.APPLY)
-        apply_button.add_css_class("suggested-action")
-
-    def update_dialog(self):
+        self.drawing_font_btn = Gtk.FontDialogButton.new(font_dialog)
         self.drawing_font_btn.set_use_font(True)
+        self.drawing_font_btn.set_use_size(True)
+        self.drawing_font_btn.set_halign(Gtk.Align.END)
+        self.drawing_font_btn.set_valign(Gtk.Align.CENTER)
+        font_row.add_suffix(self.drawing_font_btn)
+        group_style.add(font_row)
+
+        self.symbol_type_row = Adw.ComboRow()
+        self.symbol_type_row.set_title(_("Symbol style"))
+        self.symbol_type_row.set_model(Gtk.StringList.new([_("MIL/ANSI"), _("IEC")]))
+        group_style.add(self.symbol_type_row)
+
+        page.add(group_style)
+
+        group_canvas = Adw.PreferencesGroup()
+        group_canvas.set_title(_("Canvas Colors"))
+        group_canvas.add(self._create_color_row(_("Background (edit mode):"), "bg_color"))
+        group_canvas.add(self._create_color_row(_("Background (running):"), "bg_color_running"))
+        group_canvas.add(self._create_color_row(_("Grid:"), "grid_color"))
+        group_canvas.add(self._create_color_row(_("Cursor:"), "cursor_color"))
+        page.add(group_canvas)
+
+        group_comp = Adw.PreferencesGroup()
+        group_comp.set_title(_("Component Colors"))
+        group_comp.add(self._create_color_row(_("Component (default):"), "component_color"))
+        group_comp.add(self._create_color_row(_("Component (highlighted):"), "component_high_color"))
+        group_comp.add(self._create_color_row(_("Component (running):"), "component_color_running"))
+        group_comp.add(self._create_color_row(_("Component (picked):"), "picked_color"))
+        group_comp.add(self._create_color_row(_("Component (pre-added):"), "preadd_color"))
+        group_comp.add(self._create_color_row(_("Component (selected):"), "selected_color"))
+        page.add(group_comp)
+
+        group_net = Adw.PreferencesGroup()
+        group_net.set_title(_("Net Colors"))
+        group_net.add(self._create_color_row(_("Net (default):"), "net_color"))
+        group_net.add(self._create_color_row(_("Net (highlighted):"), "net_high_color"))
+        group_net.add(self._create_color_row(_("Net (running):"), "net_color_running"))
+        group_net.add(self._create_color_row(_("Net (high level):"), "highlevel_color"))
+        group_net.add(self._create_color_row(_("Net (low level):"), "lowlevel_color"))
+        page.add(group_net)
+
+        group_term = Adw.PreferencesGroup()
+        group_term.set_title(_("Terminals"))
+        group_term.add(self._create_color_row(_("Terminal (edit):"), "terminal_color"))
+        group_term.add(self._create_color_row(_("Terminal (running):"), "terminal_color_running"))
+        page.add(group_term)
+
+        return page
+
+    def _build_simulation_page(self):
+        page = Adw.PreferencesPage()
+        page.set_title(_("Simulation"))
+        page.set_icon_name("media-playback-start-symbolic")
+
+        group = Adw.PreferencesGroup()
+        group.set_title(_("Performance &amp; Constraints"))
+
+        self.calc_iter_row = Adw.SpinRow()
+        self.calc_iter_row.set_title(_("Max calculation iterations"))
+        group.add(self.calc_iter_row)
+
+        self.calc_duration_row = Adw.SpinRow()
+        self.calc_duration_row.set_title(_("Max calculation duration (µs)"))
+        group.add(self.calc_duration_row)
+
+        page.add(group)
+        return page
+
+    def _build_canvas_page(self):
+        page = Adw.PreferencesPage()
+        page.set_title(_("Canvas"))
+        page.set_icon_name("input-mouse-symbolic")
+
+        group = Adw.PreferencesGroup()
+        group.set_title(_("Layout &amp; Grid"))
+
+        self.autocenter_row = Adw.SwitchRow()
+        self.autocenter_row.set_title(_("Auto-center content on resize"))
+        group.add(self.autocenter_row)
+
+        page.add(group)
+        return page
+
+    def _create_color_row(self, title, key):
+        row = Adw.ActionRow()
+        row.set_title(title)
+
+        color_dialog = Gtk.ColorDialog()
+        btn = Gtk.ColorDialogButton.new(color_dialog)
+        btn.set_halign(Gtk.Align.END)
+        btn.set_valign(Gtk.Align.CENTER)
+
+        self.color_buttons[key] = btn
+        row.add_suffix(btn)
+        return row
+
+    def _monospace_filter_func(self, item, user_data=None):
+        if isinstance(item, Pango.FontFace):
+            family = item.get_family()
+        elif isinstance(item, Pango.FontFamily):
+            family = item
+        else:
+            return False
+        return family.is_monospace()
+
+    def _populate_values(self):
         self.drawing_font_btn.set_font_desc(Preference.drawing_font)
+        self.symbol_type_row.set_selected(Preference.symbol_type)
 
-        for key in self.color_buttons:
-            rgba = Preference.__getattr__(key).get_rgba()
-            color = Gdk.RGBA()
-            color.red = round(rgba[0], 2)
-            color.green = round(rgba[1], 2)
-            color.blue = round(rgba[2], 2)
-            color.alpha = 1.0
+        for key, btn in self.color_buttons.items():
+            pattern = Preference.__getattr__(key)
+            r, g, b, _ = pattern.get_rgba()
+            rgba = Gdk.RGBA()
+            rgba.red = r
+            rgba.green = g
+            rgba.blue = b
+            rgba.alpha = 1.0
+            btn.set_rgba(rgba)
 
-            self.color_buttons[key].set_rgba(color)
+        adj_iter = Gtk.Adjustment.new(float(Preference.max_calc_iters), 10.0, 1000000.0, 1.0, 10.0, 0.0)
+        self.calc_iter_row.set_adjustment(adj_iter)
+        self.calc_iter_row.set_digits(0)
 
-        self.symbol_type_combo.set_active(Preference.symbol_type)
-        self.calc_iter_spin.set_value(Preference.max_calc_iters)
-        self.calc_duration_spin.set_value(Preference.max_calc_duration * 1000000)
-        self.autocenter_resize_switch.set_active(bool(Preference.autocenter_resize))
+        adj_dur = Gtk.Adjustment.new(Preference.max_calc_duration * 1000000.0, 0.0, 100000.0, 1.0, 10.0, 0.0)
+        self.calc_duration_row.set_adjustment(adj_dur)
+        self.calc_duration_row.set_digits(3)
 
-    def apply_settings(self):
-        Preference.drawing_font = self.drawing_font_btn.get_font_desc()
+        self.autocenter_row.set_active(bool(Preference.autocenter_resize))
 
-        for key in self.color_buttons:
-            color = self.color_buttons[key].get_rgba()
-            Preference.__setattr__(
-                key, "%f,%f,%f" % (color.red, color.green, color.blue)
-            )
+    def _connect_signals(self):
+        self.drawing_font_btn.connect("notify::font-desc", self._on_font_changed)
+        self.symbol_type_row.connect("notify::selected", self._on_symbol_type_changed)
 
-        Preference.symbol_type = self.symbol_type_combo.get_active()
-        Preference.max_calc_iters = self.calc_iter_spin.get_value()
-        Preference.max_calc_duration = self.calc_duration_spin.get_value() * 0.000001
-        Preference.autocenter_resize = int(self.autocenter_resize_switch.get_active())
+        for key, btn in self.color_buttons.items():
+            btn.connect("notify::rgba", self._on_color_changed, key)
+
+        self.calc_iter_row.connect("notify::value", self._on_calc_iters_changed)
+        self.calc_duration_row.connect("notify::value", self._on_calc_duration_changed)
+        self.autocenter_row.connect("notify::active", self._on_autocenter_changed)
+
+    def _on_font_changed(self, button, pspec):
+        font_desc = button.get_font_desc()
+        if font_desc:
+            Preference.drawing_font = font_desc.to_string()
+            Preference.save_settings()
+            self._trigger_canvas_redraw()
+
+    def _on_symbol_type_changed(self, row, pspec):
+        Preference.symbol_type = row.get_selected()
+        Preference.save_settings()
+        self._trigger_canvas_redraw()
+
+    def _on_color_changed(self, button, pspec, key):
+        rgba = button.get_rgba()
+        if rgba:
+            Preference.__setattr__(key, f"{rgba.red},{rgba.green},{rgba.blue}")
+            Preference.save_settings()
+            self._trigger_canvas_redraw()
+
+    def _on_calc_iters_changed(self, row, pspec):
+        Preference.max_calc_iters = int(row.get_value())
+        Preference.save_settings()
+        self._trigger_canvas_redraw()
+
+    def _on_calc_duration_changed(self, row, pspec):
+        Preference.max_calc_duration = row.get_value() * 0.000001
+        Preference.save_settings()
+        self._trigger_canvas_redraw()
+
+    def _on_autocenter_changed(self, row, pspec):
+        Preference.autocenter_resize = int(row.get_active())
+        Preference.save_settings()
+        self._trigger_canvas_redraw()
+
+    def _trigger_canvas_redraw(self):
+        if self.main_frame and hasattr(self.main_frame, "drawarea"):
+            self.main_frame.drawarea.redraw = True
+            self.main_frame.drawarea.queue_draw()

@@ -40,6 +40,31 @@ TOOLTIPS = {
     }
 }
 
+WINDOW_WIDTH_PERCENT = 0.65
+WINDOW_HEIGHT_PERCENT = 0.60
+DEFAULT_WINDOW_WIDTH = 640
+DEFAULT_WINDOW_HEIGHT = 400
+
+
+def compute_default_window_size():
+    display = Gdk.Display.get_default()
+    if not display:
+        return DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
+
+    monitors = display.get_monitors()
+    if not monitors or len(monitors) == 0:
+        return DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
+
+    monitor = monitors.get_item(0)
+    if not monitor:
+        return DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
+
+    geometry = monitor.get_geometry()
+    width = int(geometry.width * WINDOW_WIDTH_PERCENT)
+    height = int(geometry.height * WINDOW_HEIGHT_PERCENT)
+    return width, height
+
+
 class ShortCutWindow:
     def __init__(self, parent):
         shortcut_builder = Gtk.Builder.new_from_string(UserInterfaces.shortcut_ui, -1)
@@ -82,7 +107,6 @@ class MainFrame(Adw.ApplicationWindow):
         self.prop_window.connect("property-changed", self.on_property_changed)
 
         # Other Windows
-        self.pref_window = PreferencesWindow(self)
         self.timing_diagram = TimingGraphDisplayWindow(self)
 
         self.clipboard = self.get_clipboard()
@@ -214,7 +238,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.action_net.set_active(False)
 
     def create_window(self):
-        self.set_default_size(640, 400)
+        self.set_default_size(*compute_default_window_size())
 
         paned = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -322,6 +346,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.set_title("%s - %s" % (const.text_notitle, const.app_name))
         self.reset_frame()
         self.circuit.reset_circuit()
+        self.drawarea.clear_animations()
         self.drawarea.center_viewport()
         self.drawarea.nearest_component = None
         self.drawarea.redraw = True
@@ -373,6 +398,7 @@ class MainFrame(Adw.ApplicationWindow):
             return
 
         self.reset_frame()
+        self.drawarea.clear_animations()
         self.drawarea.center_viewport()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
@@ -429,6 +455,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.component_dragged = False
         self.drawarea.drag_enabled = False
         self.drawarea.rect_select_enabled = False
+        self.drawarea.clear_animations()
         self.circuit.analyze_net_connections()
         self.circuit.initialize_logic()
 
@@ -443,6 +470,7 @@ class MainFrame(Adw.ApplicationWindow):
             self.comp_window.set_all_sensitive(True)
             self.action_net.set_sensitive(True)
 
+        self.drawarea.clear_animations()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
 
@@ -507,6 +535,7 @@ class MainFrame(Adw.ApplicationWindow):
             return
 
         self.circuit.undo()
+        self.drawarea.clear_animations()
         self.disable_edit_actions()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
@@ -516,12 +545,14 @@ class MainFrame(Adw.ApplicationWindow):
             return
 
         self.circuit.redo()
+        self.drawarea.clear_animations()
         self.disable_edit_actions()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
 
     def on_action_delete_pressed(self, *args):
         self.circuit.remove_selected_component()
+        self.drawarea.clear_animations()
         self.drawarea.nearest_component = None
         self.drawarea.preselected_component = None
         self.circuit.push_history()
@@ -530,6 +561,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.queue_draw()
 
     def on_action_rotate_left_90(self, *widget):
+        self.drawarea.clear_animations()
         if logic_gates[self.drawarea.get_component()] is None:
             self.circuit.rotate_left_selected_components()
             self.circuit.push_history()
@@ -539,6 +571,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.queue_draw()
 
     def on_action_rotate_right_90(self, *widget):
+        self.drawarea.clear_animations()
         if logic_gates[self.drawarea.get_component()] is None:
             self.circuit.rotate_right_selected_components()
             self.circuit.push_history()
@@ -548,6 +581,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.queue_draw()
 
     def on_action_flip_horizontally(self, *widget):
+        self.drawarea.clear_animations()
         if logic_gates[self.drawarea.get_component()] is None:
             self.circuit.flip_hori_selected_components()
             self.circuit.push_history()
@@ -557,6 +591,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.queue_draw()
 
     def on_action_flip_vertically(self, *widget):
+        self.drawarea.clear_animations()
         if logic_gates[self.drawarea.get_component()] is None:
             self.circuit.flip_vert_selected_components()
             self.circuit.push_history()
@@ -583,20 +618,9 @@ class MainFrame(Adw.ApplicationWindow):
     def on_action_save_image(self, *args):
         save_schematics_as_image(self.circuit, self.running_mode, self)
 
-    def _prefs_changed(self, dialog, response, *args):
-        if response == Gtk.ResponseType.APPLY:
-            self.pref_window.apply_settings()
-
-            Preference.save_settings()
-            self.drawarea.redraw = True
-            self.drawarea.queue_draw()
-        self.pref_window = PreferencesWindow(self)
-        dialog.close()
-
     def on_action_prefs_pressed(self, *widget):
-        self.pref_window.connect("response", self._prefs_changed)
-        self.pref_window.update_dialog()
-        self.pref_window.present()
+        pref_dialog = PreferencesWindow(self)
+        pref_dialog.present(self)
 
     def on_comp_checked(self, widget, comp_name):
         if logic_gates[comp_name]:

@@ -15,6 +15,7 @@ from ggate.Utils import cairo_paths, inv_matrix, multiply_matrix, create_compone
 from ggate.Components.LogicGates import logic_gates
 from ggate import Preference
 from gi.repository import Gtk, Gdk, Pango, PangoCairo
+from ggate.Animation import CanvasAnimationController
 
 
 class DrawArea(Gtk.ScrolledWindow):
@@ -122,6 +123,9 @@ class DrawArea(Gtk.ScrolledWindow):
         self._last_ph = 0
         self.hadj.connect("changed", self._on_adjustment_changed)
         self.vadj.connect("changed", self._on_adjustment_changed)
+        self.glide_duration_ms = 150
+        self.animation_controller = CanvasAnimationController(self)
+        self.drag_initial_offsets = {}
 
     def _on_adjustment_changed(self, adj):
         pw = self.hadj.get_page_size()
@@ -173,7 +177,31 @@ class DrawArea(Gtk.ScrolledWindow):
 
         elif action == "properties":
             self.set_selected_component_to_prop_window()
-    
+
+    def clear_animations(self):
+        self.animation_controller.clear()
+        self.drag_initial_offsets.clear()
+
+    def get_component_visual_offset(self, cmp) -> tuple[float, float]:
+        if self.parent.running_mode:
+            return 0.0, 0.0
+
+        if cmp[0] == const.component_net:
+            if self.component_dragged and cmp in self.circuit.selected_components:
+                dx = self.cursor_smooth_x - self.select_start_x - self.drag_delta_x
+                dy = self.cursor_smooth_y - self.select_start_y - self.drag_delta_y
+                return dx, dy
+            return 0.0, 0.0
+
+        comp_inst = cmp[1]
+        if self.component_dragged and cmp in self.circuit.selected_components:
+            init_x, init_y = self.drag_initial_offsets.get(comp_inst, (0.0, 0.0))
+            dx = init_x + (self.cursor_smooth_x - self.select_start_x - self.drag_delta_x)
+            dy = init_y + (self.cursor_smooth_y - self.select_start_y - self.drag_delta_y)
+            return dx, dy
+
+        return self.animation_controller.get_visual_offset(comp_inst)
+
     def draw_net(self, net, mcr: cairo.Context):
         """
         This method draws all states of the net.
@@ -193,14 +221,18 @@ class DrawArea(Gtk.ScrolledWindow):
         is_hovered = net == self.nearest_component and self.cursor_over \
             and self._pushed_component_name == const.component_none
 
+        offset_x, offset_y = self.get_component_visual_offset(net)
+        x1, y1 = net[1] + offset_x, net[2] + offset_y
+        x2, y2 = net[3] + offset_x, net[4] + offset_y
+
         # Get net level
         if self.parent.running_mode:
             # Draw net terminal
             mcr.set_source(Preference.terminal_color_running)
             if (net[1], net[2]) not in self.circuit.net_no_dot:
-                mcr.rectangle(net[1]-1.5, net[2]-1.5, 3, 3)
+                mcr.rectangle(x1-1.5, y1-1.5, 3, 3)
             elif (net[3], net[4]) not in self.circuit.net_no_dot:
-                mcr.rectangle(net[3]-1.5, net[4]-1.5, 3, 3)
+                mcr.rectangle(x2-1.5, y2-1.5, 3, 3)
             mcr.fill()
 
             # Get the color of the net
@@ -216,7 +248,7 @@ class DrawArea(Gtk.ScrolledWindow):
 
             # Draw net
             mcr.set_source(net_level_color)
-            cairo_paths(mcr, (net[1], net[2]), (net[3], net[4]))
+            cairo_paths(mcr, (x1, y1), (x2, y2))
             mcr.stroke()
 
         else:
@@ -228,13 +260,13 @@ class DrawArea(Gtk.ScrolledWindow):
                 mcr.set_source(Preference.net_high_color)
 
             # Draw net
-            cairo_paths(mcr, (net[1], net[2]), (net[3], net[4]))
+            cairo_paths(mcr, (x1, y1), (x2, y2))
             mcr.stroke()
 
             # Draw net terminal
             mcr.set_source(Preference.terminal_color)
-            mcr.rectangle(net[1]-1.5, net[2]-1.5, 3, 3)
-            mcr.rectangle(net[3]-1.5, net[4]-1.5, 3, 3)
+            mcr.rectangle(x1-1.5, y1-1.5, 3, 3)
+            mcr.rectangle(x2-1.5, y2-1.5, 3, 3)
 
         mcr.fill()
 
@@ -258,14 +290,16 @@ class DrawArea(Gtk.ScrolledWindow):
         else:
             mcr.set_source(Preference.terminal_color)
 
+        offset_x, offset_y = self.get_component_visual_offset(cmp)
+
         # Draw component terminal
         if not self.parent.running_mode:
             for p in cmp[1].rot_input_pins + cmp[1].rot_output_pins:
-                mcr.rectangle(cmp[1].pos_x+p[0]-1.5, cmp[1].pos_y+p[1]-1.5, 3, 3)
+                mcr.rectangle(cmp[1].pos_x + offset_x + p[0] - 1.5, cmp[1].pos_y + offset_y + p[1] - 1.5, 3, 3)
             mcr.fill()
 
         # Draw component
-        mcr.translate(cmp[1].pos_x, cmp[1].pos_y)
+        mcr.translate(cmp[1].pos_x + offset_x, cmp[1].pos_y + offset_y)
         cmp_matrix = create_component_matrix(cmp)
         mcr.set_matrix(cmp_matrix.multiply(mcr.get_matrix()))
 
@@ -666,7 +700,8 @@ class DrawArea(Gtk.ScrolledWindow):
                         self.redraw = True
 
                     self.component_dragged = True
-                    self.queue_draw()
+
+                self.queue_draw()
 
             else:
                 if self.rect_select_enabled:
@@ -733,6 +768,13 @@ class DrawArea(Gtk.ScrolledWindow):
 
                     if self.drag_enabled:
                         self.comps_rect = get_components_rect(self.circuit.selected_components)
+                        self.drag_initial_offsets = {}
+                        for c in self.circuit.selected_components:
+                            if c[0] != const.component_net:
+                                comp_inst = c[1]
+                                init_offset = self.animation_controller.get_visual_offset(comp_inst)
+                                self.drag_initial_offsets[comp_inst] = init_offset
+                                self.animation_controller.cancel_animation(comp_inst)
 
                 else:
                     self.preadd = True
@@ -780,6 +822,15 @@ class DrawArea(Gtk.ScrolledWindow):
                 self.drag_enabled = False
                 if self.component_dragged:
                     self.component_dragged = False
+                    for c in self.circuit.selected_components:
+                        if c[0] != const.component_net:
+                            comp_inst = c[1]
+                            init_x, init_y = self.drag_initial_offsets.get(comp_inst, (0.0, 0.0))
+                            dx = init_x + (self.cursor_smooth_x - self.select_start_x - self.drag_delta_x)
+                            dy = init_y + (self.cursor_smooth_y - self.select_start_y - self.drag_delta_y)
+                            self.animation_controller.start_offset_animation(comp_inst, (dx, dy), self.glide_duration_ms)
+                    self.drag_initial_offsets.clear()
+
                     tmp_components = self.circuit.components[:]
                     for c in tmp_components:
                         if c[0] == const.component_net:
