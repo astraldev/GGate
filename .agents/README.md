@@ -1,11 +1,24 @@
-# `.agents/` — GGate GTK4 documentation database
+# `.agents/` — agent working docs for GGate
 
-Curated reference for building GGate (logic-circuit simulator, **GTK 4 + libadwaita**,
-heavy **Cairo** canvas rendering). Scoped to the widgets/APIs this project actually uses,
-not the whole toolkit. Built so an agent (agy / Gemini) can continue UI work without
-re-deriving the toolkit from scratch.
+Index of the working docs and reference material agents use on GGate
+(logic-circuit simulator, **GTK 4 + libadwaita**, heavy **Cairo** canvas).
 
-## How to use this database
+## Directory map
+
+- `TODO.md` — working backlog (P-levels; Done at the bottom).
+- `plans/` — forward-looking implementation plans (icons).
+- `skills/` — actionable how-to: `developing-gtk-apps.md` (architecture/plumbing),
+  `designing-gnome-ui.md` (HIG), `glc-format/SKILL.md` (authoring `.glc` circuits;
+  self-contained, portable to external models).
+- `reference/` — `delegation-brief.md` (read first when delegating: repo facts,
+  conventions, verification) and `build-system-analysis.md` (build audit).
+- `gtk4/` — raw GTK4/libadwaita/Pango/Gio/Cairo API docs by namespace; index at
+  `gtk4/README.md`.
+
+## GTK4 documentation database — how to use
+
+Scoped to the widgets/APIs this project actually uses, not the whole toolkit, so an
+agent can continue UI work without re-deriving it from scratch.
 
 1. **Architecture / plumbing question** (lifecycle, threading, GSettings, actions,
    packaging, "app crashes/freezes") → `skills/developing-gtk-apps.md`.
@@ -46,12 +59,13 @@ the official docs — read them directly. They are grouped by namespace:
 | `gtk4/gio/`          | GIO — docs.gtk.org/gio | 2: SimpleAction, ListStore |
 | `gtk4/cairo/`        | PyCairo — pycairo.readthedocs.io | 4: context, surfaces, patterns, matrix |
 
-`skills/` holds two installable skills as authored guidance (not raw docs):
+`skills/` holds three installable skills as authored guidance (not raw docs):
 
 | File | Covers |
 |------|--------|
 | `skills/developing-gtk-apps.md` | App architecture, lifecycle, threading, GSettings, packaging |
 | `skills/designing-gnome-ui.md`  | GNOME HIG, widget selection, UI polish |
+| `skills/glc-format/SKILL.md`    | GGate GLC circuit file format specification and catalog |
 
 > Pages are full HTML (nav chrome included) — read the class's *Constructors / Methods /
 > Properties / Signals* sections. To refresh or add a class, curl the canonical URL, e.g.

@@ -39,10 +39,7 @@ task-specific prompt.
   if `meson` is on PATH (else paste the generated XML/meson snippets for review).
 
 ## Plans (specs live here)
-- `.agents/plans/theming.md` — theming system (palettes §2, JSON schema §5).
 - `.agents/plans/icon-creation.md` — icon generation + dynamic gresource/meson globbing.
-- `.agents/plans/timing-diagram-revamp.md` — timing dialog rewrite (done; §7 draw-area).
-- `.agents/plans/preferences-revamp.md`, `theming.md`, `component-animation.md`.
 
 ## Reporting
 - Re-read current on-disk state before editing (prior partial work may exist).

@@ -132,8 +132,12 @@ marshal); no `show_all()`/`container.add()` (use `set_visible`/`append`/`set_chi
 
 ## Companion docs
 
-- `.agents/README.md` — GTK4 docs database (60 canonical reference pages) + refresh recipe.
-- `.agents/gtk4/` — raw HTML API docs by namespace (adwaita/gtk/pango/gio/cairo).
-- `.agents/gtk4/README.md` — widget → where-used-in-GGate map.
-- `.agents/skills/` — `developing-gtk-apps` (architecture) + `designing-gnome-ui` (HIG).
-- `.agents/TODO.md` — the working backlog (P0–P3), grounded bug lists.
+- `.agents/README.md` — index/map of the whole `.agents/` directory.
+- `.agents/TODO.md` — working backlog (P-levels; Done at the bottom).
+- `.agents/plans/` — forward-looking implementation plans.
+- `.agents/skills/` — `developing-gtk-apps` (architecture) + `designing-gnome-ui` (HIG)
+  + `glc-format` (authoring `.glc` circuit files).
+- `.agents/reference/` — `delegation-brief` (read first when delegating) +
+  `build-system-analysis` (build audit).
+- `.agents/gtk4/` — raw HTML API docs by namespace (adwaita/gtk/pango/gio/cairo);
+  `.agents/gtk4/README.md` is the widget → where-used-in-GGate map.
