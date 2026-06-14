@@ -683,7 +683,7 @@ class MainFrame(Adw.ApplicationWindow):
 
 class GLogicApplication(Adw.Application):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, application_id="org.astralco.ggate", **kwargs)
+        super().__init__(*args, application_id=config.APP_PREFIX, **kwargs)
         self.window = None
 
     def action_handler(self, action):

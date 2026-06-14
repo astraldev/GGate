@@ -41,13 +41,21 @@ conf.set('pkgdatadir', pkgdatadir)
 subdir('bin')
 subdir('data/images')
 
-exclude_pycache_dirs = run_command(
-  'sh', '-c',
+exclude_pycache_dirs = []
+foreach d : run_command(
+  py_installation, '-c',
   '''
-  find ggate -type d -name __pycache__ | sed "s|^ggate/||"
+import os
+for root, dirs, files in os.walk("ggate"):
+    if os.path.basename(root) == "__pycache__":
+        print(os.path.relpath(root, "ggate").replace("\\", "/"))
   ''',
   check: true
 ).stdout().strip().split('\n')
+  if d != ''
+    exclude_pycache_dirs += d
+  endif
+endforeach
 
 # Install the entire ggate package recursively, excluding .pyc files
 install_subdir('ggate',

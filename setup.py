@@ -70,7 +70,7 @@ apps = []
 for sizes in icons['apps'].keys():
     apps.append((f'share/icons/hicolor/{sizes}x{sizes}/apps', icons['apps'][sizes]))
 
-os.system(f'chmod +777 {here}/data/org.astralco.ggate.desktop')
+os.system(f'chmod +777 {here}/data/org.astralco.GGate.desktop')
 os.system(f'chmod +777 {here}/bin/ggate')
 
 setup(
@@ -127,7 +127,7 @@ setup(
         *help_files,
         *mimes,
         *apps,
-        ("share/applications", ["data/org.astralco.ggate.desktop"]),
+        ("share/applications", ["data/org.astralco.GGate.desktop"]),
         ("share/mime/packages", ["data/ggate.xml"]),
         ("share/icons/hicolor/scalable/apps", icons["scalable"]),
     ]

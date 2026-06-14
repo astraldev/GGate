@@ -2,7 +2,7 @@
 from packaging.version import Version
 
 DATADIR = '/'.join(__file__.split("/")[:-1]) + '/'
-VERSION = "4.0.0"
+VERSION = "5.0.0"
 APP_PREFIX = "org.astralco.GGate"
 
 compatibility = {
