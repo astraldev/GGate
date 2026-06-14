@@ -1,0 +1,7 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: ggate
+Source: https://github.com/astraldev/GGate
+
+Files: *
+Copyright: 2026 Astraldev
+License: GPL-3.0+

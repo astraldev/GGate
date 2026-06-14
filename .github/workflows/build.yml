@@ -28,7 +28,7 @@ jobs:
           python3-igraph python3-shapely python3-packaging
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Mark workspace safe for git
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -43,13 +43,13 @@ jobs:
         run: meson dist -C build --no-tests --formats gztar
 
       - name: Upload tarball artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ggate-source-tarball
           path: build/meson-dist/*.tar.gz
 
       - name: Attach to release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: build/meson-dist/*.tar.gz

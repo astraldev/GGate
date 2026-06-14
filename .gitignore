@@ -6,7 +6,10 @@
 **/__pycache__/
 m4/
 *.cache/
-debian/
+# /debian is a transient CI copy of build-aux/debian; ignore it and deb build dirs
+/debian/
+obj-*/
+build-dir/
 *.egg-info/
 dist/
 build/
@@ -20,4 +23,4 @@ deb_dist/
 .mypy_cache
 dev-*
 .agents/gtk4
-.agents/debug-journal.md
+.claude/

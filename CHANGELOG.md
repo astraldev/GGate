@@ -1,5 +1,12 @@
 # ChangeLog
 
+## 2026-06-14 Ekure Edem <ekureedem480@gmail.com>
+ Revamp timing diagram: Adw dialog with themed Cairo waveforms
+ Add theming system with Classic, Space, Frappé and Mocha themes
+ Migrate preferences to Adw.PreferencesDialog
+ Dynamic JSON to gresource pipeline; recompile dev resources on launch
+ Fix oscillator timing and gate simulation crashes
+
 ## 2025-04-26 Ekure Edem <ekureedem480@gmail.com>
  Switch all tabs to spaces
  Reorganized project structure and split files to seperate parts
