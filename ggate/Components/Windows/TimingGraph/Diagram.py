@@ -37,7 +37,9 @@ class TimingGraphDiagram(Gtk.ScrolledWindow):
         self._parent_drawarea = parent.drawarea
 
         self.name_area = Gtk.DrawingArea()
+        self.name_area.set_draw_func(self.name_area_draw_fn)
         self.chart_area = Gtk.DrawingArea()
+        self.chart_area.set_draw_func(self.chart_area_draw_fn)
 
         self.name_area_surface: cairo.ImageSurface = None
         self.chart_area_surface: cairo.ImageSurface = None
@@ -127,7 +129,7 @@ class TimingGraphDiagram(Gtk.ScrolledWindow):
         self.visible_cursor["oldY"] = self.visible_cursor["y"]
 
         self.visible_cursor["x"] = x_axis
-        self.visible_cursor["y"] = x_axis
+        self.visible_cursor["y"] = y_axis
 
     def _draw_cursor(self, cr: cairo.Context):
         start = (self.visible_cursor["x"], self._section_height)
@@ -216,10 +218,10 @@ class TimingGraphDiagram(Gtk.ScrolledWindow):
         while u_tick_time <= Decimal(u_end_time):
             tick_x = float(tick_time) * self.scale + 0.5
 
-            if tick_x >= 0 and tick_x <= self.diagram_width:
+            if tick_x >= 0 and tick_x <= self.diagram_area_size["width"]:
                 # Draw vertical graduation line
                 cr.set_source_rgb(0.5, 0.5, 0.5)
-                cairo_paths(cr, (int(tick_x), 39), (int(tick_x), self.img_height - 1))
+                cairo_paths(cr, (int(tick_x), 39), (int(tick_x), self.diagram_area_size["height"] - 1))
                 cr.stroke()
 
                 # Draw label
@@ -285,11 +287,11 @@ class TimingGraphDiagram(Gtk.ScrolledWindow):
     def draw(self):
         probe_amount = len(self.__get_probes())
         # Calculate the draw height and add a little space
-        draw_height = (self._section_height * probe_amount) + (self._section_height * 2.5)
-        draw_width = max(1, (self.end_time - self.start_time) * self.scale)
+        draw_height = int(max(1, min((self._section_height * probe_amount) + (self._section_height * 2.5), 32767)))
+        draw_width = int(max(1, min((self.end_time - self.start_time) * self.scale, 32767)))
 
         # Create the image surface
-        name_surface = cairo.ImageSurface(cairo.FORMAT_RGB24, self._name_area_width, draw_height)
+        name_surface = cairo.ImageSurface(cairo.FORMAT_RGB24, int(self._name_area_width), draw_height)
         chart_surface = cairo.ImageSurface(cairo.FORMAT_RGB24, draw_width, draw_height)
 
         # Create image ctx
@@ -301,7 +303,7 @@ class TimingGraphDiagram(Gtk.ScrolledWindow):
         chart_cr_ctx.set_line_width(1.0)
 
         # Set the size request of the name & timing diagram area
-        self.name_area.set_size_request(self._name_area_width, draw_height)
+        self.name_area.set_size_request(int(self._name_area_width), draw_height)
         self.chart_area.set_size_request(draw_width, draw_height)
 
         # Save the context

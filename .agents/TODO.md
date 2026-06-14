@@ -5,9 +5,9 @@ Status legend: `[ ]` open · `[~]` in progress · `[x]` done. Items marked **(ve
 from the scan, confirm against current code first. Owner model: Claude specs → agy
 implements → Claude reviews.
 
-## ✅ Fixed this session (working tree, uncommitted since `b87a01a`)
+## ✅ Done (committed: `b87a01a`, `acc8344`, + this commit)
 
-App now launches and is usable. Changes not yet committed:
+App launches and is usable:
 - [x] **App launches on GTK4/libadwaita** — imported/instantiated `StatusDisplay`
   (`statusbar`); `add-net.png` → `list-add-symbolic` placeholder.
 - [x] **Main window chrome → `Adw.ToolbarView`** (`add_top_bar` + `set_content`); removed
@@ -30,6 +30,15 @@ App now launches and is usable. Changes not yet committed:
 - [x] **Feature: content centering** on app start / new / open (center on component bbox,
   or canvas middle when empty).
 - [x] **Feature: auto-center on resize** + Preferences toggle (`autocenter_resize`, default ON).
+- [x] **Libadwaita styling** — `do_startup` chains to `Adw.Application` (was `Gtk.Application`,
+  which skipped the Adwaita stylesheet → plain-GTK look).
+- [x] **Property dialog UX** — `Adw.ToolbarView` (working close button), guarded `dismiss()`,
+  dropdowns not searchable, removed redundant per-row group label.
+- [x] **Clipboard guard** — `_handle_clipboard` handles "no compatible transfer format" GError.
+- [x] **Single-click selects, double-click opens properties** (gesture `n_press`).
+- [x] **Running-mode crashes** — guarded `prop_window` close; timing-diagram toggle uses the
+  real `timing_diagram` attribute; `Diagram.draw()` `int()`-casts cairo surface dims (+ clamp
+  32767), registers its draw funcs, fixes cursor typo + undefined `diagram_width`/`img_height`.
 
 ## P0 — still open
 
@@ -37,9 +46,9 @@ App now launches and is usable. Changes not yet committed:
   (we run via `run.py`), but breaks installed launch. **(verify)**
 - [ ] **Version mismatch** — `pyproject.toml`/`meson.build` say `5.0.0`; `config.py`/
   `__init__.py` hardcode `4.0.0`. Pick one source of truth (meson `configure_file` → `config.py`).
-- [ ] **`About.py` not wired** — `AboutGGate.create()` never imported/instantiated/presented;
-  add an `app.about` action that builds + `present(window)`s it. Duplicate `set_comments`
-  call in `About.py`. (Crash not hit at startup; will hit when About is invoked.)
+- [~] **About doesn't work** — `AboutGGate.create()` never imported/instantiated/presented;
+  the `app.about`/menu action does nothing (or errors). Wire it: build `AboutGGate.create()`
+  and `present(window)`. Duplicate `set_comments` call in `About.py`. (agy fixing now.)
 
 ## P1 — micro-windows / polish
 
@@ -60,8 +69,13 @@ App now launches and is usable. Changes not yet committed:
   Spec was "initial always, resize gated." Split initial-vs-resize if we want it strict.
 
 ### `Windows/Preferences.py`
-- [ ] Still subclasses deprecated `Gtk.Dialog`. Candidate migration to
-  `Adw.PreferencesDialog`. **Confirm scope with PM first.**
+- [ ] **Revamp the Preferences UI to a multi-tab/category layout.** Migrate off the deprecated
+  `Gtk.Dialog` to `Adw.PreferencesDialog` with multiple `Adw.PreferencesPage`s (tabs) grouping
+  settings by category — e.g. **Theming/Appearance** (colors, fonts, symbol type), and other
+  groups (simulation: iters/duration; canvas: auto-center; etc.). Use `Adw.PreferencesGroup`
+  + the appropriate Adw rows (`SwitchRow`, `ComboRow`, `SpinRow`, color/font buttons). Preserve
+  all existing settings + load/apply wiring. **agy to draft the plan (page/group breakdown,
+  row mapping); Claude coordinates/reviews.**
 - [ ] `:24` `# todo: fix font picker`.
 
 ### `Windows/TimingGraph/Display.py` + `Diagram.py`

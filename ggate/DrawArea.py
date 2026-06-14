@@ -696,7 +696,7 @@ class DrawArea(Gtk.ScrolledWindow):
         self.cursor_smooth_x = args[2]
         self.cursor_smooth_y = args[3]
 
-        if args[1] == Gdk.BUTTON_PRIMARY:
+        if args[1] >= 1:
 
             if not self.parent.running_mode:
                 if self._pushed_component_name == const.component_none and not self._pasted_components:
@@ -774,7 +774,7 @@ class DrawArea(Gtk.ScrolledWindow):
     # Left Click
     def on_button_release_primary(self, *args):
         state = args[0].get_current_event_state()
-        if args[1] == Gdk.BUTTON_PRIMARY:  # Left button released
+        if args[1] >= 1:  # Left button released
 
             if not self.parent.running_mode:
                 self.drag_enabled = False
@@ -872,7 +872,8 @@ class DrawArea(Gtk.ScrolledWindow):
                     if not selected and not state & Gdk.ModifierType.CONTROL_MASK:
                         self.circuit.selected_components = []
                         
-                    self.set_selected_component_to_prop_window()
+                    if args[1] == 2:
+                        self.set_selected_component_to_prop_window()
                     
                     if len(self.circuit.selected_components) == 0:
                         self.parent.disable_edit_actions()
@@ -1058,7 +1059,8 @@ class DrawArea(Gtk.ScrolledWindow):
                                              self.cursor_smooth_y - c[1].pos_y) + c[1].pos_y,
                                          self.circuit.current_time):
                             if not self.parent.pause_running_mode and not self.circuit.analyze_logic():
-                                self.parent.diagram_window.diagram_area.createDiagram()
+                                if hasattr(self.parent, "timing_diagram") and self.parent.timing_diagram.get_visible():
+                                    self.parent.timing_diagram._draw_area.draw()
                             self.queue_draw()
                             break
 

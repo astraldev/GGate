@@ -422,7 +422,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.comp_window.set_all_sensitive(False)
         self.action_net.set_sensitive(False)
         self.action_net.set_active(False)
-        self.prop_window.close()
+        self.prop_window.dismiss()
         self.drawarea.set_component(const.component_none)
         self.drawarea.component_dragged = False
         self.drawarea.drag_enabled = False

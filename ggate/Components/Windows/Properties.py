@@ -13,7 +13,12 @@ class PropertyWindow(Adw.Dialog):
     }
 
     def on_window_delete(self, *args):
+        self._is_presented = False
         self.emit("window-hidden")
+
+    def dismiss(self):
+        if self._is_presented:
+            self.close()
 
     def __init__(self):
         self.title = _("Properties")
@@ -26,7 +31,7 @@ class PropertyWindow(Adw.Dialog):
         self.content_box: Gtk.Box = None
         self.banner: Adw.Banner = None
         self.component = None
-        self.vbox = None
+        self._is_presented = False
 
         self.set_content_width(350)
         self.connect("closed", self.on_window_delete)
@@ -85,29 +90,34 @@ class PropertyWindow(Adw.Dialog):
 
     def show_properties(self, component: Optional[BaseComponent], parent: Optional[Gtk.Widget] = None):
         if component is None:
-            self.close()
+            self.dismiss()
             return
 
         self.component = component
-        if self.vbox is not None:
-            self.set_child(None)
+        self.set_child(None)
 
-        self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.header_bar = Adw.HeaderBar()
-        self.header_bar.set_show_start_title_buttons(False)
-        self.header_bar.set_decoration_layout("close")
 
         self.set_title("%s - %s" % (self.title, component.description))
 
+        self.banner = Adw.Banner()
+        self.banner.set_revealed(False)
+
+        toolbar_view = Adw.ToolbarView()
+        toolbar_view.add_top_bar(self.header_bar)
+        toolbar_view.add_top_bar(self.banner)
+
         if len(component.properties) == 0:
             status_page = Adw.StatusPage(
-                title="No properties",
-                description="This component has no editable properties.",
+                title=_("No properties"),
+                description=_("This component has no editable properties."),
             )
 
-            self.set_child(status_page)
+            toolbar_view.set_content(status_page)
+            self.set_child(toolbar_view)
             if parent is not None:
                 self.present(parent)
+                self._is_presented = True
             return
 
         property_idx = 0
@@ -131,7 +141,6 @@ class PropertyWindow(Adw.Dialog):
 
                     ctrl.set_model(model)
                     ctrl.set_selected(self.component.values[property_idx])
-                    ctrl.set_enable_search(True)
                     ctrl.connect("notify::selected", self.on_apply_btn_clicked)
 
                 elif property[1][0] == const.property_int:
@@ -178,8 +187,6 @@ class PropertyWindow(Adw.Dialog):
             if has_property:
                 if current_group is None:
                     current_group = Adw.PreferencesGroup.new()
-                    current_group.set_title(property[2])
-                    current_group.set_description(property[0])
                     groups.append(current_group)
                     group_counts[current_group] = 0
 
@@ -189,15 +196,11 @@ class PropertyWindow(Adw.Dialog):
                 group_counts[current_group] += 1
             else:
                 current_group = Adw.PreferencesGroup.new()
-                current_group.set_title(property[2])
-                current_group.set_description(property[0])
+                current_group.set_title(property[0])
                 groups.append(current_group)
                 group_counts[current_group] = 0
 
             property_idx += 1
-
-        self.banner = Adw.Banner()
-        self.banner.set_revealed(False)
 
         preference_page = Adw.PreferencesPage.new()
 
@@ -205,10 +208,9 @@ class PropertyWindow(Adw.Dialog):
             if group_counts.get(group, 0) > 0:
                 preference_page.add(group)
 
-        self.vbox.append(self.header_bar)
-        self.vbox.append(self.banner)
-        self.vbox.append(preference_page)
-        self.set_child(self.vbox)
+        toolbar_view.set_content(preference_page)
+        self.set_child(toolbar_view)
 
         if parent is not None:
             self.present(parent)
+            self._is_presented = True

@@ -20,3 +20,4 @@ deb_dist/
 .mypy_cache
 dev-*
 .agents/gtk4
+.agents/debug-journal.md

@@ -1,5 +1,5 @@
 import os
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GLib
 
 _PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -99,11 +99,16 @@ class ContextMenu(Gtk.PopoverMenu):
     
     def _handle_clipboard(self, clipboard: Gdk.Clipboard, task, *args):
         window = self._get_window()
-        str_data = clipboard.read_text_finish(task)
+        try:
+            str_data = clipboard.read_text_finish(task)
+        except GLib.GError:
+            str_data = None
         if str_data is not None:
             components = self._parent.circuit.converter.string_to_components(str_data)
             has_clipboard = not isinstance(components, str) and len(components) > 0
             window.action_set_enabled("app.on_action_paste_pressed", has_clipboard)
+        else:
+            window.action_set_enabled("app.on_action_paste_pressed", False)
 
     def calculate(self, x, y):
         parent = self.get_parent()
