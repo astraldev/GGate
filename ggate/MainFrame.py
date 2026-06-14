@@ -9,7 +9,7 @@ import gi
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 
-from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, Adw
+from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, Adw, GLib
 from ggate import UserInterfaces, config
 from ggate.const import definitions as const
 from ggate.Exporter import save_schematics_as_image
@@ -118,8 +118,10 @@ class MainFrame(Adw.ApplicationWindow):
 
         if len(sys.argv) >= 2:
             self.circuit.open_file(sys.argv[1])
+            self.drawarea.zoom = 1.0
             self.drawarea.redraw = True
             self.drawarea.queue_draw()
+            GLib.idle_add(self.drawarea.center_viewport)
 
     def set_up_shortcuts(self, *args):
         actions = {
@@ -404,9 +406,10 @@ class MainFrame(Adw.ApplicationWindow):
 
         self.reset_frame()
         self.drawarea.clear_animations()
-        self.drawarea.center_viewport()
+        self.drawarea.zoom = 1.0
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
+        GLib.idle_add(self.drawarea.center_viewport)
 
         # todo: translations
         self.statusbar.update(f"Opened <a href=\"file:///{path}\">{path.split('/')[-1]}</a>")
