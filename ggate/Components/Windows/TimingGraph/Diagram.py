@@ -109,7 +109,8 @@ class TimingGraphDiagram(Gtk.Box):
         self.draw_names(cr)
 
     def chart_area_draw_fn(self, drawing_area, cr: cairo.Context, width, height, *args):
-        history = self._circuit.probe_levels_history
+        # snapshot so iterating is safe while the worker thread appends frames
+        history = list(self._circuit.probe_levels_history)
         if not history:
             cr.set_source(Preference.bg_color_running)
             cr.rectangle(0, 0, width, height)
@@ -203,7 +204,7 @@ class TimingGraphDiagram(Gtk.Box):
             cairo_paths(cr, (0, sep_y), (self.diagram_width, sep_y))
         cr.stroke()
 
-        history = self._circuit.probe_levels_history
+        history = list(self._circuit.probe_levels_history)
         if not history:
             return
 

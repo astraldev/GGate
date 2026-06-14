@@ -210,7 +210,9 @@ class CircuitManager(GObject.GObject):
     self.converter = CircuitConverter(self)
     self.sim_generator = None
     self.sim_idle_id = None
+    self.sim_cancelled = False
     self.sim_start_time = None
+    self.sim_last_emit = 0.0
 
     self.net_connections = []
     self.net_levels = []
@@ -551,11 +553,11 @@ class CircuitManager(GObject.GObject):
     self.emit("currenttime-changed", self.current_time)
 
   def cancel_simulation(self):
-    if hasattr(self, "sim_idle_id") and self.sim_idle_id is not None:
+    self.sim_cancelled = True
+    if self.sim_idle_id is not None:
       GLib.source_remove(self.sim_idle_id)
       self.sim_idle_id = None
     self.sim_generator = None
-    self.sim_cancelled = True
 
   def _rewind_history(self):
     # re-running from current_time: drop any recorded state newer than it
@@ -711,10 +713,6 @@ class CircuitManager(GObject.GObject):
     self._log_if_slow()
     return result
 
-  def _emit_progress(self):
-    pct = (self.current_time / Preference.max_calc_duration) * 100
-    self.emit("message-changed", _("Calculating... %.0f%%") % pct)
-
   def _log_if_slow(self):
     if self.sim_start_time is None:
       return
@@ -723,30 +721,34 @@ class CircuitManager(GObject.GObject):
     if elapsed > _SLOW_SIM_SECONDS:
       logger.warning("simulation took %.1fs (%d frames)", elapsed, len(self.probe_levels_history))
 
-  def _finish_sim(self, callback, val, clear_message):
+  def _finish_sim(self, callback, val):
     self.sim_idle_id = None
     self.sim_generator = None
+    if self.sim_cancelled:
+      return
     self._log_if_slow()
-    if clear_message:
+    if not val:
       self.emit("message-changed", "")
     if callback:
       callback(val)
 
   def _sim_idle_step(self, callback):
+    # process a ~20ms slice per idle tick so the UI stays responsive; emit progress ~10 Hz
     if self.sim_cancelled:
       return GLib.SOURCE_REMOVE
     start = time.time()
     try:
       while time.time() - start < 0.02:
         step_type, val = next(self.sim_generator)
-        if step_type == "progress":
-          self._emit_progress()
-        elif step_type in ("success", "error"):
-          self._finish_sim(callback, val, step_type == "success")
+        if step_type in ("success", "error"):
+          self._finish_sim(callback, val)
           return GLib.SOURCE_REMOVE
     except StopIteration:
-      self._finish_sim(callback, False, True)
+      self._finish_sim(callback, False)
       return GLib.SOURCE_REMOVE
+    if start - self.sim_last_emit > 0.1:
+      self.sim_last_emit = start
+      self.emit("currenttime-changed", self.current_time)
     return GLib.SOURCE_CONTINUE
 
   def analyze_logic(self, callback=None):
@@ -754,6 +756,7 @@ class CircuitManager(GObject.GObject):
     self.sim_cancelled = False
     self.sim_generator = self.analyze_logic_generator()
     self.sim_start_time = time.time()
+    self.sim_last_emit = 0.0
     if callback is None:
       return self._run_sim_sync()
     self.sim_idle_id = GLib.idle_add(self._sim_idle_step, callback)

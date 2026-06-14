@@ -91,6 +91,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.circuit.connect("message-changed", self.on_circuit_message_changed)
         self.circuit.connect("item-unselected", self.on_circuit_item_unselected)
         self.circuit.connect("alert", self.on_circuit_alert)
+        self.circuit.connect("currenttime-changed", self.on_sim_progress)
 
         Preference.load_settings()
 
@@ -471,6 +472,15 @@ class MainFrame(Adw.ApplicationWindow):
                 self.timing_diagram._draw_area.draw()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
+
+    def on_sim_progress(self, circuit, current_time):
+        # progress signal -> status % + trailing timing-graph refresh
+        if self.circuit.sim_idle_id is None:
+            return
+        pct = min(100, int(current_time / Preference.max_calc_duration * 100))
+        self.statusbar.update(_("Calculating... %d%%") % pct)
+        if self.timing_diagram.get_visible():
+            self.timing_diagram._draw_area.draw()
 
     def on_circuit_stop(self, *args):
         self.circuit.cancel_simulation()
