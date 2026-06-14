@@ -1,9 +1,10 @@
 import os
 from gi.repository import Gtk, Gdk
-from ggate.config import DATADIR
+
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def _get_icon_path(icon: str):
-    return os.path.join(DATADIR, "images", "actions", f"{icon}.svg")
+    return os.path.join(_PROJECT_ROOT, "data", "images", "actions", f"{icon}.svg")
 
 menu_xml = f"""
 <interface>
@@ -106,9 +107,10 @@ class ContextMenu(Gtk.PopoverMenu):
 
     def calculate(self, x, y):
         parent = self.get_parent()
-        point_x = x - parent.get_hadjustment().get_value()
-        point_y = y - parent.get_vadjustment().get_value()
-        return point_x, point_y
+        coords = parent.drawingarea.translate_coordinates(parent, x, y)
+        if coords is not None:
+            return coords[0], coords[1]
+        return x, y
 
     def present(self, x, y, *args):
         rectangle = Gdk.Rectangle()
@@ -142,9 +144,10 @@ class RunningMenu(Gtk.PopoverMenu):
 
     def calculate(self, x, y):
         parent = self.get_parent()
-        point_x = x - parent.get_hadjustment().get_value()
-        point_y = y - parent.get_vadjustment().get_value()
-        return point_x, point_y
+        coords = parent.drawingarea.translate_coordinates(parent, x, y)
+        if coords is not None:
+            return coords[0], coords[1]
+        return x, y
 
     def present(self, x, y):
         rectangle = Gdk.Rectangle()

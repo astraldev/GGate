@@ -321,6 +321,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.set_title("%s - %s" % (const.text_notitle, const.app_name))
         self.reset_frame()
         self.circuit.reset_circuit()
+        self.drawarea.center_viewport()
         self.drawarea.nearest_component = None
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
@@ -370,6 +371,7 @@ class MainFrame(Adw.ApplicationWindow):
             return
 
         self.reset_frame()
+        self.drawarea.center_viewport()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
 
@@ -420,7 +422,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.comp_window.set_all_sensitive(False)
         self.action_net.set_sensitive(False)
         self.action_net.set_active(False)
-        self.prop_window.hide()
+        self.prop_window.close()
         self.drawarea.set_component(const.component_none)
         self.drawarea.component_dragged = False
         self.drawarea.drag_enabled = False
@@ -563,7 +565,6 @@ class MainFrame(Adw.ApplicationWindow):
 
     def on_action_property_pressed(self, *widget):
         self.drawarea.set_selected_component_to_prop_window()
-        self.prop_window.present()
 
     def on_action_show_help(self, *args):
         Gtk.show_uri(None, const.help, Gdk.CURRENT_TIME)
@@ -620,14 +621,6 @@ class MainFrame(Adw.ApplicationWindow):
         self.action_components.set_active(False)
 
     def on_propwindow_hidden(self, widget):
-
-        widget.destroy()
-        self.prop_window = PropertyWindow()
-        self.prop_window.set_transient_for(self)
-        self.prop_window.set_hide_on_close(True)
-        self.prop_window.set_modal(True)
-        self.prop_window.connect("window-hidden", self.on_propwindow_hidden)
-        self.prop_window.connect("property-changed", self.on_property_changed)
         self.drawarea.queue_draw()
 
     def on_property_changed(self, widget):
@@ -642,7 +635,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.statusbar.update(message)
 
     def on_circuit_item_unselected(self, circuit):
-        self.prop_window.set_component(None)
+        self.prop_window.show_properties(None)
 
     def on_circuit_alert(self, circuit, message):
         dialog = Gtk.MessageDialog(
@@ -682,7 +675,7 @@ class GLogicApplication(Adw.Application):
         ShortCutWindow(self.window)
 
     def do_startup(self, *args):
-        Gtk.Application.do_startup(self)
+        Adw.Application.do_startup(self)
 
         # New File Pressed
         action = Gio.SimpleAction.new("on_action_new_pressed", None)

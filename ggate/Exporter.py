@@ -188,7 +188,7 @@ def draw_schematics_for_file(cr, circuit, withlevels):
   layout = PangoCairo.create_layout(cr)
   layout.set_font_description(Preference.drawing_font)
 
-  circuit.analyze_connections()
+  circuit.analyze_net_connections()
   if withlevels:
     circuit.set_netlevels()
 

@@ -101,8 +101,11 @@ These dialogs are the **current cleanup focus** — details and the grounded bug
 
 ## Conventions (enforce in review)
 
-From `.vscode/copilot-instructions.md` — hard rules for generated code:
-- **No comments** in code. No `// ...existing code...` markers (describe placement in prose).
+From `.vscode/copilot-instructions.md`, as amended by PM direction:
+- **Comments (PM-amended):** *minimal inline comments* only, on genuinely non-obvious /
+  "magic" code (a tricky index trick, a non-obvious workaround). NOT module/class/method
+  docstrings, NOT line-by-line narration. Keep it sparse. Still no `// ...existing code...`
+  placeholder markers.
 - **No unused/dangling** imports or variables. **No extra** methods/types unless necessary.
 - **Double quotes** for strings, always. Match surrounding style; verify meticulously.
 - Commits: **Conventional Commits, one-line subject.**

@@ -336,6 +336,7 @@ class CircuitManager(GObject.GObject):
 
     self.net_no_dot = net_no_dots
     self.net_connections = connections
+    self.net_levels = [-1] * len(connections)
   
 
   def split_nets(self, x, y):
@@ -509,6 +510,7 @@ class CircuitManager(GObject.GObject):
     for c in self.components:
       if c[0] != definitions.component_net:
         c[1].initialize()
+    self.net_levels = [-1]*len(self.net_connections)
 
   def revert_state(self):
     if self.component_state_history:

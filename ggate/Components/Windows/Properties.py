@@ -25,6 +25,8 @@ class PropertyWindow(Adw.Dialog):
         self.old_values = []
         self.content_box: Gtk.Box = None
         self.banner: Adw.Banner = None
+        self.component = None
+        self.vbox = None
 
         self.set_content_width(350)
         self.connect("closed", self.on_window_delete)
@@ -81,8 +83,9 @@ class PropertyWindow(Adw.Dialog):
 
         self.emit("property-changed")
 
-    def show_properties(self, component: Optional[BaseComponent]):
+    def show_properties(self, component: Optional[BaseComponent], parent: Optional[Gtk.Widget] = None):
         if component is None:
+            self.close()
             return
 
         self.component = component
@@ -103,16 +106,15 @@ class PropertyWindow(Adw.Dialog):
             )
 
             self.set_child(status_page)
+            if parent is not None:
+                self.present(parent)
             return
 
         property_idx = 0
-        group_location = 0
-
-        # Create property editor
         self.prop_controls = []
-
-        # Property Groups
         groups = []
+        group_counts = {}
+        current_group = None
 
         for property in component.properties:
             has_property = True
@@ -130,7 +132,7 @@ class PropertyWindow(Adw.Dialog):
                     ctrl.set_model(model)
                     ctrl.set_selected(self.component.values[property_idx])
                     ctrl.set_enable_search(True)
-                    ctrl.connect("changed", self.on_apply_btn_clicked)
+                    ctrl.connect("notify::selected", self.on_apply_btn_clicked)
 
                 elif property[1][0] == const.property_int:
                     ctrl = Adw.SpinRow.new_with_range(
@@ -143,20 +145,22 @@ class PropertyWindow(Adw.Dialog):
                     ctrl.set_numeric(True)
                     ctrl.set_title(property[0])
                     ctrl.set_value(component.values[property_idx])
-                    ctrl.connect("changed", self.on_apply_btn_clicked)
+                    ctrl.connect("notify::value", self.on_apply_btn_clicked)
 
                 elif property[1][0] == const.property_float:
                     floating_points = property[1][3] if property[1][3] < 3 else 2
+                    step = 10.0 ** -floating_points if floating_points > 0 else 1.0
                     ctrl = Adw.SpinRow.new_with_range(
                         property[1][1],
                         property[1][2],
-                        floating_points
+                        step
                     )
 
+                    ctrl.set_digits(floating_points)
                     ctrl.set_numeric(True)
                     ctrl.set_title(property[0])
                     ctrl.set_value(component.values[property_idx])
-                    ctrl.connect("changed", self.on_apply_btn_clicked)
+                    ctrl.connect("notify::value", self.on_apply_btn_clicked)
 
                 else:
                     ctrl = Adw.EntryRow(
@@ -169,31 +173,27 @@ class PropertyWindow(Adw.Dialog):
 
             else:
                 property_idx -= 1
-                group_location += 1
                 has_property = False
 
-            # Create initial group if it doesn't exist
-            if group_location >= len(groups) and has_property:
-                group = Adw.PreferencesGroup.new()
-                group.set_title(property[2])
-                group.set_description(property[0])
-                groups.append(group)
+            if has_property:
+                if current_group is None:
+                    current_group = Adw.PreferencesGroup.new()
+                    current_group.set_title(property[2])
+                    current_group.set_description(property[0])
+                    groups.append(current_group)
+                    group_counts[current_group] = 0
 
-            # Set current group to the previous one
-            elif has_property:
+                # self.prop_controls stays 1:1 and in-order with non-separator properties
                 self.prop_controls.append(ctrl)
+                current_group.add(ctrl)
+                group_counts[current_group] += 1
+            else:
+                current_group = Adw.PreferencesGroup.new()
+                current_group.set_title(property[2])
+                current_group.set_description(property[0])
+                groups.append(current_group)
+                group_counts[current_group] = 0
 
-                group = groups[group_location]
-                group.add(ctrl)
-
-            # Create a new group
-            elif not has_property:
-                group = Adw.PreferencesGroup.new()
-                group.set_title(property[2])
-                group.set_description(property[0])
-                groups.append(group)
-
-            # Update the property index
             property_idx += 1
 
         self.banner = Adw.Banner()
@@ -201,9 +201,8 @@ class PropertyWindow(Adw.Dialog):
 
         preference_page = Adw.PreferencesPage.new()
 
-        # Add all groups to the preference page
         for group in groups:
-            if group.get_children():
+            if group_counts.get(group, 0) > 0:
                 preference_page.add(group)
 
         self.vbox.append(self.header_bar)
@@ -211,4 +210,5 @@ class PropertyWindow(Adw.Dialog):
         self.vbox.append(preference_page)
         self.set_child(self.vbox)
 
-        self.present()
+        if parent is not None:
+            self.present(parent)

@@ -118,6 +118,36 @@ class DrawArea(Gtk.ScrolledWindow):
         self._pasted_components = None
         self._pushed_component_name = const.component_none
         self._pushed_component = logic_gates[const.component_none]
+        self._last_pw = 0
+        self._last_ph = 0
+        self.hadj.connect("changed", self._on_adjustment_changed)
+        self.vadj.connect("changed", self._on_adjustment_changed)
+
+    def _on_adjustment_changed(self, adj):
+        pw = self.hadj.get_page_size()
+        ph = self.vadj.get_page_size()
+        if pw > 0 and ph > 0:
+            if pw != self._last_pw or ph != self._last_ph:
+                self._last_pw = pw
+                self._last_ph = ph
+                if Preference.autocenter_resize:
+                    self.center_viewport()
+
+    def center_viewport(self):
+        pw = self.hadj.get_page_size()
+        ph = self.vadj.get_page_size()
+        if pw <= 0 or ph <= 0:
+            return
+        if self.circuit and self.circuit.components:
+            rect = get_components_rect(self.circuit.components)
+            c_x = (rect[0] + rect[2]) / 2
+            c_y = (rect[1] + rect[3]) / 2
+        else:
+            c_x = self.width / 2
+            c_y = self.height / 2
+        self.hadj.set_value(c_x - pw / 2)
+        self.vadj.set_value(c_y - ph / 2)
+
 
     def queue_draw(self, *args):
         self.show()
@@ -141,9 +171,8 @@ class DrawArea(Gtk.ScrolledWindow):
         elif action == 'flip_verti':
             self.parent.on_action_flip_vertically()
 
-        elif action == 'properties':
+        elif action == "properties":
             self.set_selected_component_to_prop_window()
-            self.parent.prop_window.present()
     
     def draw_net(self, net, mcr: cairo.Context):
         """
@@ -1063,12 +1092,12 @@ class DrawArea(Gtk.ScrolledWindow):
     def set_selected_component_to_prop_window(self):
         if len(self.circuit.selected_components) == 1:
             if self.circuit.selected_components[0][0] != const.component_net:
-                self.parent.prop_window.set_component(
-                    self.circuit.selected_components[0][1])
+                self.parent.prop_window.show_properties(
+                    self.circuit.selected_components[0][1], self.parent)
             else:
-                self.parent.prop_window.set_component(None)
+                self.parent.prop_window.show_properties(None)
         else:
-            self.parent.prop_window.set_component(None)
+            self.parent.prop_window.show_properties(None)
 
     def set_component(self, comp_name):
         self._pasted_components = None

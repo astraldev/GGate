@@ -33,7 +33,8 @@ class AlertDialogs(Adw.AlertDialog):
     self.set_heading("Unsaved changes")
     self.set_body("Buffer was modified, save changes?")
 
-    self.add_responses(*self.responses)
+    for response_id, label in self.responses:
+      self.add_response(response_id, label)
     self.set_default_response(self.YES_RESPONSE)
     self.set_close_response(self.CANCEL_RESPONSE)
 
@@ -49,7 +50,8 @@ class AlertDialogs(Adw.AlertDialog):
     self.set_heading("Unsaved changes")
     self.set_body("Buffer was modified, save changes before creating new buffer?")
 
-    self.add_responses(*self.responses)
+    for response_id, label in self.responses:
+      self.add_response(response_id, label)
     self.set_default_response(self.YES_RESPONSE)
     self.set_close_response(self.CANCEL_RESPONSE)
 
@@ -70,7 +72,8 @@ class AlertDialogs(Adw.AlertDialog):
     self.set_heading("Unsaved changes")
     self.set_body("Buffer was modified, save changes before closing?")
     
-    self.add_responses(*self.responses)
+    for response_id, label in self.responses:
+      self.add_response(response_id, label)
     self.set_default_response(self.YES_RESPONSE)
     self.set_close_response(self.CANCEL_RESPONSE)
 

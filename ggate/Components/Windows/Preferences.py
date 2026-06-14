@@ -145,6 +145,13 @@ class PreferencesWindow(Gtk.Dialog):
 
         vbox.append(pref)
 
+        pref2 = Gtk.Box(spacing=5)
+        pref2.set_margin_top(5)
+        pref2.append(Gtk.Label(label=_("Auto-center content on resize:")))
+        self.autocenter_resize_switch = Gtk.Switch()
+        pref2.append(self.autocenter_resize_switch)
+        vbox.append(pref2)
+
         vbox.set_margin_start(10)
         vbox.set_margin_top(10)
         vbox.set_margin_bottom(10)
@@ -179,6 +186,7 @@ class PreferencesWindow(Gtk.Dialog):
         self.symbol_type_combo.set_active(Preference.symbol_type)
         self.calc_iter_spin.set_value(Preference.max_calc_iters)
         self.calc_duration_spin.set_value(Preference.max_calc_duration * 1000000)
+        self.autocenter_resize_switch.set_active(bool(Preference.autocenter_resize))
 
     def apply_settings(self):
         Preference.drawing_font = self.drawing_font_btn.get_font_desc()
@@ -192,3 +200,4 @@ class PreferencesWindow(Gtk.Dialog):
         Preference.symbol_type = self.symbol_type_combo.get_active()
         Preference.max_calc_iters = self.calc_iter_spin.get_value()
         Preference.max_calc_duration = self.calc_duration_spin.get_value() * 0.000001
+        Preference.autocenter_resize = int(self.autocenter_resize_switch.get_active())

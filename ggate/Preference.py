@@ -58,7 +58,8 @@ class _Preference(dict,object):
     "selection_box_border": cairo.SolidPattern(1, 0.75, 0),
     "symbol_type": 0, #  0: MIL/ANSI  1: IEC
     "max_calc_iters": 10000,
-    "max_calc_duration": 0.0002
+    "max_calc_duration": 0.0002,
+    "autocenter_resize": 1
   }
 
   def load_settings(self):
