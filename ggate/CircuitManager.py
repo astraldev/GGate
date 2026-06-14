@@ -7,18 +7,22 @@ if TYPE_CHECKING:
 
 import os
 import copy
+import time
 import igraph
-from gi.repository import GObject
+from gi.repository import GObject, GLib
 from shapely.geometry import LineString, Point
 from ggate.Components.LogicGates.SystemComponents import BaseComponent
 from ggate.Components.LogicGates import logic_gates
 from ggate.const import definitions
 from ggate import config
 from ggate import Preference
-from ggate.Utils import encode_text, decode_text, fit_components, get_components_rect, multiply_matrix, rotate_left_90, rotate_right_90
+from ggate.Utils import encode_text, decode_text, fit_components, get_components_rect, multiply_matrix, rotate_left_90, rotate_right_90, logger
 from gettext import gettext as _
 
 CircuitComponent = Tuple[definitions, BaseComponent]
+
+# warn if a simulation run takes longer than this (seconds)
+_SLOW_SIM_SECONDS = 15
 
 class CircuitConverter():
   def __init__(self, circuit: CircuitManager):
@@ -204,6 +208,9 @@ class CircuitManager(GObject.GObject):
     self.filepath = ""
     self.mainframe = mainframe
     self.converter = CircuitConverter(self)
+    self.sim_generator = None
+    self.sim_idle_id = None
+    self.sim_start_time = None
 
     self.net_connections = []
     self.net_levels = []
@@ -543,97 +550,213 @@ class CircuitManager(GObject.GObject):
 
     self.emit("currenttime-changed", self.current_time)
 
-  def analyze_logic(self):
+  def cancel_simulation(self):
+    if hasattr(self, "sim_idle_id") and self.sim_idle_id is not None:
+      GLib.source_remove(self.sim_idle_id)
+      self.sim_idle_id = None
+    self.sim_generator = None
+    self.sim_cancelled = True
+
+  def _rewind_history(self):
+    # re-running from current_time: drop any recorded state newer than it
+    if not self.component_state_history:
+      return
+    t = 0
+    for i, comp_state in reversed(list(enumerate(self.component_state_history))):
+      if comp_state[0] <= self.current_time:
+        t = i
+        break
+    self.current_time = self.component_state_history[t][0]
+    self.component_state_history = self.component_state_history[:t]
+    self.probe_levels_history = self.probe_levels_history[:t]
+
+  def _net_index_at(self, x, y):
+    for j, net in enumerate(self.net_connections):
+      if (x, y) in net:
+        return j
+    return None
+
+  def _gather_inputs(self, comp):
+    # input level per connected input pin; None if any pin sits on an open net
+    inputs = []
+    for px, py in comp.rot_input_pins:
+      j = self._net_index_at(comp.pos_x + px, comp.pos_y + py)
+      if j is None:
+        continue
+      if self.net_levels[j] == -1:
+        return None
+      inputs.append(self.net_levels[j])
+    return inputs
+
+  def _apply_output_stack(self, comp):
+    for i in range(len(comp.rot_output_pins)):
+      stack = comp.output_stack[i]
+      if not stack:
+        continue
+      if stack[0][0] == self.current_time:
+        comp.output_level[i] = stack.pop(0)[1]
+      elif comp.output_level[i] == stack[0][1]:
+        stack.pop(0)
+
+  def _evaluate_components(self):
+    # evaluate every non-net component at current_time; True if an input is open
+    for c in self.components:
+      if c[0] == definitions.component_net:
+        continue
+      inputs = self._gather_inputs(c[1])
+      if inputs is None:
+        self.emit("message-changed", _("Input port is open circuit!"))
+        return True
+      c[1].calculate(inputs, self.current_time)
+      c[1].input_level = inputs[:]
+      self._apply_output_stack(c[1])
+    return False
+
+  def _settle_state(self, net_levels_history):
+    # "settled" (stable), "oscillate" (repeating cycle), or "continue"
+    if self.net_levels in net_levels_history[:-1]:
+      if self.net_levels == net_levels_history[-1]:
+        return "settled"
+      return "oscillate"
+    return "continue"
+
+  def _record_state(self):
+    probe_levels = [self.current_time]
+    for c in self.components:
+      if c[0] == definitions.component_probe:
+        probe_levels.append(c[1].input_level[0])
+    self.probe_levels_history.append(probe_levels)
+
+    comp_state = [self.current_time, self.net_levels[:]]
+    for c in self.components:
+      if c[0] != definitions.component_net:
+        comp_state.append((c[1].input_level[:], c[1].output_level[:], copy.deepcopy(c[1].output_stack), copy.deepcopy(c[1].store)))
+    self.component_state_history.append(comp_state)
+
+  def _advance_to_next_event(self):
+    # jump current_time to the soonest pending output event; False if none
+    timelist = []
+    for c in self.components:
+      if c[0] == definitions.component_net:
+        continue
+      for s in c[1].output_stack:
+        if s and s[0][0] != self.current_time:
+          timelist.append(s[0][0])
+    if not timelist or min(timelist) == self.current_time:
+      return False
+    self.current_time = min(timelist)
+    for c in self.components:
+      if c[0] == definitions.component_net:
+        continue
+      for i, s in enumerate(c[1].output_stack):
+        if s and s[0][0] == self.current_time:
+          c[1].output_level[i] = s.pop(0)[1]
+    return True
+
+  def _settle(self, counter, max_iters):
+    # run the per-timestep settle loop; yields ("progress", t) each iteration and
+    # returns the updated counter when settled, or None on error (message emitted)
+    net_levels_history = []
+    while True:
+      if self.set_netlevels():
+        return None
+      if self._evaluate_components():
+        return None
+
+      state = self._settle_state(net_levels_history)
+      if state == "settled":
+        self.emit("message-changed", "")
+        return counter
+      if state == "oscillate":
+        self.emit("message-changed", _("This circuit oscillates on infinite frequency!"))
+        return None
+
+      net_levels_history.append(self.net_levels)
+      if counter >= max_iters:
+        self.emit("message-changed", _("Calculation exceeded %d iterations — raise the limit in Preferences.") % max_iters)
+        return None
+      counter += 1
+      yield ("progress", self.current_time)
+
+  def analyze_logic_generator(self):
+    self._rewind_history()
     counter = 0
     stop_time = Preference.max_calc_duration
     max_iters = Preference.max_calc_iters
 
-    if self.component_state_history:
-      t = 0
-      for i, comp_state in reversed(list(enumerate(self.component_state_history))):
-        if comp_state[0] <= self.current_time:
-          t = i
-          break
-      self.current_time = self.component_state_history[t][0]
-      self.component_state_history = self.component_state_history[:t]
-      self.probe_levels_history = self.probe_levels_history[:t]
-
     while self.current_time < stop_time:
-      net_levels_history = []
-
-      while True:
-        if self.set_netlevels():
-          return True
-
-        for c in self.components:
-          if c[0] != definitions.component_net:
-            input_datas = []
-            for p in c[1].rot_input_pins:
-              for j, net in enumerate(self.net_connections):
-                if (c[1].pos_x + p[0], c[1].pos_y + p[1]) in net:
-                  if self.net_levels[j] == -1:
-                    self.emit("message-changed", _("Input port is open circuit!"))
-                    return True
-                  input_datas.append(self.net_levels[j])
-
-            c[1].calculate(input_datas, self.current_time)
-            c[1].input_level = input_datas[:]
-
-            for i, p in enumerate(c[1].rot_output_pins):
-              if c[1].output_stack[i]:
-                if c[1].output_stack[i][0][0] == self.current_time:
-                  c[1].output_level[i] = c[1].output_stack[i].pop(0)[1]
-                elif c[1].output_level[i] == c[1].output_stack[i][0][1]:
-                  c[1].output_stack[i].pop(0)
-
-        if self.net_levels in net_levels_history[:-1]:
-          if self.net_levels == net_levels_history[len(net_levels_history) - 1]:
-            self.emit("message-changed", "")
-            break
-          else:
-            self.emit("message-changed", _("This circuit oscillates on infinite frequency!"))
-            return True
-
-        net_levels_history.append(self.net_levels)
-
-        if counter >= max_iters:
-          self.emit("message-changed", _("This logic is complexity! (iters > %d)") % max_iters)
-          return True
-
-        counter += 1
-
-      probe_levels = [self.current_time]
-      for c in self.components:
-        if c[0] == definitions.component_probe:
-          probe_levels.append(c[1].input_level[0])
-      self.probe_levels_history.append(probe_levels)
-
-      comp_state = [self.current_time, self.net_levels[:]]
-      for c in self.components:
-        if c[0] != definitions.component_net:
-          comp_state.append((c[1].input_level[:], c[1].output_level[:], copy.deepcopy(c[1].output_stack), copy.deepcopy(c[1].store)))
-      self.component_state_history.append(comp_state)
-
-      tmptime = self.current_time
-      timelist = []
-      for c in self.components:
-        if c[0] != definitions.component_net:
-          for s in c[1].output_stack:
-            if s and s[0][0] != self.current_time:
-              timelist.append(s[0][0])
-      if timelist:
-        self.current_time = min(timelist)
-      if tmptime == self.current_time:
+      counter = yield from self._settle(counter, max_iters)
+      if counter is None:
+        yield ("error", True)
+        return
+      self._record_state()
+      if not self._advance_to_next_event():
         break
-
-      for c in self.components:
-        if c[0] != definitions.component_net:
-          for i, s in enumerate(c[1].output_stack):
-            if s and s[0][0] == self.current_time:
-              c[1].output_level[i] = s.pop(0)[1]
+      yield ("progress", self.current_time)
 
     self.emit("currenttime-changed", self.current_time)
-    return False
+    yield ("success", False)
+
+  def _run_sim_sync(self):
+    result = None
+    try:
+      while True:
+        step_type, val = next(self.sim_generator)
+        if step_type in ("success", "error"):
+          result = val
+          break
+    except StopIteration:
+      pass
+    self.sim_generator = None
+    self._log_if_slow()
+    return result
+
+  def _emit_progress(self):
+    pct = (self.current_time / Preference.max_calc_duration) * 100
+    self.emit("message-changed", _("Calculating... %.0f%%") % pct)
+
+  def _log_if_slow(self):
+    if self.sim_start_time is None:
+      return
+    elapsed = time.time() - self.sim_start_time
+    self.sim_start_time = None
+    if elapsed > _SLOW_SIM_SECONDS:
+      logger.warning("simulation took %.1fs (%d frames)", elapsed, len(self.probe_levels_history))
+
+  def _finish_sim(self, callback, val, clear_message):
+    self.sim_idle_id = None
+    self.sim_generator = None
+    self._log_if_slow()
+    if clear_message:
+      self.emit("message-changed", "")
+    if callback:
+      callback(val)
+
+  def _sim_idle_step(self, callback):
+    if self.sim_cancelled:
+      return GLib.SOURCE_REMOVE
+    start = time.time()
+    try:
+      while time.time() - start < 0.02:
+        step_type, val = next(self.sim_generator)
+        if step_type == "progress":
+          self._emit_progress()
+        elif step_type in ("success", "error"):
+          self._finish_sim(callback, val, step_type == "success")
+          return GLib.SOURCE_REMOVE
+    except StopIteration:
+      self._finish_sim(callback, False, True)
+      return GLib.SOURCE_REMOVE
+    return GLib.SOURCE_CONTINUE
+
+  def analyze_logic(self, callback=None):
+    self.cancel_simulation()
+    self.sim_cancelled = False
+    self.sim_generator = self.analyze_logic_generator()
+    self.sim_start_time = time.time()
+    if callback is None:
+      return self._run_sim_sync()
+    self.sim_idle_id = GLib.idle_add(self._sim_idle_step, callback)
 
   def remove_selected_component(self):
     for c in self.selected_components:

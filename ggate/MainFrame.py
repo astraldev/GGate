@@ -463,13 +463,17 @@ class MainFrame(Adw.ApplicationWindow):
         self.circuit.analyze_net_connections()
         self.circuit.initialize_logic()
 
-        # compute t=0..stop_time once so oscillators/probes populate history
-        self.circuit.analyze_logic()
+        self.circuit.analyze_logic(callback=self.on_simulation_finished)
 
+    def on_simulation_finished(self, is_error):
+        if not is_error:
+            if hasattr(self, "timing_diagram") and self.timing_diagram.get_visible():
+                self.timing_diagram._draw_area.draw()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
 
     def on_circuit_stop(self, *args):
+        self.circuit.cancel_simulation()
         if self.running_mode:
             self.running_mode = False
             if self.circuit.action_count < len(self.circuit.components_history) - 1:

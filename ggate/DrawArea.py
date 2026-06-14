@@ -1109,9 +1109,8 @@ class DrawArea(Gtk.ScrolledWindow):
                                          im[2] * (self.cursor_smooth_x - c[1].pos_x) + im[3] * (
                                              self.cursor_smooth_y - c[1].pos_y) + c[1].pos_y,
                                          self.circuit.current_time):
-                            if not self.parent.pause_running_mode and not self.circuit.analyze_logic():
-                                if hasattr(self.parent, "timing_diagram") and self.parent.timing_diagram.get_visible():
-                                    self.parent.timing_diagram._draw_area.draw()
+                            if not self.parent.pause_running_mode:
+                                self.circuit.analyze_logic(callback=self.parent.on_simulation_finished)
                             self.queue_draw()
                             break
 

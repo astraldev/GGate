@@ -15,6 +15,8 @@ from gi.repository import Gtk, Gdk, PangoCairo
 
 # Ruler strip height in pixels; each probe row is also _ROW_H px.
 _ROW_H = 40
+# max chart width in px (Cairo surface limit)
+_MAX_DIAGRAM_WIDTH = 32767
 
 class TimingGraphDiagram(Gtk.Box):
     def __init__(self, parent: MainFrame):
@@ -48,7 +50,8 @@ class TimingGraphDiagram(Gtk.Box):
         self.chart_area.set_hexpand(True)  # fills viewport width before scrolling kicks in
 
         self.name_scroll = Gtk.ScrolledWindow()
-        self.name_scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.NEVER)
+        # EXTERNAL: no scrollbar but still scrolls via the shared vadjustment
+        self.name_scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.EXTERNAL)
         self.name_scroll.set_hexpand(False)
         self.name_scroll.set_vexpand(True)
         self.name_scroll.set_child(self.name_area)
@@ -88,7 +91,9 @@ class TimingGraphDiagram(Gtk.Box):
     def update_layout_sizes(self):
         n = len(self.__get_probes())
         self.img_height = _ROW_H + n * _ROW_H          # ruler row + one row per probe
-        self.diagram_width = int(max(1, (self.end_time - self.start_time) * self.scale))
+        raw_width = int(max(1, (self.end_time - self.start_time) * self.scale))
+        self.width_capped = raw_width > _MAX_DIAGRAM_WIDTH
+        self.diagram_width = min(raw_width, _MAX_DIAGRAM_WIDTH)
         # set_size_request only ever called here — never inside a draw callback (avoids layout loop)
         self.name_area.set_size_request(self.name_width, self.img_height)
         self.chart_area.set_size_request(self.diagram_width, self.img_height)

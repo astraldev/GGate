@@ -7,6 +7,13 @@ Companion docs: `reference/build-system-analysis.md`, `reference/delegation-brie
 
 ## P1 — polish
 
+- [ ] **Guard against over-large circuits.** Warn (and optionally block) when loading a circuit
+  too large to handle, and warn when a save/compress or simulation will take too long, instead of
+  hanging/OOM-ing. (Run-time hang is mitigated by the non-blocking sim + the >15s log, but there's
+  no up-front guard.)
+- [ ] **Timing diagram: surface the width cap.** `diagram_width` is now clamped to Cairo's 32767px
+  so a fine timing unit can't OOM; tell the user (status/banner) when the chart is capped and to
+  zoom out, instead of silently capping.
 - [ ] **Timing diagram visual polish** (PM: "not looking great"). Dense oscillator waveforms
   read as a picket-fence and the hi/lo amplitude is small; large empty tail (data ends at the
   oscillator duration but range defaults to 200µs) and dead vertical space below the rows.

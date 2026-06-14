@@ -1,8 +1,12 @@
 # -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
+import logging
 from gi.repository import Pango, PangoCairo
 from ggate.const import definitions as const
 import cairo
+
+# shared application logger
+logger = logging.getLogger("ggate")
 
 def number_in_range(value, min_value, max_value):
   return min_value <= value <= max_value
