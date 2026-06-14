@@ -163,7 +163,8 @@ class TimingGraphDiagram(Gtk.Box):
         # header label ("Time [µs]") right-aligned into the ruler strip
         unit_str = ["ns", "µs", "ms"][self.timing_unit]
         cr.set_source(Preference.component_color_running)
-        cairo_draw_text(cr, name_layout, f"{_('Time')} [{unit_str}]", self.name_width - 6, _ROW_H // 2, 1.0, 0.5)
+        time_label = _("Time")
+        cairo_draw_text(cr, name_layout, f"{time_label} [{unit_str}]", self.name_width - 6, _ROW_H // 2, 1.0, 0.5)
         cr.fill()
 
         # probe name labels, vertically centred in each row

@@ -119,20 +119,32 @@ class CircuitConverter():
 
           name, value = property.split(":")
           value = decode_text(value)
-          if name in component[1].prop_names:
-            index = component[1].prop_names.index(name)
+          if name not in component[1].prop_names:
+            continue
 
-            if component[1].properties[index][1] == definitions.property_int:
-              component[1].values[index] = int(value)
+          index = component[1].prop_names.index(name)
+          real_props = [p for p in component[1].properties if p[1] is not None]
+          if index >= len(real_props):
+            component[1].values[index] = value
+            continue
 
-            elif component[1].properties[index][1] == definitions.property_float:
-              component[1].values[index] = float(value)
-      
-            elif component[1].properties[index][1] == definitions.property_select:
-              component[1].values[index] = int(value)
+          prop_type = real_props[index][1]
+          if isinstance(prop_type, tuple):
+            prop_type = prop_type[0]
 
-            else:
-              component[1].values[index] = value
+          if prop_type == definitions.property_int:
+            component[1].values[index] = int(float(value))
+          elif prop_type == definitions.property_float:
+            component[1].values[index] = float(value)
+          elif prop_type == definitions.property_select:
+            component[1].values[index] = int(float(value))
+          elif prop_type == definitions.property_bool:
+            component[1].values[index] = bool(value) or value == "1"
+          else:
+            component[1].values[index] = value
+
+      component[1].propertyChanged(component[1].values)
+      component[1].set_rot_props()
 
       return component
 

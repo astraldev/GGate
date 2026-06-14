@@ -96,6 +96,15 @@ These dialogs are the **current cleanup focus** — details and the grounded bug
   `install_subdir('ggate')`), `meson_options.txt`, `bin/ggate.in`, `data/images/` gresource.
 - **Flatpak**: `build-aux/flatpak/org.astralco.GGate.json` (GNOME 47 runtime, pip deps).
 - **Snap**: `build-aux/snapcraft/snapcraft.yaml` (`core22`, poetry deps, meson plugin).
+- **Dev resources**: `run.py` loads `./dev-resources.gresource`. This bundle is a build
+  artifact (git-ignored) and must be recompiled from `data/images/dev-resources.xml`
+  whenever bundled assets (icons, themes) change — a stale bundle silently drops new
+  resources (e.g. themes not enumerating → empty registry). `run.py` now recompiles it on
+  every launch via `glib-compile-resources`; never hand-edit the `.gresource`.
+- ⚠️ `data/images/dev-resources.xml` is currently hand-maintained and git-ignored, so it
+  can drift from the Meson-generated installed resource (`resources.xml.in` + the
+  `data/images/meson.build` glob). A "proper" fix is to generate the dev XML the same way
+  Meson generates the installed one (single source of truth). See `.agents/TODO.md`.
 - ⚠️ `config.py`/`__init__.py` versions are **static**, not Meson-populated, and currently
   **disagree** with `pyproject.toml`/`meson.build` (4.0.0 vs 5.0.0). See `.agents/TODO.md` P0.
 

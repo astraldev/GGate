@@ -24,16 +24,16 @@ foreach file: icon_files
   icon_files_xml += '<file preprocess="xml-stripblanks">' + file + '</file>'
 endforeach
 
-# Dynamically glob theme JSON files from ../themes/
+# Collect theme JSON filenames from ../themes/ to bundle into the gresource
 theme_files_list = run_command(
-  'find', meson.project_source_root() / 'data/themes', '-maxdepth', '1', '-name', '*.json', '-type', 'f',
-  check: false
+  'sh', '-c', 'for f in "$0"/*.json; do [ -e "$f" ] && basename "$f"; done',
+  meson.project_source_root() / 'data/themes',
+  check: true
 ).stdout().strip().split('\n')
 
 theme_files_xml = []
-foreach file: theme_files_list
-  if file != ''
-    basename = run_command('basename', file, check: true).stdout().strip()
+foreach basename: theme_files_list
+  if basename != ''
     # alias keeps the resource path clean (<prefix>/<basename>); disk path is ../themes via source_dir
     theme_files_xml += '<file alias="' + basename + '">themes/' + basename + '</file>'
   endif
@@ -45,7 +45,7 @@ resources_xml = configure_file(
   configuration: {
     'ICON_FILES': '\n    '.join(icon_files_xml),
     'THEME_FILES': '\n    '.join(theme_files_xml),
-    'PREFIX': prefix,
+    'PREFIX': gresource_prefix,
   }
 )
 

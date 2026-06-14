@@ -33,11 +33,10 @@ class Theme:
 THEME_REGISTRY: dict[str, Theme] = {}
 
 
-def init_registry(dev_mode: bool = False) -> None:
-    """Dynamically enumerate and load themes from gresource + user config dir."""
+def init_registry(is_dev_mode: bool = False) -> None:
     THEME_REGISTRY.clear()
 
-    prefix = "/org/astralco/GGate/Dev/themes" if dev_mode else "/org/astralco/GGate/themes"
+    prefix = "/org/astralco/GGate/Dev/themes" if is_dev_mode else "/org/astralco/GGate/themes"
 
     try:
         children = Gio.resources_enumerate_children(prefix, Gio.ResourceLookupFlags.NONE)
@@ -63,7 +62,6 @@ def init_registry(dev_mode: bool = False) -> None:
 
 
 def _load_user_themes() -> None:
-    """Scan ~/.config/ggate/themes/ for user-provided JSON themes."""
     from ggate.const import definitions
     themes_dir = os.path.join(definitions.config_path, "themes")
     if not os.path.isdir(themes_dir):
@@ -87,7 +85,6 @@ def _load_user_themes() -> None:
 
 
 def apply_theme(name: str, preference_module) -> None:
-    """Write all color keys from the named theme into Preference, then save."""
     theme = THEME_REGISTRY.get(name)
     if theme is None:
         return
@@ -103,7 +100,6 @@ def apply_theme(name: str, preference_module) -> None:
 
 
 def apply_chrome(name: str, display: Gdk.Display) -> None:
-    """Apply theme chrome (color scheme + accent CSS) to the app."""
     theme = THEME_REGISTRY.get(name)
     if theme is None:
         return

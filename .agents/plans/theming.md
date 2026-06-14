@@ -287,7 +287,7 @@ All themes, built-in and user-provided, follow this schema:
 ```
 
 ### Runtime Theme Discovery
-`Themes.init_registry(dev_mode)` enumerates the gresource theme prefix (`/org/astralco/GGate/Dev/themes` or `/org/astralco/GGate/themes`) via `Gio.resources_enumerate_children()`, parses each JSON child, and registers themes in `THEME_REGISTRY`. It then scans `~/.config/ggate/themes/` for user-provided JSON files to load and merge. No hardcoded list of theme names exists in the codebase.
+`Themes.init_registry(running_from_source)` enumerates the gresource theme prefix (`/org/astralco/GGate/Dev/themes` or `/org/astralco/GGate/themes`) via `Gio.resources_enumerate_children()`, parses each JSON child, and registers themes in `THEME_REGISTRY`. It then scans `~/.config/ggate/themes/` for user-provided JSON files to load and merge. No hardcoded list of theme names exists in the codebase.
 
 ---
 

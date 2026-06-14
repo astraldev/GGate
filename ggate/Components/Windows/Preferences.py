@@ -157,16 +157,15 @@ class PreferencesWindow(Adw.PreferencesDialog):
         self.drawing_font_btn.set_font_desc(Preference.drawing_font)
         self.symbol_type_row.set_selected(Preference.symbol_type)
 
-        # set theme ComboRow to match saved theme name
         active_theme = Preference.theme
         theme_names = list(THEME_REGISTRY.keys()) + ["Custom"]
         idx = theme_names.index(active_theme) if active_theme in theme_names else len(theme_names) - 1
+        
         self._suppress_custom = True
         self.theme_row.set_selected(idx)
-        self._suppress_custom = False
-
-        for key, btn in self.color_buttons.items():
+        for key in self.color_buttons:
             self._sync_button_from_preference(key)
+        self._suppress_custom = False
 
         adj_iter = Gtk.Adjustment.new(float(Preference.max_calc_iters), 10.0, 1000000.0, 1.0, 10.0, 0.0)
         self.calc_iter_row.set_adjustment(adj_iter)
@@ -210,13 +209,13 @@ class PreferencesWindow(Adw.PreferencesDialog):
             return
 
         # load all palette colors into Preference + save + update chrome
+        # suppress through the whole load: apply_theme + button sync both emit
+        # notify::rgba, which would otherwise flip the row back to "Custom"
         self._suppress_custom = True
         apply_theme(selected, Preference)
-        self._suppress_custom = False
-
-        # update every color button live to reflect the new palette
         for key in self.color_buttons:
             self._sync_button_from_preference(key)
+        self._suppress_custom = False
 
         self._apply_chrome(selected)
         self._trigger_canvas_redraw()

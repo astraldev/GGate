@@ -21,7 +21,7 @@ from ggate.Components.Windows.Properties import PropertyWindow
 from ggate.Components.Windows.Preferences import PreferencesWindow
 from ggate.Components.Windows.About import AboutGGate
 from ggate import Preference
-from ggate import Themes as _Themes
+from ggate import Themes
 
 from ggate.Components.LogicGates import logic_gates
 from ggate.Components.Managers.FileManager import FileIOManager
@@ -94,8 +94,8 @@ class MainFrame(Adw.ApplicationWindow):
 
         Preference.load_settings()
 
-        _Themes.init_registry(config.DEV_MODE)
-        _Themes.apply_chrome(Preference.theme, Gdk.Display.get_default())
+        Themes.init_registry(config.RUNNING_FROM_SOURCE)
+        Themes.apply_chrome(Preference.theme, Gdk.Display.get_default())
 
         # Component window
         self.comp_window = ComponentView()
@@ -121,7 +121,6 @@ class MainFrame(Adw.ApplicationWindow):
             self.drawarea.queue_draw()
 
     def set_up_shortcuts(self, *args):
-
         actions = {
             "application": [
                 ("app.on_action_new_pressed", ["<Ctrl>N"]),
@@ -463,6 +462,9 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.clear_animations()
         self.circuit.analyze_net_connections()
         self.circuit.initialize_logic()
+
+        # compute t=0..stop_time once so oscillators/probes populate history
+        self.circuit.analyze_logic()
 
         self.drawarea.redraw = True
         self.drawarea.queue_draw()

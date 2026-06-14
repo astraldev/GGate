@@ -1,5 +1,3 @@
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
-
 import cairo
 import sys
 import os
@@ -34,10 +32,10 @@ class _Preference(dict,object):
     return self.pref_dict.get(__k, None)
 
   pref_dict = {
-    '_red':   cairo.SolidPattern(1.0, 0.0, 0.0),
-    '_green':  cairo.SolidPattern(0.0, 1.0, 0.0),
-    '_blue':   cairo.SolidPattern(0.0, 0.0, 1.0),
-    '_yellow':   cairo.SolidPattern(1.0, 1.0, 0.0),
+    "_red":   cairo.SolidPattern(1.0, 0.0, 0.0),
+    "_green":  cairo.SolidPattern(0.0, 1.0, 0.0),
+    "_blue":   cairo.SolidPattern(0.0, 0.0, 1.0),
+    "_yellow":   cairo.SolidPattern(1.0, 1.0, 0.0),
 
     "grid_step": 10,
 
@@ -74,8 +72,8 @@ class _Preference(dict,object):
     if not success or not data:
       return
 
-    for line in data:
-      pref = line.split("=", 1)  # maxsplit=1 so string values like theme names survive
+    for line in data.splitlines():
+      pref = line.split("=", 1)
 
       if len(pref) == 2 and pref[0] in self.pref_dict:
         self.__setattr__(pref[0], pref[1])

@@ -110,7 +110,7 @@ class XOR(BaseComponent):
     return False
 
   def calculate(self, input_datas, time):
-    new_output = (input_datas[0] + input_datas[1]) % 2 if self.values[0] == 2 else (input_datas[0] + input_datas[1] + input_datas[2]) % 2
+    new_output = sum(input_datas) % 2
     if new_output != self.output_level[0]:
       if self.output_level[0]:
         self.output_stack = [[[time + self.tp_hl, new_output]]]

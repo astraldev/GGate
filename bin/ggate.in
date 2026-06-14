@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
   app = GLogicApplication()
   if len(sys.argv) > 1 and sys.argv[1] == "--version":
-    print(f"GGate: v{__version__}")
+    print(f"GGate {__version__}")
     sys.exit(0)
 
   app.run()

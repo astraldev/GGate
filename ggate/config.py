@@ -1,13 +1,12 @@
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
+from os import path
 from packaging.version import Version
 
 DATADIR = '/'.join(__file__.split("/")[:-1]) + '/'
 VERSION = "5.0.0"
 APP_PREFIX = "org.astralco.GGate"
 
-import os as _os
 # True when running from a source checkout (run.py is adjacent to the ggate package)
-DEV_MODE = _os.path.isfile(_os.path.join(_os.path.dirname(_os.path.dirname(__file__)), "run.py"))
+RUNNING_FROM_SOURCE = path.isfile(path.join(path.dirname(path.dirname(__file__)), "run.py"))
 
 compatibility = {
   "version": VERSION,

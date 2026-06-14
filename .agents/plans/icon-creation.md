@@ -615,7 +615,7 @@ display = Gdk.Display.get_default()
 if display:
     theme = Gtk.IconTheme.get_for_display(display)
     # Register the GResource path prefix where GTK will search for icons
-    resource_prefix = "/org/astralco/GGate/Dev/icons" if config.DEV_MODE else "/org/astralco/GGate/icons"
+    resource_prefix = "/org/astralco/GGate/Dev/icons" if config.RUNNING_FROM_SOURCE else "/org/astralco/GGate/icons"
     theme.add_resource_path(resource_prefix)
 ```
 

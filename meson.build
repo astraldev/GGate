@@ -26,10 +26,10 @@ pkgdatadir = get_option('prefix') / get_option('datadir') / meson.project_name()
 profile = get_option('profile')
 if profile == 'development'
   app_id = 'org.astralco.GGate.Dev'
-  prefix = '/org/astralco/GGate/Dev'
+  gresource_prefix = '/org/astralco/GGate/Dev'
 elif profile == 'release'
   app_id = 'org.astralco.GGate'
-  prefix = '/org/astralco/GGate'
+  gresource_prefix = '/org/astralco/GGate'
 endif
 
 conf = configuration_data()
@@ -43,13 +43,9 @@ subdir('data/images')
 
 exclude_pycache_dirs = []
 foreach d : run_command(
-  py_installation, '-c',
-  '''
-import os
-for root, dirs, files in os.walk("ggate"):
-    if os.path.basename(root) == "__pycache__":
-        print(os.path.relpath(root, "ggate").replace("\\", "/"))
-  ''',
+  find_program('sh'),
+  files('build-aux/meson-exclude-pycache.sh'),
+  'ggate',
   check: true
 ).stdout().strip().split('\n')
   if d != ''
@@ -64,8 +60,11 @@ install_subdir('ggate',
   exclude_files: ['*.pyc']
 )
 
-# gnome.post_install(
-#   glib_compile_schemas: true,
-#   gtk_update_icon_cache: true,
-#   update_desktop_database: true,
-# )
+# Update desktop/icon caches only when not building inside a sandbox (Flatpak/Snap)
+if not get_option('prefix').startswith('/app') and not get_option('prefix').startswith('/snap')
+  gnome.post_install(
+    glib_compile_schemas: true,
+    gtk_update_icon_cache: true,
+    update_desktop_database: true,
+  )
+endif

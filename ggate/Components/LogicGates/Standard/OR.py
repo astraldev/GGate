@@ -124,7 +124,7 @@ class OR(BaseComponent):
     return False
 
   def calculate(self, input_datas, time):
-    new_output = input_datas[0] or input_datas[1] if self.values[0] == 2 else input_datas[0] or input_datas[1] or input_datas[2]
+    new_output = any(input_datas)
     if new_output != self.output_level[0]:
       if self.output_level[0]:
         self.output_stack = [[[time + self.tp_hl, new_output]]]
