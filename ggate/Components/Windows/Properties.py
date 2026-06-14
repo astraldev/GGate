@@ -28,13 +28,21 @@ class PropertyWindow(Adw.Dialog):
 
         self.prop_controls = []
         self.old_values = []
-        self.content_box: Gtk.Box = None
-        self.banner: Adw.Banner = None
         self.component = None
         self._is_presented = False
 
         self.set_content_width(350)
         self.connect("closed", self.on_window_delete)
+
+        # Build persistent UI hierarchy once to prevent widget leaks
+        self.header_bar = Adw.HeaderBar()
+        self.banner = Adw.Banner()
+        self.banner.set_revealed(False)
+
+        self.toolbar_view = Adw.ToolbarView()
+        self.toolbar_view.add_top_bar(self.header_bar)
+        self.toolbar_view.add_top_bar(self.banner)
+        self.set_child(self.toolbar_view)
     
     def _set_invalid_state(self, positions):
         for idx, ctrl in enumerate(self.prop_controls):
@@ -94,18 +102,8 @@ class PropertyWindow(Adw.Dialog):
             return
 
         self.component = component
-        self.set_child(None)
-
-        self.header_bar = Adw.HeaderBar()
-
         self.set_title("%s - %s" % (self.title, component.description))
-
-        self.banner = Adw.Banner()
         self.banner.set_revealed(False)
-
-        toolbar_view = Adw.ToolbarView()
-        toolbar_view.add_top_bar(self.header_bar)
-        toolbar_view.add_top_bar(self.banner)
 
         if len(component.properties) == 0:
             status_page = Adw.StatusPage(
@@ -113,8 +111,7 @@ class PropertyWindow(Adw.Dialog):
                 description=_("This component has no editable properties."),
             )
 
-            toolbar_view.set_content(status_page)
-            self.set_child(toolbar_view)
+            self.toolbar_view.set_content(status_page)
             if parent is not None:
                 self.present(parent)
                 self._is_presented = True
@@ -208,8 +205,7 @@ class PropertyWindow(Adw.Dialog):
             if group_counts.get(group, 0) > 0:
                 preference_page.add(group)
 
-        toolbar_view.set_content(preference_page)
-        self.set_child(toolbar_view)
+        self.toolbar_view.set_content(preference_page)
 
         if parent is not None:
             self.present(parent)

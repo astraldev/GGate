@@ -18,8 +18,7 @@ class SevenSegment(BaseComponent):
     self.output_level = []
 
     self.prop_names = ['_red', '_blue', '_green', '_yellow']
-    self.properties.append((_("Color of 7 Segment LEDs :"), None, ''))
-    self.properties.append((_("Color :"), (definitions.property_select, _('Red'), _('Blue'), _('Green'), _('Yellow')), ''))
+    self.properties.append((_("Color:"), (definitions.property_select, _('Red'), _('Blue'), _('Green'), _('Yellow')), ''))
     self.values.append(2)
 
   def set_7seg(self, cr: cairo.Context, a, b, c, d, e, f, g):

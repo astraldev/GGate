@@ -19,7 +19,7 @@ class LED(BaseComponent):
     self.output_level = []
 
     self.prop_names = ['_red', '_blue', '_green', '_yellow']
-    self.properties.append((_("Color :"), (definitions.property_select, _('Red'), _('Blue'), _('Green'), _('Yellow')), ''))
+    self.properties.append((_("Color:"), (definitions.property_select, _('Red'), _('Blue'), _('Green'), _('Yellow')), ''))
     self.values.append(2)
 
   def drawComponent(self, cr, layout):

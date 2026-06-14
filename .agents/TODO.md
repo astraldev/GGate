@@ -19,25 +19,23 @@ Companion docs: `reference/build-system-analysis.md`, `reference/delegation-brie
   oscillator duration but range defaults to 200µs) and dead vertical space below the rows.
   Ideas: default the time range to the actual data extent; increase waveform amplitude within
   each row; a saner default zoom for high-frequency signals.
-- [ ] **`Windows/Properties.py`** rebuilds all widgets + re-`present()` on every
-  `show_properties` (old children leak). Build once / reuse; consider `Adw.ToolbarView`.
+
 - [ ] **Initial centering gated by resize pref** — when `autocenter_resize` is OFF, first-paint
   centering is also skipped. Split initial-vs-resize if we want it strict.
 
 ## P2 — icons & dead code
 
-- [ ] **Icon system** (plan: `plans/icon-creation.md`, specced incl. per-component visuals).
-  Implement: `bin/generate-gate-icons.py` (programmatic SVGs, ANSI+IEC), gresource→freedesktop
-  layout with aliases (reuse the proven dynamic-glob+`alias` pattern from theming),
-  `IconTheme.add_resource_path` at startup, switch `ComponentView`/`MenuPopover` from filesystem
-  paths to icon-name lookups, delete `_get_icon_path`. **(BLOCKER for installed runs:
-  `ComponentView`/`MenuPopover` still use `__file__`/`DATADIR` filesystem icon paths.)**
+- [ ] **Icon system** (plan: `plans/icon-creation.md`). Implement: `bin/generate-gate-icons.py`
+  to output properly drawn icons with useful curves and accurate, straight-to-the-point SVG outputs
+  in two variants (ANSI and IEC). Set up gresource→freedesktop layout with aliases (using the
+  dynamic-glob+`alias` pattern from theming), call `IconTheme.add_resource_path` at startup,
+  switch `ComponentView`/`MenuPopover` from filesystem paths to icon-name lookups, and delete
+  `_get_icon_path`. **(BLOCKER for installed runs: `ComponentView`/`MenuPopover` still use
+  `__file__`/`DATADIR` filesystem icon paths.)**
 - [ ] Fix the gresource icon layout: dev XML nests icons under `…/Dev/data/icons/scalable/
   actions/` with components misfiled there too (double "actions" / misfile). Tidy into a clean
   freedesktop layout, dev + installed in sync.
-- [ ] Remove GTK3 leftovers (confirm no imports first): `ggate/TimingDiagramWindow.py`,
-  `ggate/DiagramArea.py` — now safe since the timing dialog was rewritten.
-- [ ] Remove dead stub `ggate/Components/Managers/Exporter.py` (real one is `ggate/Exporter.py`).
+
 - [ ] Style: residual 2-vs-4-space indent, mixed quotes, stale `indent-tabs-mode` headers in
   older files (new work follows: double quotes, comments per the `comment-style` memory).
 - [ ] Commented-out translator-credits block in `MainFrame.py`.
@@ -73,6 +71,10 @@ Companion docs: `reference/build-system-analysis.md`, `reference/delegation-brie
 
 Earlier work (app launches, dialogs migrated, sim/crash fixes) — see git history
 `a0c0edc`…`a078fb1`. Recent (this development cycle):
+
+- [x] **Property window widget reuse & leak fix** — optimized `PropertyWindow` (`ggate/Components/Windows/Properties.py`) to build its toolbar view, header bar, and banner once on initialization and reuse them, avoiding widget leaks. Also removed the redundant section header from Seven Segment LED properties.
+
+- [x] **Remove GTK3 leftovers & dead exporter stub** — deleted dead GTK3 leftover files `ggate/TimingDiagramWindow.py` and `ggate/DiagramArea.py`, and the dead exporter stub `ggate/Components/Managers/Exporter.py`.
 
 - [x] **Header bar migrated to Adw.HeaderBar** — replaced Gtk.HeaderBar with Adw.HeaderBar for standard Adwaita layout, positioning menu buttons and simulation controls on the right.
 - [x] **AlertDialogs duplicate response fixed** — refactored class to dynamically instantiate Adw.AlertDialog instead of subclassing it to avoid registering same response IDs multiple times.
