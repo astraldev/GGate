@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 #
 #  Copyright (C) Koichi Akabe 2012 <vbkaisetsu@gmail.com>
 #
@@ -19,16 +18,71 @@
 
 import gi
 import sys
+import os
+import subprocess
 
-gi.require_version("Gtk", '4.0')
-gi.require_version('PangoCairo', '1.0')
+gi.require_version("Gtk", "4.0")
+gi.require_version("PangoCairo", "1.0")
 gi.require_version("Adw", "1")
 
 from gi.repository import Gio
 from ggate.MainFrame import GLogicApplication
 from ggate import __version__
 
+
+def build_dev_resources():
+  import glob
+  base = os.path.dirname(os.path.abspath(__file__))
+  images_dir = os.path.join(base, "data", "images")
+  xml = os.path.join(images_dir, "dev-resources.xml")
+  target = os.path.join(base, "dev-resources.gresource")
+
+  comp_files = sorted(glob.glob(os.path.join(images_dir, "components", "*.svg")))
+  act_files = sorted(glob.glob(os.path.join(images_dir, "actions", "*.svg")))
+  theme_files = sorted(glob.glob(os.path.join(base, "data", "themes", "*.json")))
+
+  icon_lines = []
+  for f in comp_files:
+    rel = os.path.relpath(f, images_dir).replace("\\", "/")
+    icon_lines.append(f"    <file preprocess=\"xml-stripblanks\">{rel}</file>")
+  for f in act_files:
+    rel = os.path.relpath(f, images_dir).replace("\\", "/")
+    icon_lines.append(f"    <file preprocess=\"xml-stripblanks\">{rel}</file>")
+
+  theme_lines = []
+  for f in theme_files:
+    rel = os.path.relpath(f, images_dir).replace("\\", "/")
+    basename = os.path.basename(f)
+    theme_lines.append(f"    <file alias=\"{basename}\">{rel}</file>")
+
+  xml_content = (
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    "<gresources>\n"
+    "  <gresource prefix=\"/org/astralco/GGate/Dev/data/icons/scalable/actions/\">\n"
+    + "\n".join(icon_lines)
+    + "\n  </gresource>\n"
+    "  <gresource prefix=\"/org/astralco/GGate/Dev/themes/\">\n"
+    + "\n".join(theme_lines)
+    + "\n  </gresource>\n"
+    "</gresources>\n"
+  )
+
+  try:
+    with open(xml, "w", encoding="utf-8") as f:
+      f.write(xml_content)
+  except OSError:
+    pass
+
+  try:
+    subprocess.run(
+      ["glib-compile-resources", "--sourcedir", images_dir, "--target", target, xml],
+      check=True,
+    )
+  except (OSError, subprocess.CalledProcessError):
+    pass
+
 if __name__ == "__main__":
+  build_dev_resources()
   resource = Gio.Resource.load("./dev-resources.gresource")
   resource._register()
 
