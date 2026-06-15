@@ -1,0 +1,71 @@
+version
+ author=5.0.0
+ required=2.6.0
+
+osc
+ position=340,260
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=period:5.0,shift:0.0,duration:160.0,initstate:0
+
+tff
+ position=420,260
+ input_level=0
+ output_level=0,1
+ matrix=1,0,0,1
+ properties=trig:0,tphl:0.0,tplh:0.0
+
+tff
+ position=540,250
+ input_level=0
+ output_level=0,1
+ matrix=1,0,0,1
+ properties=trig:0,tphl:0.0,tplh:0.0
+
+tff
+ position=660,240
+ input_level=0
+ output_level=0,1
+ matrix=1,0,0,1
+ properties=trig:0,tphl:0.0,tplh:0.0
+
+probe
+ position=420,250
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:CLK
+
+probe
+ position=540,240
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:Q0
+
+probe
+ position=660,230
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:Q1
+
+probe
+ position=780,220
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:Q2
+
+net
+ position=410,240,430,240
+
+net
+ position=530,230,550,230
+
+net
+ position=650,220,670,220
+
+net
+ position=770,210,790,210

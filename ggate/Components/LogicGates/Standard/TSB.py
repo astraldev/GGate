@@ -25,9 +25,9 @@ class TSB(BaseComponent):
     self.active_high = True
 
     self.prop_names = ['active', 'inverted']
-    self.properties.append((_("Active :"), (definitions.property_select, _("Low"), _("High")), ""))
+    self.properties.append((_("Active:"), (definitions.property_select, _("Low"), _("High")), ""))
     self.values.append(1)
-    self.properties.append((_("Inverted :"), (definitions.property_select, _("True"), _("False")), ""))
+    self.properties.append((_("Inverted:"), (definitions.property_select, _("True"), _("False")), ""))
     self.values.append(1)
 
   def propertyChanged(self, prop):

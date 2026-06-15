@@ -1,11 +1,15 @@
 ./*.py
-**.glc
+*.glc
+!data/examples/*.glc
+.flatpak-builder/
 ./*.png
 **/__pycache__/
 m4/
 *.cache/
-.vscode/
-debian/
+# /debian is a transient CI copy of build-aux/debian; ignore it and deb build dirs
+/debian/
+obj-*/
+build-dir/
 *.egg-info/
 dist/
 build/
@@ -17,3 +21,6 @@ deb_dist/
 .DS_Store
 .ruff_cache
 .mypy_cache
+dev-*
+.agents/gtk4
+.claude/

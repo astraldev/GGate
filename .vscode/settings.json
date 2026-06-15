@@ -1,0 +1,5 @@
+{
+    "python.analysis.autoImportCompletions": true,
+    "svg.preview.backgroundCustom": "#eee",
+    "svg.preview.background": "custom"
+}

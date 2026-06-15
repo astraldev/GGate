@@ -1,0 +1,365 @@
+version
+ author=5.0.0
+ required=2.6.0
+
+sw
+ position=100,100
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:1
+
+sw
+ position=100,200
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+osc
+ position=100,300
+ input_level=
+ output_level=0
+ matrix=1,0,0,1
+ properties=period:2.0,shift:0.0,duration:200.0,initstate:0
+
+not
+ position=250,200
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+and
+ position=250,300
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
+
+xor
+ position=400,150
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
+
+or
+ position=550,150
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2,tphl:0.0,tplh:0.0
+
+counter
+ position=700,300
+ input_level=0,0
+ output_level=0,0,0,0
+ matrix=1,0,0,1
+ properties=n:16,bits:4,trig:0,tphl:0.0,tplh:0.0
+
+7seg
+ position=950,300
+ input_level=0,0,0,0
+ output_level=
+ matrix=1,0,0,1
+ properties=_red:2
+
+siso
+ position=700,450
+ input_level=0,0
+ output_level=0,1
+ matrix=1,0,0,1
+ properties=bits:4,trig:0,tphl:0.0,tplh:0.0
+
+led
+ position=950,440
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=_red:2
+
+dff
+ position=700,570
+ input_level=0,0
+ output_level=0,1
+ matrix=1,0,0,1
+ properties=trig:0,tphl:0.0,tplh:0.0
+
+led
+ position=950,560
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=_red:2
+
+jkff
+ position=700,700
+ input_level=0,0,0
+ output_level=0,1
+ matrix=1,0,0,1
+ properties=trig:0,tphl:0.0,tplh:0.0
+
+tff
+ position=700,800
+ input_level=0
+ output_level=0,1
+ matrix=1,0,0,1
+ properties=trig:0,tphl:0.0,tplh:0.0
+
+rsff
+ position=700,900
+ input_level=0,0
+ output_level=0,1
+ matrix=1,0,0,1
+ properties=tphl:0.0,tplh:0.0
+
+probe
+ position=950,80
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:CLK_0
+
+probe
+ position=950,140
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:ECLK_0
+
+probe
+ position=950,200
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:RST_0
+
+probe
+ position=950,350
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:CNT_Q0_0
+
+probe
+ position=950,700
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:JK_Q_0
+
+probe
+ position=950,800
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:T_Q_0
+
+probe
+ position=950,900
+ input_level=0
+ output_level=
+ matrix=1,0,0,1
+ properties=name:RS_Q_0
+
+net
+ position=170,280,200,280
+
+net
+ position=200,70,200,280
+
+net
+ position=200,280,200,290
+
+net
+ position=200,290,260,290
+
+net
+ position=200,70,960,70
+
+net
+ position=170,80,202,80
+
+net
+ position=202,80,202,270
+
+net
+ position=202,270,260,270
+
+net
+ position=170,180,210,180
+
+net
+ position=210,180,210,190
+
+net
+ position=210,190,210,690
+
+net
+ position=210,690,210,870
+
+net
+ position=210,180,260,180
+
+net
+ position=210,690,710,690
+
+net
+ position=210,870,710,870
+
+net
+ position=210,190,960,190
+
+net
+ position=340,180,370,180
+
+net
+ position=370,140,370,180
+
+net
+ position=370,180,370,270
+
+net
+ position=370,140,410,140
+
+net
+ position=370,270,710,270
+
+net
+ position=350,280,380,280
+
+net
+ position=380,120,380,130
+
+net
+ position=380,130,380,250
+
+net
+ position=380,250,380,280
+
+net
+ position=380,280,380,440
+
+net
+ position=380,440,380,560
+
+net
+ position=380,560,380,670
+
+net
+ position=380,670,380,780
+
+net
+ position=380,120,410,120
+
+net
+ position=380,120,560,120
+
+net
+ position=380,250,710,250
+
+net
+ position=380,440,710,440
+
+net
+ position=380,560,710,560
+
+net
+ position=380,670,710,670
+
+net
+ position=380,780,710,780
+
+net
+ position=380,130,960,130
+
+net
+ position=500,130,520,130
+
+net
+ position=520,130,520,140
+
+net
+ position=520,140,560,140
+
+net
+ position=650,130,670,130
+
+net
+ position=670,130,670,420
+
+net
+ position=670,420,670,540
+
+net
+ position=670,540,670,650
+
+net
+ position=670,650,670,890
+
+net
+ position=670,420,710,420
+
+net
+ position=670,540,710,540
+
+net
+ position=670,650,710,650
+
+net
+ position=670,890,710,890
+
+net
+ position=820,230,850,230
+
+net
+ position=850,230,850,340
+
+net
+ position=850,230,960,230
+
+net
+ position=850,340,960,340
+
+net
+ position=820,250,960,250
+
+net
+ position=820,270,960,270
+
+net
+ position=820,290,960,290
+
+net
+ position=820,420,960,420
+
+net
+ position=810,540,960,540
+
+net
+ position=810,650,860,650
+
+net
+ position=860,650,860,690
+
+net
+ position=860,690,960,690
+
+net
+ position=810,770,870,770
+
+net
+ position=870,770,870,790
+
+net
+ position=870,790,960,790
+
+net
+ position=800,870,880,870
+
+net
+ position=880,870,880,890
+
+net
+ position=880,890,960,890

@@ -1,6 +1,6 @@
 from ggate import Preference
 from ggate.Components.LogicGates.SystemComponents import BaseComponent
-from ggate.Utils import cairo_draw_text, cairo_paths, const
+from ggate.Utils import cairo_draw_text, cairo_paths
 from ggate.const import definitions as const
 
 
@@ -98,7 +98,7 @@ class NAND(BaseComponent):
     return False
 
   def calculate(self, input_datas, time):
-    new_output = not (input_datas[0] and input_datas[1]) if self.values[0] == 2 else not (input_datas[0] and input_datas[1] and input_datas[2])
+    new_output = not all(input_datas)
     if new_output != self.output_level[0]:
       if self.output_level[0]:
         self.output_stack = [[[time + self.tp_hl, new_output]]]

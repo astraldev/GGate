@@ -1,0 +1,10 @@
+option(
+  'profile',
+  type: 'combo',
+  choices: [
+    'release',
+    'development',
+  ],
+  value: 'development',
+  description: 'Build profile: development uses the .Dev app id and dev resources'
+)

@@ -7,17 +7,18 @@ authors = [
 ]
 license = {text = "GPL v3"}
 readme = "README.md"
-requires-python = ">= 3.9,<4.0"
+requires-python = ">= 3.10,<4.0"
 dependencies = [
     "pycairo (>=1.27.0,<2.0.0)",
     "pygobject (>=3.52.3,<4.0.0)",
-    "packaging (>=24.2,<25.0)",
-    "python-igraph (>=0.11.8,<0.12.0)",
-    "shapely (==2.0.7)",
+    "packaging (>=25.0)",
+    "python-igraph (>=0.11.9,<0.12.0)",
+    "shapely (>=2.1.1,<3.0.0)",
 ]
 
 [tool.ruff.lint]
 extend-select = ["W291"]
+ignore = ["E402"]
 
 [tool.poetry]
 
@@ -25,7 +26,13 @@ extend-select = ["W291"]
 pygobject-stubs = "^2.13.0"
 mypy = "^1.15.0"
 ruff = "^0.11.2"
+pytest = "^8.0.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["meson-python>=0.11.0"]
+build-backend = "mesonpy"
+

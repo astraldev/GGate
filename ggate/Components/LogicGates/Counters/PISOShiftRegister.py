@@ -1,6 +1,6 @@
 from ggate import Preference
 from ggate.Components.LogicGates.SystemComponents import BaseComponent
-from ggate.Utils import cairo_draw_text, cairo_paths, const, stack_with_tphl_lh
+from ggate.Utils import cairo_draw_text, cairo_paths, stack_with_tphl_lh
 from ggate.const import definitions as const
 
 
@@ -39,8 +39,8 @@ class PISOShiftRegister(BaseComponent):
     self.inpin_b = -60 + (prop[0] - 1) * 10
     self.comp_rect = [10, min((self.inpin_t - 50, -90)), 120, max((self.inpin_b + 30, -30))]
     self.input_pins = [(10, y) for y in range(self.inpin_t - 20, self.inpin_b + 21, 20)]
-    self.input_pins_dir = [const.direction_E for i in range(prop[0] + 2)]
-    self.input_level = [False for i in range(prop[0] + 2)]
+    self.input_pins_dir = [const.direction_E for _ in range(prop[0] + 2)]
+    self.input_level = [False for _ in range(prop[0] + 2)]
     self.tp_hl = prop[2] * 0.000001
     self.tp_lh = prop[3] * 0.000001
     return False
@@ -108,7 +108,7 @@ class PISOShiftRegister(BaseComponent):
     return False
 
   def initialize(self):
-    self.store = [False for i in range(self.values[0])]
+    self.store = [False for _ in range(self.values[0])]
     self.output_stack = [[[0.0, False]], [[0.0, True]]]
 
   def calculate(self, input_datas, time):

@@ -1,27 +1,31 @@
 # Installation Instructions
 
-## __Required Packages__ *optional
+## From source (development)
 
-  On Debian systems, you can install dependencies with the following command:
+Make sure the system dependencies are present: Python `>= 3.10`, GTK `>= 4.16`,
+libadwaita `>= 1.6.8`, and the Python packages `pygobject`, `pycairo`, `python-igraph`,
+`shapely`, `packaging`.
 
-  ```bash
-  sudo apt-get install python3-gi python3-gi-cairo libgtk-4-0
-  ```
+Then run, from the project root:
 
-## __Install__
+```bash
+python3 run.py
+```
 
-* Download the `.deb` package from release and install.
-* Clone the repo and install from source
+You can pass a `.glc` circuit file to open it on launch:
 
-  ```bash
-  git clone http://github.com/astraldev/GGate
-  cd GGate
-  sudo pip install .
-  ```
+```bash
+python3 run.py data/examples/oscillators.glc
+```
 
-Or install using __snap__
+## Flatpak
 
-> Coming soon
+*Coming soon*
 
-Or install using __flatpak__
-> Coming soon
+## Snap
+
+*Coming soon*
+
+## Deb
+
+*Coming soon*

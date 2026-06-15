@@ -1,6 +1,6 @@
 from ggate import Preference
 from ggate.Components.LogicGates.SystemComponents import BaseComponent
-from ggate.Utils import cairo_draw_text, cairo_paths, const
+from ggate.Utils import cairo_draw_text, cairo_paths
 from ggate.const import definitions as const
 
 
@@ -62,6 +62,7 @@ class SW(BaseComponent):
 
   def click(self, x, y, time):
     self.store[0] = not self.store[0]
+    self.values[0] = int(self.store[0])
     self.clicked_time = time
     return True
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
@@ -14,24 +13,45 @@ from ggate.MenuPopover import ContextMenu, RunningMenu
 from ggate.Utils import cairo_paths, inv_matrix, multiply_matrix, create_component_matrix, get_components_rect, draw_rounded_rectangle, clamp
 from ggate.Components.LogicGates import logic_gates
 from ggate import Preference
-from gi.repository import Gtk, Gdk, Pango, PangoCairo
+from gi.repository import Gtk, Gdk, Pango, PangoCairo, GLib
+from ggate.Animation import CanvasAnimationController
+from ggate.PlaybackControls import PlaybackControls
 
 
-class DrawArea(Gtk.ScrolledWindow):
+class DrawArea(Gtk.Overlay):
     def __init__(self, parent: MainFrame):
-        Gtk.ScrolledWindow.__init__(self)
+        Gtk.Overlay.__init__(self)
         self.set_hexpand(True)
         self.set_vexpand(True)
+
+        self.scroller = Gtk.ScrolledWindow()
+        self.scroller.set_hexpand(True)
+        self.scroller.set_vexpand(True)
+
         self.width = 1920
         self.height = 1080
-        self.vadj = self.get_vadjustment()
-        self.hadj = self.get_hadjustment()
+        self.zoom = 1.0
+        self.vadj = self.scroller.get_vadjustment()
+        self.hadj = self.scroller.get_hadjustment()
         self.netstarted = False
 
         self.drawingarea = Gtk.DrawingArea()
         self.drawingarea.set_size_request(self.width, self.height)
-        self.set_child(self.drawingarea)
+        self.scroller.set_child(self.drawingarea)
+        self.set_child(self.scroller)
         self.drawingarea.set_draw_func(self.on_draw)
+
+        self.playback_controls = PlaybackControls(parent)
+        self.add_overlay(self.playback_controls)
+
+        scroll_controller = Gtk.EventControllerScroll.new(Gtk.EventControllerScrollFlags.BOTH_AXES)
+        scroll_controller.connect("scroll", self.on_scroll)
+        self.drawingarea.add_controller(scroll_controller)
+
+        zoom_gesture = Gtk.GestureZoom()
+        zoom_gesture.connect("begin", self.on_zoom_begin)
+        zoom_gesture.connect("scale-changed", self.on_zoom_scale_changed)
+        self.drawingarea.add_controller(zoom_gesture)
 
         self.vadj.set_value(self.height / 2)
         self.hadj.set_value(self.width / 2)
@@ -110,16 +130,122 @@ class DrawArea(Gtk.ScrolledWindow):
         self.rect_select_enabled = False
         self.middle_move_enabled = False
         self.mouse_down = False
-        self.mbitmap = None
         self.circuit: CircuitManager = None
         self.redraw = True
         self.netstarted = False
-        self.mpixbuf = cairo.ImageSurface(cairo.FORMAT_RGB24, self.width, self.height)
         self._pasted_components = None
         self._pushed_component_name = const.component_none
         self._pushed_component = logic_gates[const.component_none]
+        self._last_pw = 0
+        self._last_ph = 0
+        self._initial_centering_done = False
+        self.hadj.connect("changed", self._on_adjustment_changed)
+        self.vadj.connect("changed", self._on_adjustment_changed)
+        self.glide_duration_ms = 150
+        self.animation_controller = CanvasAnimationController(self)
+        self.drag_initial_offsets = {}
+
+    def reset_initial_centering(self):
+        self._initial_centering_done = False
+
+    def _on_adjustment_changed(self, adj):
+        pw = self.hadj.get_page_size()
+        ph = self.vadj.get_page_size()
+        if pw > 0 and ph > 0:
+            if pw != self._last_pw or ph != self._last_ph:
+                self._last_pw = pw
+                self._last_ph = ph
+                if not self._initial_centering_done or Preference.autocenter_resize:
+                    self.center_viewport()
+
+    def center_viewport(self):
+        pw = self.hadj.get_page_size()
+        ph = self.vadj.get_page_size()
+        if pw <= 0 or ph <= 0:
+            return False
+        if self.circuit and self.circuit.components:
+            rect = get_components_rect(self.circuit.components)
+            c_x = ((rect[0] + rect[2]) / 2) * self.zoom
+            c_y = ((rect[1] + rect[3]) / 2) * self.zoom
+        else:
+            c_x = (self.width / 2) * self.zoom
+            c_y = (self.height / 2) * self.zoom
+        self.hadj.set_value(c_x - pw / 2)
+        self.vadj.set_value(c_y - ph / 2)
+        self._initial_centering_done = True
+        return False
+
+
+    def update_canvas_size(self):
+        min_width = 1920
+        min_height = 1080
+        margin = 300
+        if self.circuit and self.circuit.components:
+            rect = get_components_rect(self.circuit.components)
+            if rect:
+                req_width = max(min_width, int(rect[2] + margin))
+                req_height = max(min_height, int(rect[3] + margin))
+            else:
+                req_width = min_width
+                req_height = min_height
+        else:
+            req_width = min_width
+            req_height = min_height
+        req_width = min(req_width, 32767)
+        req_height = min(req_height, 32767)
+        if req_width != self.width or req_height != self.height:
+            self.width = req_width
+            self.height = req_height
+            self.drawingarea.set_size_request(int(self.width * self.zoom), int(self.height * self.zoom))
+
+    def on_scroll(self, controller, dx, dy):
+        state = controller.get_current_event_state()
+        if state & Gdk.ModifierType.CONTROL_MASK:
+            zoom_step = 1.1
+            if dy < 0:
+                new_zoom = self.zoom * zoom_step
+            elif dy > 0:
+                new_zoom = self.zoom / zoom_step
+            else:
+                return False
+            new_zoom = clamp(new_zoom, 0.5, 5.0)
+            if new_zoom != self.zoom:
+                old_zoom = self.zoom
+                cx = self.cursor_smooth_x
+                cy = self.cursor_smooth_y
+                self.zoom = new_zoom
+                self.drawingarea.set_size_request(int(self.width * self.zoom), int(self.height * self.zoom))
+                new_hadj = self.hadj.get_value() + cx * (new_zoom - old_zoom)
+                new_vadj = self.vadj.get_value() + cy * (new_zoom - old_zoom)
+                self.hadj.set_value(new_hadj)
+                self.vadj.set_value(new_vadj)
+                self.queue_draw()
+            return True
+        return False
+
+    def on_zoom_begin(self, gesture, sequence):
+        self.zoom_start_factor = self.zoom
+
+    def on_zoom_scale_changed(self, gesture, scale):
+        if not hasattr(self, "zoom_start_factor"):
+            self.zoom_start_factor = self.zoom
+        new_zoom = clamp(self.zoom_start_factor * scale, 0.5, 20.0)
+        if new_zoom != self.zoom:
+            success, gx, gy = gesture.get_bounding_box_center()
+            if success:
+                old_zoom = self.zoom
+                cx = gx / old_zoom
+                cy = gy / old_zoom
+                self.zoom = new_zoom
+                self.drawingarea.set_size_request(int(self.width * self.zoom), int(self.height * self.zoom))
+                new_hadj = self.hadj.get_value() + cx * (new_zoom - old_zoom)
+                new_vadj = self.vadj.get_value() + cy * (new_zoom - old_zoom)
+                self.hadj.set_value(new_hadj)
+                self.vadj.set_value(new_vadj)
+                self.queue_draw()
 
     def queue_draw(self, *args):
+        self.update_canvas_size()
         self.show()
         self.drawingarea.queue_draw()
         super().queue_draw(*args)
@@ -141,10 +267,33 @@ class DrawArea(Gtk.ScrolledWindow):
         elif action == 'flip_verti':
             self.parent.on_action_flip_vertically()
 
-        elif action == 'properties':
+        elif action == "properties":
             self.set_selected_component_to_prop_window()
-            self.parent.prop_window.present()
-    
+
+    def clear_animations(self):
+        self.animation_controller.clear()
+        self.drag_initial_offsets.clear()
+
+    def get_component_visual_offset(self, cmp) -> tuple[float, float]:
+        if self.parent.running_mode:
+            return 0.0, 0.0
+
+        if cmp[0] == const.component_net:
+            if self.component_dragged and cmp in self.circuit.selected_components:
+                dx = self.cursor_smooth_x - self.select_start_x - self.drag_delta_x
+                dy = self.cursor_smooth_y - self.select_start_y - self.drag_delta_y
+                return dx, dy
+            return 0.0, 0.0
+
+        comp_inst = cmp[1]
+        if self.component_dragged and cmp in self.circuit.selected_components:
+            init_x, init_y = self.drag_initial_offsets.get(comp_inst, (0.0, 0.0))
+            dx = init_x + (self.cursor_smooth_x - self.select_start_x - self.drag_delta_x)
+            dy = init_y + (self.cursor_smooth_y - self.select_start_y - self.drag_delta_y)
+            return dx, dy
+
+        return self.animation_controller.get_visual_offset(comp_inst)
+
     def draw_net(self, net, mcr: cairo.Context):
         """
         This method draws all states of the net.
@@ -164,14 +313,18 @@ class DrawArea(Gtk.ScrolledWindow):
         is_hovered = net == self.nearest_component and self.cursor_over \
             and self._pushed_component_name == const.component_none
 
+        offset_x, offset_y = self.get_component_visual_offset(net)
+        x1, y1 = net[1] + offset_x, net[2] + offset_y
+        x2, y2 = net[3] + offset_x, net[4] + offset_y
+
         # Get net level
         if self.parent.running_mode:
             # Draw net terminal
             mcr.set_source(Preference.terminal_color_running)
             if (net[1], net[2]) not in self.circuit.net_no_dot:
-                mcr.rectangle(net[1]-1.5, net[2]-1.5, 3, 3)
+                mcr.rectangle(x1-1.5, y1-1.5, 3, 3)
             elif (net[3], net[4]) not in self.circuit.net_no_dot:
-                mcr.rectangle(net[3]-1.5, net[4]-1.5, 3, 3)
+                mcr.rectangle(x2-1.5, y2-1.5, 3, 3)
             mcr.fill()
 
             # Get the color of the net
@@ -187,7 +340,7 @@ class DrawArea(Gtk.ScrolledWindow):
 
             # Draw net
             mcr.set_source(net_level_color)
-            cairo_paths(mcr, (net[1], net[2]), (net[3], net[4]))
+            cairo_paths(mcr, (x1, y1), (x2, y2))
             mcr.stroke()
 
         else:
@@ -199,13 +352,13 @@ class DrawArea(Gtk.ScrolledWindow):
                 mcr.set_source(Preference.net_high_color)
 
             # Draw net
-            cairo_paths(mcr, (net[1], net[2]), (net[3], net[4]))
+            cairo_paths(mcr, (x1, y1), (x2, y2))
             mcr.stroke()
 
             # Draw net terminal
             mcr.set_source(Preference.terminal_color)
-            mcr.rectangle(net[1]-1.5, net[2]-1.5, 3, 3)
-            mcr.rectangle(net[3]-1.5, net[4]-1.5, 3, 3)
+            mcr.rectangle(x1-1.5, y1-1.5, 3, 3)
+            mcr.rectangle(x2-1.5, y2-1.5, 3, 3)
 
         mcr.fill()
 
@@ -229,14 +382,16 @@ class DrawArea(Gtk.ScrolledWindow):
         else:
             mcr.set_source(Preference.terminal_color)
 
+        offset_x, offset_y = self.get_component_visual_offset(cmp)
+
         # Draw component terminal
         if not self.parent.running_mode:
             for p in cmp[1].rot_input_pins + cmp[1].rot_output_pins:
-                mcr.rectangle(cmp[1].pos_x+p[0]-1.5, cmp[1].pos_y+p[1]-1.5, 3, 3)
+                mcr.rectangle(cmp[1].pos_x + offset_x + p[0] - 1.5, cmp[1].pos_y + offset_y + p[1] - 1.5, 3, 3)
             mcr.fill()
 
         # Draw component
-        mcr.translate(cmp[1].pos_x, cmp[1].pos_y)
+        mcr.translate(cmp[1].pos_x + offset_x, cmp[1].pos_y + offset_y)
         cmp_matrix = create_component_matrix(cmp)
         mcr.set_matrix(cmp_matrix.multiply(mcr.get_matrix()))
 
@@ -320,31 +475,34 @@ class DrawArea(Gtk.ScrolledWindow):
         cr.set_matrix(matrix)
 
     def on_draw(self, widget, cr: cairo.Context, width, height, *args):
-        # Rerender whole screen
-        if self.redraw:
-            mcr = cairo.Context(self.mpixbuf)
-            if self.parent.running_mode:
-                mcr.set_source(Preference.bg_color_running)
-            else:
-                mcr.set_source(Preference.bg_color)
+        if self.parent.running_mode:
+            cr.set_source(Preference.bg_color_running)
+        else:
+            cr.set_source(Preference.bg_color)
+        cr.rectangle(0, 0, width, height)
+        cr.fill()
 
-            # Setup the background color
-            mcr.rectangle(0, 0, self.width, self.height)
-            mcr.fill()
+        cr.scale(self.zoom, self.zoom)
 
-            # Draw grids
-            if not self.parent.running_mode:
-                mcr.set_source(Preference.grid_color)
-                for x in range(0, self.width, self.grid_step):
-                    cairo_paths(mcr, (x, 0), (x, self.height))
-                for y in range(0, self.height, self.grid_step):
-                    cairo_paths(mcr, (0, y), (self.width, y))
-                mcr.stroke()
+        if not self.parent.running_mode:
+            cr.set_source(Preference.grid_color)
+            x1, y1, x2, y2 = cr.clip_extents()
+            if math.isfinite(x1) and math.isfinite(x2) and math.isfinite(y1) and math.isfinite(y2):
+                effective_step = self.grid_step
+                while (x2 - x1) / effective_step > 300 or (y2 - y1) / effective_step > 300:
+                    effective_step *= 2
 
-            self.redraw = False
+                start_x = int(x1 - (x1 % effective_step))
+                end_x = int(x2)
+                for x in range(start_x, end_x + effective_step, effective_step):
+                    cairo_paths(cr, (x, y1), (x, y2))
+                start_y = int(y1 - (y1 % effective_step))
+                end_y = int(y2)
+                for y in range(start_y, end_y + effective_step, effective_step):
+                    cairo_paths(cr, (x1, y), (x2, y))
+                cr.stroke()
 
-        cr.set_source_surface(self.mpixbuf, 0, 0)
-        cr.paint()
+        self.redraw = False
 
         cr.translate(0.5, 0.5)
         cr.set_line_width(1.0)
@@ -361,15 +519,15 @@ class DrawArea(Gtk.ScrolledWindow):
         """
         if self.rect_select_enabled:
             x, y = self.select_start_x - 0.5, self.select_start_y - 0.5
-            width = self.cursor_smooth_x - self.select_start_x
-            height = self.cursor_smooth_y - self.select_start_y
+            sel_w = self.cursor_smooth_x - self.select_start_x
+            sel_h = self.cursor_smooth_y - self.select_start_y
 
             cr.set_source(Preference.selection_box)
-            draw_rounded_rectangle(cr, x, y, width, height)
+            draw_rounded_rectangle(cr, x, y, sel_w, sel_h)
             cr.fill()
 
             cr.set_source(Preference.selection_box_border)
-            draw_rounded_rectangle(cr, x, y, width, height)
+            draw_rounded_rectangle(cr, x, y, sel_w, sel_h)
             cr.stroke()
 
         cr.set_source(source)
@@ -514,18 +672,19 @@ class DrawArea(Gtk.ScrolledWindow):
 
     def on_motion(self,  *args):
         """TODO: Optimize this"""
-        x_axis, y_axis = args[1], args[2]
+        x_axis, y_axis = args[1] / self.zoom, args[2] / self.zoom
 
         self.cursor_smooth_x = x_axis
         self.cursor_smooth_y = y_axis
 
         if self.middle_move_enabled:
-            delta_x = self.move_start_x - x_axis
-            delta_y = self.move_start_y - y_axis
-            if -1 < delta_x < 1 and -1 < delta_y < 1:
-                return
-            self.hadj.set_value(self.hadj.get_value() + delta_x)
-            self.vadj.set_value(self.vadj.get_value() + delta_y)
+            delta_x = self.move_start_x - args[1]
+            delta_y = self.move_start_y - args[2]
+            if not (-1 < delta_x < 1 and -1 < delta_y < 1):
+                self.hadj.set_value(self.hadj.get_value() + delta_x)
+                self.vadj.set_value(self.vadj.get_value() + delta_y)
+                self.move_start_x = args[1]
+                self.move_start_y = args[2]
 
         if self.parent.running_mode:
             return
@@ -637,7 +796,8 @@ class DrawArea(Gtk.ScrolledWindow):
                         self.redraw = True
 
                     self.component_dragged = True
-                    self.queue_draw()
+
+                self.queue_draw()
 
             else:
                 if self.rect_select_enabled:
@@ -664,10 +824,10 @@ class DrawArea(Gtk.ScrolledWindow):
 
     def on_button_press_primary(self, *args):
 
-        self.cursor_smooth_x = args[2]
-        self.cursor_smooth_y = args[3]
+        self.cursor_smooth_x = args[2] / self.zoom
+        self.cursor_smooth_y = args[3] / self.zoom
 
-        if args[1] == Gdk.BUTTON_PRIMARY:
+        if args[1] >= 1:
 
             if not self.parent.running_mode:
                 if self._pushed_component_name == const.component_none and not self._pasted_components:
@@ -689,7 +849,7 @@ class DrawArea(Gtk.ScrolledWindow):
                         else:
                             im = inv_matrix(c[1].matrix)
                             if c[1].isMouseOvered(im[0] * (self.cursor_smooth_x - c[1].pos_x) + im[1] * (self.cursor_smooth_y - c[1].pos_y) + c[1].pos_x,
-                                                  im[2] * (self.cursor_smooth_x - c[1].pos_x) + im[3] * (self.cursor_smooth_y - c[1].pos_y) + c[1].pos_y):
+                                                   im[2] * (self.cursor_smooth_x - c[1].pos_x) + im[3] * (self.cursor_smooth_y - c[1].pos_y) + c[1].pos_y):
                                 if c in self.circuit.selected_components:
                                     self.drag_delta_x = 0
                                     self.drag_delta_y = 0
@@ -704,6 +864,13 @@ class DrawArea(Gtk.ScrolledWindow):
 
                     if self.drag_enabled:
                         self.comps_rect = get_components_rect(self.circuit.selected_components)
+                        self.drag_initial_offsets = {}
+                        for c in self.circuit.selected_components:
+                            if c[0] != const.component_net:
+                                comp_inst = c[1]
+                                init_offset = self.animation_controller.get_visual_offset(comp_inst)
+                                self.drag_initial_offsets[comp_inst] = init_offset
+                                self.animation_controller.cancel_animation(comp_inst)
 
                 else:
                     self.preadd = True
@@ -720,10 +887,9 @@ class DrawArea(Gtk.ScrolledWindow):
             self.mouse_down = True
 
     def on_button_press_middle(self, *args):
-        if args[2] == Gdk.BUTTON_MIDDLE:
-            self.middle_move_enabled = True
-            self.move_start_x = self.cursor_smooth_x
-            self.move_start_y = self.cursor_smooth_y
+        self.middle_move_enabled = True
+        self.move_start_x = args[2]
+        self.move_start_y = args[3]
 
     def refresh_nets(self):
         tmp_components = self.circuit.components[:]
@@ -745,12 +911,21 @@ class DrawArea(Gtk.ScrolledWindow):
     # Left Click
     def on_button_release_primary(self, *args):
         state = args[0].get_current_event_state()
-        if args[1] == Gdk.BUTTON_PRIMARY:  # Left button released
+        if args[1] >= 1:  # Left button released
 
             if not self.parent.running_mode:
                 self.drag_enabled = False
                 if self.component_dragged:
                     self.component_dragged = False
+                    for c in self.circuit.selected_components:
+                        if c[0] != const.component_net:
+                            comp_inst = c[1]
+                            init_x, init_y = self.drag_initial_offsets.get(comp_inst, (0.0, 0.0))
+                            dx = init_x + (self.cursor_smooth_x - self.select_start_x - self.drag_delta_x)
+                            dy = init_y + (self.cursor_smooth_y - self.select_start_y - self.drag_delta_y)
+                            self.animation_controller.start_offset_animation(comp_inst, (dx, dy), self.glide_duration_ms)
+                    self.drag_initial_offsets.clear()
+
                     tmp_components = self.circuit.components[:]
                     for c in tmp_components:
                         if c[0] == const.component_net:
@@ -843,7 +1018,8 @@ class DrawArea(Gtk.ScrolledWindow):
                     if not selected and not state & Gdk.ModifierType.CONTROL_MASK:
                         self.circuit.selected_components = []
                         
-                    self.set_selected_component_to_prop_window()
+                    if args[1] == 2:
+                        self.set_selected_component_to_prop_window()
                     
                     if len(self.circuit.selected_components) == 0:
                         self.parent.disable_edit_actions()
@@ -952,7 +1128,7 @@ class DrawArea(Gtk.ScrolledWindow):
                             self.cursor_x - self._paste_center_x
                         bottom = self._pasted_rect[3] + \
                             self.cursor_y - self._paste_center_y
-                        if left >= 0 and top >= 0 and right <= 1980 and bottom <= 1080:
+                        if left >= 0 and top >= 0 and right <= self.width and bottom <= self.height:
                             for cadd in self._pasted_components:
                                 if cadd[0] == const.component_net:
                                     cadd[1] += self.cursor_x - \
@@ -1004,7 +1180,7 @@ class DrawArea(Gtk.ScrolledWindow):
                             component_data[1].pos_x = self.cursor_x
                             component_data[1].pos_y = self.cursor_y
 
-                            if 0 <= component_data[1].pos_x + component_data[1].rot_comp_rect[0] + 3 and 0 <= component_data[1].pos_y + component_data[1].rot_comp_rect[1] + 3 and component_data[1].pos_x + component_data[1].rot_comp_rect[2] - 3 <= 1920 and component_data[1].pos_y + component_data[1].rot_comp_rect[3] - 3 <= 1080:
+                            if 0 <= component_data[1].pos_x + component_data[1].rot_comp_rect[0] + 3 and 0 <= component_data[1].pos_y + component_data[1].rot_comp_rect[1] + 3 and component_data[1].pos_x + component_data[1].rot_comp_rect[2] - 3 <= self.width and component_data[1].pos_y + component_data[1].rot_comp_rect[3] - 3 <= self.height:
                                 for p in component_data[1].rot_input_pins + component_data[1].rot_output_pins:
                                     self.circuit.split_nets(
                                         p[0] + self.cursor_x, p[1] + self.cursor_y)
@@ -1028,8 +1204,7 @@ class DrawArea(Gtk.ScrolledWindow):
                                          im[2] * (self.cursor_smooth_x - c[1].pos_x) + im[3] * (
                                              self.cursor_smooth_y - c[1].pos_y) + c[1].pos_y,
                                          self.circuit.current_time):
-                            if not self.parent.pause_running_mode and not self.circuit.analyze_logic():
-                                self.parent.diagram_window.diagram_area.createDiagram()
+                            self.parent.recompute_simulation()
                             self.queue_draw()
                             break
 
@@ -1063,12 +1238,12 @@ class DrawArea(Gtk.ScrolledWindow):
     def set_selected_component_to_prop_window(self):
         if len(self.circuit.selected_components) == 1:
             if self.circuit.selected_components[0][0] != const.component_net:
-                self.parent.prop_window.set_component(
-                    self.circuit.selected_components[0][1])
+                self.parent.prop_window.show_properties(
+                    self.circuit.selected_components[0][1], self.parent)
             else:
-                self.parent.prop_window.set_component(None)
+                self.parent.prop_window.show_properties(None)
         else:
-            self.parent.prop_window.set_component(None)
+            self.parent.prop_window.show_properties(None)
 
     def set_component(self, comp_name):
         self._pasted_components = None

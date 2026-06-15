@@ -1,6 +1,6 @@
 from ggate import Preference
 from ggate.Components.LogicGates.SystemComponents import BaseComponent
-from ggate.Utils import cairo_draw_text, cairo_paths, const, stack_with_tphl_lh
+from ggate.Utils import cairo_draw_text, cairo_paths, stack_with_tphl_lh
 from ggate.const import definitions as const
 
 
@@ -97,7 +97,7 @@ class SISOShiftRegister(BaseComponent):
 
   def initialize(self):
     self.store[0] = 0
-    self.stack = [False for i in range(self.values[0])]
+    self.stack = [False for _ in range(self.values[0])]
     self.output_stack = [[[0.0, False]], [[0.0, True]]]
 
   def calculate(self, input_datas, time):

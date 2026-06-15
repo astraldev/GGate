@@ -1,0 +1,55 @@
+name: Build Pipeline
+
+on:
+  push:
+    branches: [ "main", "v5(development)" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main", "v5(development)" ]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write
+
+jobs:
+  dist:
+    runs-on: ubuntu-latest
+    container: fedora:41
+    steps:
+      - name: Install dependencies
+        run: >
+          dnf install -y
+          git meson ninja-build glib2-devel
+          gtk4-devel libadwaita-devel
+          python3-gobject-devel python3-devel desktop-file-utils
+          python3-gobject python3-cairo
+          python3-igraph python3-shapely python3-packaging
+
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Mark workspace safe for git
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Configure
+        run: meson setup build
+
+      - name: Compile
+        run: meson compile -C build
+
+      - name: Build source tarball
+        run: meson dist -C build --no-tests --formats gztar
+
+      - name: Upload tarball artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ggate-source-tarball
+          path: build/meson-dist/*.tar.gz
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v3
+        with:
+          files: build/meson-dist/*.tar.gz

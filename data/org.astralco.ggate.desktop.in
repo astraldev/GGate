@@ -1,0 +1,10 @@
+[Desktop Entry]
+Comment=Logic circuit simulator for linux
+Exec=ggate %F
+Name=GGate
+Terminal=false
+Type=Application
+Icon=@APP_ID@
+Categories=Science;Education;Utility;
+StartupNotify=true
+MimeType=text/glc;

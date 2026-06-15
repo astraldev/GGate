@@ -1,5 +1,5 @@
 from ggate import Preference
-from ggate.Components.LogicGates.SystemComponents import BaseComponent
+from ggate.Components.LogicGates.SystemComponents import BaseComponent, PropertyError
 from ggate.Utils import cairo_draw_text, cairo_paths
 from ggate.const import definitions
 from gi.repository import Pango
@@ -25,16 +25,14 @@ class Probe(BaseComponent):
     self.width = 12
 
   def propertyChanged(self, prop):
-    if prop[0] == "":
-      return True
-    return False
+    return PropertyError("Name cannot be empty.", [0]) if prop[0] == "" else False
 
   def drawComponent(self, cr, layout):
     cr.arc(40, -10, 10, 0, 2 * math.pi)
     cr.stroke()
     cairo_draw_text(cr, layout, "V", 40, -10, 0.5, 0.5)
     cairo_draw_text(cr, layout, self.values[0], 55, -10, 0.0, 0.5)
-    (w, h) = layout.get_size()
+    (w, _) = layout.get_size()
     self.width = w / Pango.SCALE
     if self.width < 12:
       self.width = 12

@@ -1,0 +1,508 @@
+version
+ author=5.0.0
+ required=2.6.0
+
+meta
+ zoom=0.9424371608722886
+
+sw
+ position=410.0,750.0
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=initstate:0
+
+sw
+ position=410.0,700.0
+ input_level=0
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:1
+
+sw
+ position=410.0,650.0
+ input_level=0
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:1
+
+sw
+ position=410.0,600.0
+ input_level=0
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+7seg
+ position=430.0,300.0
+ input_level=0,0,0,1
+ output_level=0
+ matrix=1,0,0,1
+ properties=_red:2
+
+7seg
+ position=560.0,300.0
+ input_level=0,0,0,1
+ output_level=0
+ matrix=1,0,0,1
+ properties=_red:1
+
+7seg
+ position=990.0,300.0
+ input_level=0,0,1,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=_red:0
+
+sw
+ position=540.0,600.0
+ input_level=0
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+sw
+ position=540.0,650.0
+ input_level=0
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:1
+
+sw
+ position=540.0,700.0
+ input_level=0
+ output_level=0
+ matrix=1,0,0,1
+ properties=initstate:0
+
+sw
+ position=540.0,750.0
+ input_level=0
+ output_level=1
+ matrix=1,0,0,1
+ properties=initstate:1
+
+and
+ position=780.0,420.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=780.0,470.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=780.0,550.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=780.0,600.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+xor
+ position=680.0,460.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+xor
+ position=680.0,590.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+xor
+ position=780.0,370.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+xor
+ position=870.0,380.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+xor
+ position=870.0,510.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+xor
+ position=870.0,640.0
+ input_level=0,0
+ output_level=1
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+xor
+ position=870.0,750.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+and
+ position=870.0,700.0
+ input_level=0,0
+ output_level=1
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+or
+ position=870.0,590.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+or
+ position=870.0,460.0
+ input_level=0,0
+ output_level=0
+ matrix=1,0,0,1
+ properties=inputs:2.0,tphl:0.0,tplh:0.0
+
+text
+ position=410.0,550.0
+ input_level=0
+ output_level=0
+ matrix=1,0,0,1
+ properties=text:IN1
+
+text
+ position=540.0,550.0
+ input_level=0
+ output_level=0
+ matrix=1,0,0,1
+ properties=text:IN2
+
+text
+ position=1010.0,320.0
+ input_level=0
+ output_level=0
+ matrix=1,0,0,1
+ properties=text:OUT \e IN1 + IN2
+
+net
+ position=880.0,610.0,780.0,610.0
+
+net
+ position=790.0,570.0,780.0,570.0
+
+net
+ position=780.0,610.0,780.0,570.0
+
+net
+ position=880.0,560.0,880.0,530.0
+
+net
+ position=880.0,430.0,880.0,400.0
+
+net
+ position=880.0,480.0,780.0,480.0
+
+net
+ position=780.0,480.0,780.0,440.0
+
+net
+ position=790.0,440.0,780.0,440.0
+
+net
+ position=970.0,680.0,970.0,650.0
+
+net
+ position=790.0,590.0,790.0,630.0
+
+net
+ position=970.0,650.0,880.0,650.0
+
+net
+ position=790.0,630.0,880.0,630.0
+
+net
+ position=880.0,650.0,880.0,630.0
+
+net
+ position=970.0,570.0,970.0,520.0
+
+net
+ position=790.0,460.0,790.0,500.0
+
+net
+ position=970.0,520.0,880.0,520.0
+
+net
+ position=790.0,500.0,880.0,500.0
+
+net
+ position=880.0,520.0,880.0,500.0
+
+net
+ position=970.0,440.0,970.0,390.0
+
+net
+ position=970.0,390.0,880.0,390.0
+
+net
+ position=880.0,390.0,880.0,370.0
+
+net
+ position=440.0,250.0,420.0,250.0
+
+net
+ position=790.0,410.0,690.0,410.0
+
+net
+ position=420.0,250.0,420.0,380.0
+
+net
+ position=690.0,410.0,690.0,430.0
+
+net
+ position=420.0,380.0,490.0,380.0
+
+net
+ position=690.0,430.0,490.0,430.0
+
+net
+ position=490.0,380.0,490.0,430.0
+
+net
+ position=480.0,630.0,490.0,630.0
+
+net
+ position=490.0,430.0,490.0,630.0
+
+net
+ position=570.0,290.0,570.0,340.0
+
+net
+ position=880.0,720.0,880.0,690.0
+
+net
+ position=570.0,340.0,640.0,340.0
+
+net
+ position=880.0,690.0,640.0,690.0
+
+net
+ position=640.0,340.0,640.0,690.0
+
+net
+ position=610.0,730.0,640.0,730.0
+
+net
+ position=640.0,690.0,640.0,730.0
+
+net
+ position=1000.0,230.0,970.0,230.0
+
+net
+ position=970.0,230.0,970.0,360.0
+
+net
+ position=1000.0,250.0,980.0,250.0
+
+net
+ position=980.0,250.0,980.0,490.0
+
+net
+ position=980.0,490.0,970.0,490.0
+
+net
+ position=1000.0,270.0,990.0,270.0
+
+net
+ position=990.0,270.0,990.0,620.0
+
+net
+ position=990.0,620.0,970.0,620.0
+
+net
+ position=1000.0,290.0,1000.0,730.0
+
+net
+ position=1000.0,730.0,970.0,730.0
+
+net
+ position=440.0,270.0,430.0,270.0
+
+net
+ position=690.0,580.0,680.0,580.0
+
+net
+ position=430.0,270.0,430.0,360.0
+
+net
+ position=790.0,520.0,680.0,520.0
+
+net
+ position=680.0,580.0,680.0,520.0
+
+net
+ position=430.0,360.0,500.0,360.0
+
+net
+ position=680.0,520.0,500.0,520.0
+
+net
+ position=500.0,360.0,500.0,520.0
+
+net
+ position=480.0,680.0,500.0,680.0
+
+net
+ position=500.0,520.0,500.0,680.0
+
+net
+ position=440.0,290.0,440.0,340.0
+
+net
+ position=880.0,740.0,870.0,740.0
+
+net
+ position=440.0,340.0,510.0,340.0
+
+net
+ position=480.0,730.0,510.0,730.0
+
+net
+ position=870.0,740.0,870.0,670.0
+
+net
+ position=880.0,670.0,870.0,670.0
+
+net
+ position=510.0,340.0,510.0,550.0
+
+net
+ position=510.0,730.0,510.0,550.0
+
+net
+ position=870.0,670.0,660.0,670.0
+
+net
+ position=510.0,550.0,660.0,550.0
+
+net
+ position=660.0,670.0,660.0,550.0
+
+net
+ position=570.0,270.0,560.0,270.0
+
+net
+ position=560.0,270.0,560.0,360.0
+
+net
+ position=790.0,540.0,690.0,540.0
+
+net
+ position=690.0,560.0,690.0,540.0
+
+net
+ position=560.0,360.0,630.0,360.0
+
+net
+ position=690.0,540.0,630.0,540.0
+
+net
+ position=630.0,360.0,630.0,540.0
+
+net
+ position=610.0,680.0,630.0,680.0
+
+net
+ position=630.0,540.0,630.0,680.0
+
+net
+ position=570.0,250.0,550.0,250.0
+
+net
+ position=550.0,250.0,550.0,380.0
+
+net
+ position=550.0,380.0,620.0,380.0
+
+net
+ position=610.0,630.0,620.0,630.0
+
+net
+ position=620.0,380.0,620.0,450.0
+
+net
+ position=620.0,630.0,620.0,450.0
+
+net
+ position=790.0,390.0,680.0,390.0
+
+net
+ position=690.0,450.0,680.0,450.0
+
+net
+ position=620.0,450.0,680.0,450.0
+
+net
+ position=680.0,390.0,680.0,450.0
+
+net
+ position=570.0,230.0,540.0,230.0
+
+net
+ position=540.0,230.0,540.0,400.0
+
+net
+ position=540.0,400.0,610.0,400.0
+
+net
+ position=610.0,580.0,610.0,400.0
+
+net
+ position=610.0,400.0,660.0,400.0
+
+net
+ position=790.0,340.0,660.0,340.0
+
+net
+ position=660.0,400.0,660.0,340.0
+
+net
+ position=440.0,230.0,410.0,230.0
+
+net
+ position=410.0,230.0,410.0,400.0
+
+net
+ position=410.0,400.0,480.0,400.0
+
+net
+ position=480.0,400.0,480.0,410.0
+
+net
+ position=480.0,580.0,480.0,410.0
+
+net
+ position=790.0,360.0,670.0,360.0
+
+net
+ position=480.0,410.0,670.0,410.0
+
+net
+ position=670.0,360.0,670.0,410.0

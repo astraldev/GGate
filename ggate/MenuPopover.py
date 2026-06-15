@@ -1,11 +1,7 @@
-import os
-from gi.repository import Gtk, Gdk
-from ggate.config import DATADIR
+from gi.repository import Gtk, Gdk, GLib
+from ggate import config
 
-def _get_icon_path(icon: str):
-    return os.path.join(DATADIR, "images", "actions", f"{icon}.svg")
-
-menu_xml = f"""
+menu_xml = """
 <interface>
   <menu id="model">
     <section>
@@ -13,22 +9,22 @@ menu_xml = f"""
         <item>
           <attribute name="label" translatable="yes">Flip Horizontally</attribute>
           <attribute name="action">menu.flip_hori</attribute>
-          <attribute name="verb-icon">{_get_icon_path("flip-horizontal")}</attribute>
+          <attribute name="verb-icon">flip-horizontal-symbolic</attribute>
         </item>
         <item>
           <attribute name="label" translatable="yes">Flip Vertically</attribute>
           <attribute name="action">menu.flip_verti</attribute>
-          <attribute name="verb-icon">{_get_icon_path("flip-vertical")}</attribute>
+          <attribute name="verb-icon">flip-vertical-symbolic</attribute>
         </item>
         <item>
           <attribute name="label" translatable="yes">Rotate Left</attribute>
           <attribute name="action">menu.rot_left</attribute>
-          <attribute name="verb-icon">{_get_icon_path("rotate-left")}</attribute>
+          <attribute name="verb-icon">rotate-left-symbolic</attribute>
         </item>
         <item>
           <attribute name="label" translatable="yes">Rotate right</attribute>
           <attribute name="action">menu.rot_right</attribute>
-          <attribute name="verb-icon">{_get_icon_path("rotate-right")}</attribute>
+          <attribute name="verb-icon">rotate-right-symbolic</attribute>
         </item>
     </section>
     <section>
@@ -96,19 +92,25 @@ class ContextMenu(Gtk.PopoverMenu):
     def _get_window(self) -> Gtk.ApplicationWindow:
         return self.get_parent().parent
     
-    def _handle_clipboard(self, clipboard, task, *args):
+    def _handle_clipboard(self, clipboard: Gdk.Clipboard, task, *args):
         window = self._get_window()
-        str_data = window.get_clipboard().read_text_finish(task)
+        try:
+            str_data = clipboard.read_text_finish(task)
+        except GLib.GError:
+            str_data = None
         if str_data is not None:
             components = self._parent.circuit.converter.string_to_components(str_data)
             has_clipboard = not isinstance(components, str) and len(components) > 0
             window.action_set_enabled("app.on_action_paste_pressed", has_clipboard)
+        else:
+            window.action_set_enabled("app.on_action_paste_pressed", False)
 
     def calculate(self, x, y):
         parent = self.get_parent()
-        point_x = x - parent.get_hadjustment().get_value()
-        point_y = y - parent.get_vadjustment().get_value()
-        return point_x, point_y
+        coords = parent.drawingarea.translate_coordinates(parent, x, y)
+        if coords is not None:
+            return coords[0], coords[1]
+        return x, y
 
     def present(self, x, y, *args):
         rectangle = Gdk.Rectangle()
@@ -142,9 +144,10 @@ class RunningMenu(Gtk.PopoverMenu):
 
     def calculate(self, x, y):
         parent = self.get_parent()
-        point_x = x - parent.get_hadjustment().get_value()
-        point_y = y - parent.get_vadjustment().get_value()
-        return point_x, point_y
+        coords = parent.drawingarea.translate_coordinates(parent, x, y)
+        if coords is not None:
+            return coords[0], coords[1]
+        return x, y
 
     def present(self, x, y):
         rectangle = Gdk.Rectangle()

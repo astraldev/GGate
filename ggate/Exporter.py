@@ -1,4 +1,3 @@
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
 import cairo
 import os
@@ -124,7 +123,7 @@ def _save_schematics_as_image_response(settingsdialog, response, content):
 
   settingsdialog.close()
 
-  settingsdialog.parent.statusbar.push(0, "Image schematics saved..")
+  settingsdialog.parent.statusbar.update(_("Image schematics saved.."))
 
 def save_timing_diagram_as_image(diagram_area, parent):
 
@@ -178,7 +177,7 @@ def _save_timing_diagram_as_image_response(settingsdialog, response, content):
     surface.finish()
 
   settingsdialog.close()
-  settingsdialog.parent.statusbar.push(0, "Timing diagram saved..")
+  settingsdialog.parent.statusbar.update(_("Timing diagram saved.."))
 
 def draw_schematics_for_file(cr, circuit, withlevels):
 
@@ -188,7 +187,7 @@ def draw_schematics_for_file(cr, circuit, withlevels):
   layout = PangoCairo.create_layout(cr)
   layout.set_font_description(Preference.drawing_font)
 
-  circuit.analyze_connections()
+  circuit.analyze_net_connections()
   if withlevels:
     circuit.set_netlevels()
 

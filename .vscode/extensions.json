@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "jock.svg",
+        "mesonbuild.mesonbuild",
+        "mrmomo.meson-build",
+        "charliermarsh.ruff",
+        "github.vscode-github-actions"
+    ]
+}

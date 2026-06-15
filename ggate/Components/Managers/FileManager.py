@@ -100,6 +100,7 @@ class FileManager(Gtk.FileDialog):
 
     return fm
   
+  @classmethod
   def for_schematics(cls, mainframe: MainFrame):
     # TODO: Implement schematics
     pass

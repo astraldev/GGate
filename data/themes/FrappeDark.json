@@ -1,0 +1,29 @@
+{
+  "name": "Frappé (Dark)",
+  "accent_hex": "#ca9ee6",
+  "colors": {
+    "bg_color": "#303446",
+    "bg_color_running": "#292c3c",
+    "grid_color": "#414559",
+    "cursor_color": "#babbf1",
+    "component_color": "#8caaee",
+    "component_high_color": "#85c1dc",
+    "component_color_running": "#c6d0f5",
+    "picked_color": "#ef9f76",
+    "preadd_color": "#eebebe",
+    "selected_color": "#ca9ee6",
+    "net_color": "#838ba7",
+    "net_high_color": "#99d1db",
+    "net_color_running": "#737994",
+    "highlevel_color": "#a6d189",
+    "lowlevel_color": "#8caaee",
+    "terminal_color": "#e78284",
+    "terminal_color_running": "#232634",
+    "selection_box": "#ca9ee633",
+    "selection_box_border": "#ca9ee6",
+    "_red": "#e78284",
+    "_green": "#a6d189",
+    "_blue": "#8caaee",
+    "_yellow": "#e5c890"
+  }
+}

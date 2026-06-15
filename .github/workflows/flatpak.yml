@@ -1,0 +1,27 @@
+name: Flatpak Build
+
+on:
+  release:
+    types: [published]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  flatpak-builder:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+      options: --privileged
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      
+      - name: Set up Flatpak environment
+        run: |
+          flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+          flatpak install -y flathub org.gnome.Platform//48 org.gnome.Sdk//48
+      
+      - name: Build Flatpak
+        run: |
+          flatpak-builder --disable-rofiles-fuse --repo=repo --force-clean build-dir build-aux/flatpak/org.astralco.ggate.json

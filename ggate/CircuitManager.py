@@ -1,4 +1,3 @@
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 from __future__ import annotations
 from collections import Counter
 from typing import TYPE_CHECKING, Tuple
@@ -6,21 +5,29 @@ from typing import TYPE_CHECKING, Tuple
 if TYPE_CHECKING:
   from ggate.MainFrame import MainFrame
 
-import igraph
-import copy
 import os
+import re
+import copy
+import time
+import igraph
 from gi.repository import GObject
 from shapely.geometry import LineString, Point
-from shapely.ops import split
+from ggate.CircuitPlaybackAnimation import CircuitPlaybackAnimation
 from ggate.Components.LogicGates.SystemComponents import BaseComponent
 from ggate.Components.LogicGates import logic_gates
 from ggate.const import definitions
-from ggate import Preference
-from ggate.Utils import encode_text, decode_text, fit_components, get_components_rect, get_duplicate_points, multiply_matrix, rotate_left_90, rotate_right_90
-from gettext import gettext as _
 from ggate import config
+from ggate import Preference
+from ggate.Utils import encode_text, decode_text, fit_components, get_components_rect, multiply_matrix, rotate_left_90, rotate_right_90, logger
+from gettext import gettext as _
 
 CircuitComponent = Tuple[definitions, BaseComponent]
+
+# warn if a simulation run takes longer than this (seconds)
+_SLOW_SIM_SECONDS = 15
+# max time each compute idle-tick may run before yielding to keep the UI responsive
+_COMPUTE_SLICE_SECONDS = 0.008
+
 
 class CircuitConverter():
   def __init__(self, circuit: CircuitManager):
@@ -34,6 +41,11 @@ class CircuitConverter():
       ("required", [config.compatibility["required"]]),
     ])
 
+    zoom = self.circuit.mainframe.drawarea.zoom
+    self._add_data("meta", [
+      ("zoom", [zoom]),
+    ])
+
   def _add_data(self, key: str, attributes: list[tuple[str, list[str]]]) -> None:
     self.data += f"{key}"
 
@@ -45,26 +57,29 @@ class CircuitConverter():
     
     self.data += "\n\n"
 
-  def components_to_string(self):
+  def components_to_string(self, components=None):
+    self.data = ""
     self._start_write()
-    for c in self.circuit.components:
+    target_components = components if components is not None else self.circuit.components
+    for c in target_components:
       if c[0] == definitions.component_net:
         self._add_data("net", [
-          ("position", [c[1], c[2], c[3], c[4]]),
+          ("position", [int(round(float(x))) for x in c[1:5]]),
         ])
       else:
+        formatted_props = []
+        for i, p in enumerate(c[1].values):
+          val_str = str(p)
+          if isinstance(p, float) and p.is_integer():
+            val_str = str(int(p))
+          formatted_props.append(f"{c[1].prop_names[i]}:{encode_text(val_str)}")
+
         self._add_data(c[0], [
-          ("position", [c[1].pos_x, c[1].pos_y]),
+          ("position", [int(round(float(x))) for x in (c[1].pos_x, c[1].pos_y)]),
           ("input_level", [str(int(p)) for p in c[1].input_level]),
           ("output_level", [str(int(p)) for p in c[1].output_level]),
           ("matrix", [str(int(p)) for p in c[1].matrix]),
-          (
-            "properties",
-            [
-              f"{c[1].prop_names[i]}:{encode_text(str(p))}" \
-                for i, p in enumerate(c[1].values)
-            ]
-          ),
+          ("properties", formatted_props),
         ])
     self.data = self.data.strip()
     return self.data
@@ -87,7 +102,7 @@ class CircuitConverter():
     content = self._parse_section_content(lines[1:])
     
     if which == "net":
-      content["position"] = [int(x) for x in content["position"]]
+      content["position"] = [int(float(x)) for x in content["position"]]
       if len(content["position"]) != 4:
         content["position"] = [0, 10, 10, 10]
 
@@ -96,8 +111,8 @@ class CircuitConverter():
     elif which in logic_gates:
       component: CircuitComponent = [which, copy.deepcopy(logic_gates[which])]
       if (position := content.get("position", None)) and len(position) == 2:
-        component[1].pos_x = int(position[0])
-        component[1].pos_y = int(position[1])
+        component[1].pos_x = int(float(position[0]))
+        component[1].pos_y = int(float(position[1]))
 
       if (input_level := content.get("input_level", None)):
         component[1].input_level = [
@@ -121,20 +136,32 @@ class CircuitConverter():
 
           name, value = property.split(":")
           value = decode_text(value)
-          if name in component[1].prop_names:
-            index = component[1].prop_names.index(name)
+          if name not in component[1].prop_names:
+            continue
 
-            if component[1].properties[index][1] == definitions.property_int:
-              component[1].values[index] = int(value)
+          index = component[1].prop_names.index(name)
+          real_props = [p for p in component[1].properties if p[1] is not None]
+          if index >= len(real_props):
+            component[1].values[index] = value
+            continue
 
-            elif component[1].properties[index][1] == definitions.property_float:
-              component[1].values[index] = float(value)
-      
-            elif component[1].properties[index][1] == definitions.property_select:
-              component[1].values[index] = int(value)
+          prop_type = real_props[index][1]
+          if isinstance(prop_type, tuple):
+            prop_type = prop_type[0]
 
-            else:
-              component[1].values[index] = value
+          if prop_type == definitions.property_int:
+            component[1].values[index] = int(float(value))
+          elif prop_type == definitions.property_float:
+            component[1].values[index] = float(value)
+          elif prop_type == definitions.property_select:
+            component[1].values[index] = int(float(value))
+          elif prop_type == definitions.property_bool:
+            component[1].values[index] = bool(value) or value == "1"
+          else:
+            component[1].values[index] = value
+
+      component[1].propertyChanged(component[1].values)
+      component[1].set_rot_props()
 
       return component
 
@@ -152,12 +179,23 @@ class CircuitConverter():
           % { "creator": authored_version, "this": current_version, "minimum": current_required }
 
       return None
+
+    elif which == "meta":
+      if (zoom_val := content.get("zoom", None)):
+        zoom = float(zoom_val[0])
+        if self.circuit.mainframe:
+          self.circuit.mainframe.drawarea.zoom = zoom
+          self.circuit.mainframe.drawarea.drawingarea.set_size_request(
+            int(self.circuit.mainframe.drawarea.width * zoom),
+            int(self.circuit.mainframe.drawarea.height * zoom)
+          )
+      return None
     return None
 
   def string_to_components(self, str_data) -> list[CircuitComponent]:
     components: list[CircuitComponent] = []
 
-    for section in str_data.split("\n\n"):
+    for section in re.split(r'\n[ \t\r]*\n', str_data):
       section = section.strip()
       if not section or section == "":
         continue
@@ -177,7 +215,7 @@ class CircuitManager(GObject.GObject):
   __gsignals__ = {
     'currenttime-changed': (GObject.SIGNAL_RUN_FIRST, None, (float,)),
     'title-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
-    'message-changed': (GObject.SIGNAL_RUN_FIRST, None, (str,)),
+    'message-changed': (GObject.SIGNAL_RUN_FIRST, None, (str, bool)),
     'item-unselected': (GObject.SIGNAL_RUN_FIRST, None, ()),
     'alert': (GObject.SIGNAL_RUN_FIRST, None, (str,))
   }
@@ -194,6 +232,10 @@ class CircuitManager(GObject.GObject):
     self.filepath = ""
     self.mainframe = mainframe
     self.converter = CircuitConverter(self)
+    self.playback = CircuitPlaybackAnimation(self)
+    self.sim_generator = None
+    self.sim_cancelled = False
+    self.sim_start_time = None
 
     self.net_connections = []
     self.net_levels = []
@@ -215,7 +257,7 @@ class CircuitManager(GObject.GObject):
     self.simple_change = True
     self.save_point = self.action_count
     self.emit("title-changed", "%s - %s" % (os.path.basename(filepath), definitions.app_name))
-    self.emit('message-changed', _('Saved File ')+os.path.basename(filepath))
+    self.emit('message-changed', _('Saved File ')+os.path.basename(filepath), True)
 
     return True
 
@@ -236,7 +278,7 @@ class CircuitManager(GObject.GObject):
     self.components_history = [copy.deepcopy(self.components)]
     self.filepath = filepath
     self.emit("title-changed", "%s - %s" % (os.path.basename(filepath), definitions.app_name))
-    self.emit('message-changed', _('Opened file ' + os.path.basename(filepath)))
+    self.emit('message-changed', _('Opened file ' + os.path.basename(filepath)), True)
 
     return False
   
@@ -338,6 +380,7 @@ class CircuitManager(GObject.GObject):
 
     self.net_no_dot = net_no_dots
     self.net_connections = connections
+    self.net_levels = [-1] * len(connections)
   
 
   def split_nets(self, x, y):
@@ -499,7 +542,7 @@ class CircuitManager(GObject.GObject):
           for j,net in enumerate(self.net_connections):
             if (c[1].pos_x + p[0], c[1].pos_y + p[1]) in net:
               if self.net_levels[j] != -1 and self.net_levels[j] != c[1].output_level[i]:
-                self.emit("message-changed", _("Output port is short circuit!"))
+                self.emit("message-changed", _("Output port is short circuit!"), False)
                 return True
               self.net_levels[j] = c[1].output_level[i]
     return False
@@ -511,6 +554,18 @@ class CircuitManager(GObject.GObject):
     for c in self.components:
       if c[0] != definitions.component_net:
         c[1].initialize()
+    self.net_levels = [-1]*len(self.net_connections)
+
+  def _apply_recorded_frame(self, t):
+    i = 2
+    for c in self.components:
+      if c[0] != definitions.component_net:
+        c[1].input_level = self.component_state_history[t][i][0]
+        c[1].output_level = self.component_state_history[t][i][1]
+        c[1].output_stack = self.component_state_history[t][i][2]
+        c[1].store = self.component_state_history[t][i][3]
+        i += 1
+    self.net_levels = self.component_state_history[t][1]
 
   def revert_state(self):
     if self.component_state_history:
@@ -519,109 +574,231 @@ class CircuitManager(GObject.GObject):
         if comp_state[0] <= self.current_time:
           t = i
           break
-      i = 2
-      for c in self.components:
-        if c[0] != definitions.component_net:
-          c[1].input_level = self.component_state_history[t][i][0]
-          c[1].output_level = self.component_state_history[t][i][1]
-          c[1].output_stack = self.component_state_history[t][i][2]
-          c[1].store = self.component_state_history[t][i][3]
-          i += 1
-      self.net_levels = self.component_state_history[t][1]
+      self._apply_recorded_frame(t)
 
     self.emit("currenttime-changed", self.current_time)
 
-  def analyze_logic(self):
+  def cancel_simulation(self):
+    self.playback.cancel()
+
+  def _rewind_history(self):
+    # re-running from current_time: drop any recorded state newer than it
+    if not self.component_state_history:
+      return
+    t = 0
+    for i, comp_state in reversed(list(enumerate(self.component_state_history))):
+      if comp_state[0] <= self.current_time:
+        t = i
+        break
+    self.current_time = self.component_state_history[t][0]
+    self.component_state_history = self.component_state_history[:t]
+    self.probe_levels_history = self.probe_levels_history[:t]
+
+  def _net_index_at(self, x, y):
+    for j, net in enumerate(self.net_connections):
+      if (x, y) in net:
+        return j
+    return None
+
+  def _gather_inputs(self, comp):
+    # input level per connected input pin; None if any pin sits on an open net
+    inputs = []
+    for px, py in comp.rot_input_pins:
+      j = self._net_index_at(comp.pos_x + px, comp.pos_y + py)
+      if j is None:
+        continue
+      if self.net_levels[j] == -1:
+        return None
+      inputs.append(self.net_levels[j])
+    return inputs
+
+  def _apply_output_stack(self, comp):
+    for i in range(len(comp.rot_output_pins)):
+      stack = comp.output_stack[i]
+      if not stack:
+        continue
+      if stack[0][0] == self.current_time:
+        comp.output_level[i] = stack.pop(0)[1]
+      elif comp.output_level[i] == stack[0][1]:
+        stack.pop(0)
+
+  def _evaluate_components(self):
+    # evaluate every non-net component at current_time; True if an input is open
+    for c in self.components:
+      if c[0] == definitions.component_net:
+        continue
+      inputs = self._gather_inputs(c[1])
+      if inputs is None:
+        self.emit("message-changed", _("Input port is open circuit!"), False)
+        return True
+      c[1].calculate(inputs, self.current_time)
+      c[1].input_level = inputs[:]
+      self._apply_output_stack(c[1])
+    return False
+
+  def _settle_state(self, net_levels_history):
+    # "settled" (stable), "oscillate" (repeating cycle), or "continue"
+    if self.net_levels in net_levels_history[:-1]:
+      if self.net_levels == net_levels_history[-1]:
+        return "settled"
+      return "oscillate"
+    return "continue"
+
+  def _record_state(self):
+    probe_levels = [self.current_time]
+    for c in self.components:
+      if c[0] == definitions.component_probe:
+        probe_levels.append(c[1].input_level[0])
+    self.probe_levels_history.append(probe_levels)
+
+    comp_state = [self.current_time, self.net_levels[:]]
+    for c in self.components:
+      if c[0] != definitions.component_net:
+        comp_state.append((c[1].input_level[:], c[1].output_level[:], copy.deepcopy(c[1].output_stack), copy.deepcopy(c[1].store)))
+    self.component_state_history.append(comp_state)
+
+  def _advance_to_next_event(self):
+    # jump current_time to the soonest pending output event; False if none
+    timelist = []
+    for c in self.components:
+      if c[0] == definitions.component_net:
+        continue
+      for s in c[1].output_stack:
+        if s and s[0][0] != self.current_time:
+          timelist.append(s[0][0])
+    if not timelist or min(timelist) == self.current_time:
+      return False
+    self.current_time = min(timelist)
+    for c in self.components:
+      if c[0] == definitions.component_net:
+        continue
+      for i, s in enumerate(c[1].output_stack):
+        if s and s[0][0] == self.current_time:
+          c[1].output_level[i] = s.pop(0)[1]
+    return True
+
+  def _settle(self, counter, max_iters):
+    # run the per-timestep settle loop; yields ("progress", t) each iteration and
+    # returns the updated counter when settled, or None on error (message emitted)
+    net_levels_history = []
+    while True:
+      if self.set_netlevels():
+        return None
+      if self._evaluate_components():
+        return None
+
+      state = self._settle_state(net_levels_history)
+      if state == "settled":
+        self.emit("message-changed", "", False)
+        return counter
+      if state == "oscillate":
+        self.emit("message-changed", _("This circuit oscillates on infinite frequency!"), False)
+        return None
+
+      net_levels_history.append(self.net_levels)
+      if counter >= max_iters:
+        self.emit("message-changed", _("Calculation exceeded %d iterations — raise the limit in Preferences.") % max_iters, False)
+        return None
+      counter += 1
+      yield ("progress", self.current_time)
+
+  def analyze_logic_generator(self):
+    self._rewind_history()
     counter = 0
     stop_time = Preference.max_calc_duration
     max_iters = Preference.max_calc_iters
 
-    if self.component_state_history:
-      t = 0
-      for i, comp_state in reversed(list(enumerate(self.component_state_history))):
-        if comp_state[0] <= self.current_time:
-          t = i
-          break
-      self.current_time = self.component_state_history[t][0]
-      self.component_state_history = self.component_state_history[:t]
-      self.probe_levels_history = self.probe_levels_history[:t]
-
     while self.current_time < stop_time:
-      net_levels_history = []
-
-      while True:
-        if self.set_netlevels():
-          return True
-
-        for c in self.components:
-          if c[0] != definitions.component_net:
-            input_datas = []
-            for p in c[1].rot_input_pins:
-              for j, net in enumerate(self.net_connections):
-                if (c[1].pos_x + p[0], c[1].pos_y + p[1]) in net:
-                  if self.net_levels[j] == -1:
-                    self.emit("message-changed", _("Input port is open circuit!"))
-                    return True
-                  input_datas.append(self.net_levels[j])
-
-            c[1].calculate(input_datas, self.current_time)
-            c[1].input_level = input_datas[:]
-
-            for i, p in enumerate(c[1].rot_output_pins):
-              if c[1].output_stack[i]:
-                if c[1].output_stack[i][0][0] == self.current_time:
-                  c[1].output_level[i] = c[1].output_stack[i].pop(0)[1]
-                elif c[1].output_level[i] == c[1].output_stack[i][0][1]:
-                  c[1].output_stack[i].pop(0)
-
-        if self.net_levels in net_levels_history[:-1]:
-          if self.net_levels == net_levels_history[len(net_levels_history) - 1]:
-            self.emit("message-changed", "")
-            break
-          else:
-            self.emit("message-changed", _("This circuit oscillates on infinite frequency!"))
-            return True
-
-        net_levels_history.append(self.net_levels)
-
-        if counter >= max_iters:
-          self.emit("message-changed", _("This logic is complexity! (iters > %d)") % max_iters)
-          return True
-
-        counter += 1
-
-      probe_levels = [self.current_time]
-      for c in self.components:
-        if c[0] == definitions.component_probe:
-          probe_levels.append(c[1].input_level[0])
-      self.probe_levels_history.append(probe_levels)
-
-      comp_state = [self.current_time, self.net_levels[:]]
-      for c in self.components:
-        if c[0] != definitions.component_net:
-          comp_state.append((c[1].input_level[:], c[1].output_level[:], copy.deepcopy(c[1].output_stack), copy.deepcopy(c[1].store)))
-      self.component_state_history.append(comp_state)
-
-      tmptime = self.current_time
-      timelist = []
-      for c in self.components:
-        if c[0] != definitions.component_net:
-          for s in c[1].output_stack:
-            if s and s[0][0] != self.current_time:
-              timelist.append(s[0][0])
-      if timelist:
-        self.current_time = min(timelist)
-      if tmptime == self.current_time:
+      counter = yield from self._settle(counter, max_iters)
+      if counter is None:
+        yield ("error", True)
+        return
+      self._record_state()
+      if not self._advance_to_next_event():
         break
-
-      for c in self.components:
-        if c[0] != definitions.component_net:
-          for i, s in enumerate(c[1].output_stack):
-            if s and s[0][0] == self.current_time:
-              c[1].output_level[i] = s.pop(0)[1]
+      yield ("progress", self.current_time)
 
     self.emit("currenttime-changed", self.current_time)
-    return False
+    yield ("success", False)
+
+  def _run_sim_sync(self):
+    result = None
+    try:
+      while True:
+        step_type, val = next(self.sim_generator)
+        if step_type in ("success", "error"):
+          result = val
+          break
+    except StopIteration:
+      pass
+    self.sim_generator = None
+    self._log_if_slow()
+    return result
+
+  def _log_if_slow(self):
+    if self.sim_start_time is None:
+      return
+    elapsed = time.time() - self.sim_start_time
+    self.sim_start_time = None
+    if elapsed > _SLOW_SIM_SECONDS:
+      logger.warning("simulation took %.1fs (%d frames)", elapsed, len(self.probe_levels_history))
+
+  def analyze_logic(self, callback=None):
+    self.cancel_simulation()
+    if callback is None:
+      self.sim_cancelled = False
+      self.sim_generator = self.analyze_logic_generator()
+      self.sim_start_time = time.time()
+      return self._run_sim_sync()
+    self.playback.run(callback)
+
+  def begin_compute(self):
+    self.sim_cancelled = False
+    self.sim_generator = self.analyze_logic_generator()
+    self.sim_start_time = time.time()
+
+  def compute_slice(self):
+    start = time.time()
+    while time.time() - start < _COMPUTE_SLICE_SECONDS:
+      try:
+        step_type, val = next(self.sim_generator)
+        if step_type in ("success", "error"):
+          self._end_compute()
+          return ("done", val)
+      except StopIteration:
+        self._end_compute()
+        return ("done", False)
+    return ("running", None)
+
+  def _end_compute(self):
+    self._log_if_slow()
+    self.sim_generator = None
+
+  def cancel_compute(self):
+    self.sim_cancelled = True
+    self.sim_generator = None
+
+  def apply_frame_at(self, index):
+    self.current_time = self.component_state_history[index][0]
+    self._apply_recorded_frame(index)
+    self.emit("currenttime-changed", self.current_time)
+
+  def frame_count(self):
+    return len(self.component_state_history)
+
+  def total_time(self):
+    if not self.component_state_history:
+      return 0.0
+    return self.component_state_history[-1][0]
+
+  def is_animated(self):
+    return len(self.component_state_history) > 1 and self.total_time() > 0
+
+  def finalize_playback(self, error, callback):
+    if not error:
+      self.emit("message-changed", "", False)
+    if callback:
+      callback(error)
 
   def remove_selected_component(self):
     for c in self.selected_components:

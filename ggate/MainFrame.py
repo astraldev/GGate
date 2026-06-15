@@ -1,14 +1,14 @@
-# -*- coding: utf-8; indent-tabs-mode: t; tab-width: 4 -*-
 
 import os
 import sys
 import webbrowser
 
 import gi
+
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 
-from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, Adw
+from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, Adw, GLib
 from ggate import UserInterfaces, config
 from ggate.const import definitions as const
 from ggate.Exporter import save_schematics_as_image
@@ -16,29 +16,52 @@ from gettext import gettext as _
 from ggate.DrawArea import DrawArea
 from ggate.ComponentView import ComponentView
 from ggate.CircuitManager import CircuitManager
-from ggate.PropertyWindow import PropertyWindow
-from ggate.PreferencesWindow import PreferencesWindow
+from ggate.Components.Windows.Properties import PropertyWindow
+from ggate.Components.Windows.Preferences import PreferencesWindow
+from ggate.Components.Windows.About import AboutGGate
 from ggate import Preference
+from ggate import Themes
 
 from ggate.Components.LogicGates import logic_gates
-
 from ggate.Components.Managers.FileManager import FileIOManager
 from ggate.Components.Managers.FileManager import FileManager
 from ggate.Components.Managers.Alerts import AlertDialogs
-
+from ggate.Components.Windows.TimingGraph.Display import TimingGraphDisplayWindow
 from ggate.StatusDisplay import StatusDisplay
-from ggate.TimingDiagramWindow import TimingDiagramWindow
 
 themed_icons = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
-themed_icons.add_search_path(config.DATADIR + "/images")
+themed_icons.add_search_path(config.ICONDIR)
 
 TOOLTIPS = {
     "simulation": {
         "start": _("Run and simulate this circuit"),
         "stop": _("Stop simulation"),
-        "pause": _("Continue simulation"),
     }
 }
+
+WINDOW_WIDTH_PERCENT = 0.85
+WINDOW_HEIGHT_PERCENT = 0.75
+DEFAULT_WINDOW_WIDTH = 640
+DEFAULT_WINDOW_HEIGHT = 400
+
+def compute_default_window_size():
+    display = Gdk.Display.get_default()
+    if not display:
+        return DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
+
+    monitors = display.get_monitors()
+    if not monitors or len(monitors) == 0:
+        return DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
+
+    monitor = monitors.get_item(0)
+    if not monitor:
+        return DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT
+
+    geometry = monitor.get_geometry()
+    width = int(geometry.width * WINDOW_WIDTH_PERCENT)
+    height = int(geometry.height * WINDOW_HEIGHT_PERCENT)
+    return width, height
+
 
 class ShortCutWindow:
     def __init__(self, parent):
@@ -54,7 +77,6 @@ class MainFrame(Adw.ApplicationWindow):
         )
         self.application: Adw.Application = kwargs["application"]
         self.running_mode = False
-        self.pause_running_mode = False
 
         self.io_manager = FileIOManager
         self.file_manager = FileManager.for_glc(self)
@@ -65,54 +87,37 @@ class MainFrame(Adw.ApplicationWindow):
         self.circuit.connect("message-changed", self.on_circuit_message_changed)
         self.circuit.connect("item-unselected", self.on_circuit_item_unselected)
         self.circuit.connect("alert", self.on_circuit_alert)
+        self.circuit.connect("currenttime-changed", self.on_sim_progress)
 
         Preference.load_settings()
+
+        Themes.init_registry(config.RUNNING_FROM_SOURCE)
+        Themes.apply_chrome(Preference.theme, Gdk.Display.get_default())
 
         # Component window
         self.comp_window = ComponentView()
         self.comp_window.connect("component-checked", self.on_comp_checked)
 
+        self.statusbar = StatusDisplay()
+
         self.create_window()
 
         # Property window
         self.prop_window = PropertyWindow()
-        self.prop_window.set_transient_for(self)
-        self.prop_window.set_hide_on_close(True)
-        self.prop_window.set_modal(True)
-
         self.prop_window.connect("window-hidden", self.on_propwindow_hidden)
         self.prop_window.connect("property-changed", self.on_property_changed)
 
-        # Timing diagram window
-        self.diagram_window = TimingDiagramWindow(self)
-
-        # Preferences window
-        self.pref_window = PreferencesWindow(self)
-
-        # About dialog
-        self.about_dialog = Gtk.AboutDialog()
-        picture = Gdk.Texture.new_for_pixbuf(
-            GdkPixbuf.Pixbuf.new_from_file(config.DATADIR + "/images/ggate.png")
-        )
-        self.about_dialog.set_logo(picture)
-        self.about_dialog.set_program_name(const.app_name)
-        self.about_dialog.set_version(config.VERSION)
-        self.about_dialog.set_comments(const.description)
-        self.about_dialog.set_copyright(const.copyright)
-        self.about_dialog.set_website(const.website)
-        self.about_dialog.set_license(const.license)
-        self.about_dialog.set_authors(const.developer)
-
-        tr_credits = _("translator-credits")
-        if tr_credits != "translator-credits":
-            self.about_dialog.set_translator_credits(tr_credits)
+        # Other Windows
+        self.timing_diagram = TimingGraphDisplayWindow(self)
 
         self.clipboard = self.get_clipboard()
 
         if len(sys.argv) >= 2:
             self.circuit.open_file(sys.argv[1])
+            self.drawarea.zoom = 1.0
             self.drawarea.redraw = True
             self.drawarea.queue_draw()
+            GLib.idle_add(self.drawarea.center_viewport)
 
     def set_up_shortcuts(self, *args):
         actions = {
@@ -189,8 +194,6 @@ class MainFrame(Adw.ApplicationWindow):
             _("Rotate component ") + "<b>" + _("Left 90°") + "</b>"
         )
 
-        self.action_bar.pack_start(self.action_rotleft)
-
         # Rotate Right Action
         self.action_rotright = Gtk.Button()
         image = Gtk.Image.new_from_icon_name("object-rotate-right-symbolic")
@@ -200,7 +203,12 @@ class MainFrame(Adw.ApplicationWindow):
             _("Rotate component ") + "<b>" + _("Right 90°") + "</b>"
         )
 
-        self.action_bar.pack_start(self.action_rotright)
+        # Group Rotate Actions
+        _rot_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        _rot_box.add_css_class("linked")
+        _rot_box.append(self.action_rotleft)
+        _rot_box.append(self.action_rotright)
+        self.action_bar.pack_start(_rot_box)
 
         # Flip Horizontal
         self.action_fliphori = Gtk.Button()
@@ -211,8 +219,6 @@ class MainFrame(Adw.ApplicationWindow):
             _("Flip component " + "<b>" + _("horizontally") + "</b>")
         )
 
-        self.action_bar.pack_start(self.action_fliphori)
-
         # Flip Vertical
         self.action_flipvert = Gtk.Button()
         image = Gtk.Image.new_from_icon_name("object-flip-vertical-symbolic")
@@ -222,13 +228,16 @@ class MainFrame(Adw.ApplicationWindow):
             _("Flip component ") + "<b>" + _("vertically") + "</b>"
         )
 
-        self.action_bar.pack_start(self.action_flipvert)
+        # Group Flip Actions
+        _flip_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        _flip_box.add_css_class("linked")
+        _flip_box.append(self.action_fliphori)
+        _flip_box.append(self.action_flipvert)
+        self.action_bar.pack_start(_flip_box)
 
         # Add Net
         self.action_net = Gtk.ToggleButton()
-        image = Gtk.Image.new_from_pixbuf(
-            GdkPixbuf.Pixbuf.new_from_file(config.DATADIR + "images/add-net.png")
-        )
+        image = Gtk.Image.new_from_icon_name("list-add-symbolic")
         self.action_net.set_child(image)
         self.action_net.connect("toggled", self.on_action_net_toggled)
         self.action_net.set_tooltip_markup(
@@ -238,10 +247,11 @@ class MainFrame(Adw.ApplicationWindow):
         self.action_net.set_active(False)
 
     def create_window(self):
-        self.set_default_size(640, 400)
+        self.set_default_size(*compute_default_window_size())
 
         paned = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.toast_overlay = Adw.ToastOverlay()
 
         # Menu Button
 
@@ -257,68 +267,38 @@ class MainFrame(Adw.ApplicationWindow):
         self.popover = Gtk.PopoverMenu.new_from_model(_menu)
         self.menu_button.set_popover(self.popover)
 
-        # play, pause, stop button
+        # play / stop button
         self.action_run = Gtk.ToggleButton()
-        self.action_pause = Gtk.Button()
 
         play_image = Gtk.Image.new_from_icon_name("media-playback-start-symbolic")
         self.action_run.set_tooltip_text(TOOLTIPS["simulation"]["start"])
         self.action_run.connect("toggled", self.on_action_run_clicked)
-
-        pause_image = Gtk.Image.new_from_icon_name("media-playback-pause-symbolic")
-        self.action_pause.set_tooltip_text(TOOLTIPS["simulation"]["pause"])
-        self.action_pause.set_visible(False)
-        self.action_pause.connect("clicked", self.on_action_pause_clicked)
-
         self.action_run.set_child(play_image)
-        self.action_pause.set_child(pause_image)
-
-        _run_pause_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        _run_pause_box.add_css_class("linked")
-        _run_pause_box.append(self.action_run)
-        _run_pause_box.append(self.action_pause)
 
         # Header Bar
-        self.header_bar = Gtk.HeaderBar()
-
-        if sys.platform.startswith("win32") or sys.platform.startswith("darwin"):
-            self.header_bar.set_use_native_controls(True)
-
-        if self.header_bar.get_use_native_controls():
-            self.header_bar.pack_end(self.menu_button)
-            self.header_bar.pack_end(_run_pause_box)
-        else:
-            self.header_bar.pack_start(self.menu_button)
-            self.header_bar.pack_end(_run_pause_box)
-
-        self.set_titlebar(self.header_bar)
+        self.header_bar = Adw.HeaderBar()
+        self.header_bar.pack_end(self.menu_button)
+        self.header_bar.pack_end(self.action_run)
 
         # Draw area
         self.drawarea = DrawArea(self)
         self.drawarea.circuit = self.circuit
-        box.append(self.drawarea)
-        self.drawarea.set_vexpand(True)
-        self.drawarea.set_hexpand(True)
 
-        # Status bar
-        self.statusbar = StatusDisplay()
+        self.toast_overlay.set_child(self.drawarea)
+        self.toast_overlay.set_vexpand(True)
+        self.toast_overlay.set_hexpand(True)
+
+        box.append(self.toast_overlay)
+
+        # Status bar / Bottom Action Bar
         self.action_bar = Gtk.ActionBar()
+        self.action_bar.set_hexpand(True)
 
         self.set_up_action_bar()
         self.set_up_shortcuts()
 
-        action_bar_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-
-        _box = Gtk.Box()
-        _box.set_hexpand(False)
-        _box.set_halign(Gtk.Align.START)
-
-        _box.append(self.action_bar)
-        action_bar_box.append(_box)
-        action_bar_box.append(self.statusbar)
-        action_bar_box.set_hexpand(True)
-
-        box.append(action_bar_box)
+        self.action_bar.pack_end(self.statusbar)
+        box.append(self.action_bar)
 
         # Component box
         paned.set_start_child(self.comp_window)
@@ -331,7 +311,10 @@ class MainFrame(Adw.ApplicationWindow):
         paned.set_resize_start_child(False)
         paned.set_shrink_start_child(False)
 
-        self.set_child(paned)
+        toolbar_view = Adw.ToolbarView()
+        toolbar_view.add_top_bar(self.header_bar)
+        toolbar_view.set_content(paned)
+        self.set_content(toolbar_view)
 
         # Connect events
         self.connect("close-request", self.on_window_delete)
@@ -340,8 +323,11 @@ class MainFrame(Adw.ApplicationWindow):
 
     def create_new_buffer(self, *args):
         self.set_title("%s - %s" % (const.text_notitle, const.app_name))
+        self.drawarea.reset_initial_centering()
         self.reset_frame()
         self.circuit.reset_circuit()
+        self.drawarea.clear_animations()
+        self.drawarea.center_viewport()
         self.drawarea.nearest_component = None
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
@@ -352,13 +338,12 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.set_component(const.component_none)
         self.disable_edit_actions()
         self.action_net.set_active(False)
-        self.diagram_window.destroy()
-        self.diagram_window = TimingDiagramWindow(self)
 
     # >> app action handlers >>
 
     def on_action_about_pressed(self, *widget):
-        self.about_dialog.present()
+        about_dialog = AboutGGate.create()
+        about_dialog.present(self)
 
     def on_action_new_pressed(self, *args):
         if self.circuit.need_save:
@@ -373,7 +358,7 @@ class MainFrame(Adw.ApplicationWindow):
 
     def on_action_save_pressed(self, *args):
         fpath = self.circuit.filepath
-        if not os.path.exists(fpath) or not self.save_file_complete():
+        if not os.path.exists(fpath) or not self.save_file__complete():
             return self.on_action_saveas_pressed()
 
     def on_action_saveas_pressed(self, *args):
@@ -392,12 +377,13 @@ class MainFrame(Adw.ApplicationWindow):
         if self.circuit.open_file(path):
             return
 
+        self.drawarea.reset_initial_centering()
         self.reset_frame()
+        self.drawarea.clear_animations()
+        self.drawarea.zoom = 1.0
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
-
-        # todo: translations
-        self.statusbar.update(f"Opened <a href=\"file:///{path}\">{path.split('/')[-1]}</a>")
+        GLib.idle_add(self.drawarea.center_viewport)
 
     def save_file__complete(self, path = None):
         "Saves current circuit to the specified path or opened file"
@@ -443,49 +429,46 @@ class MainFrame(Adw.ApplicationWindow):
         self.comp_window.set_all_sensitive(False)
         self.action_net.set_sensitive(False)
         self.action_net.set_active(False)
-        self.prop_window.hide()
+        self.prop_window.dismiss()
         self.drawarea.set_component(const.component_none)
         self.drawarea.component_dragged = False
         self.drawarea.drag_enabled = False
         self.drawarea.rect_select_enabled = False
+        self.drawarea.clear_animations()
         self.circuit.analyze_net_connections()
         self.circuit.initialize_logic()
-        if not self.circuit.analyze_logic():
-            self.diagram_window.diagram_area.createDiagram()
 
+        self.circuit.analyze_logic(callback=self.on_simulation_finished)
+
+    def on_simulation_finished(self, is_error):
+        if not is_error:
+            if hasattr(self, "timing_diagram") and self.timing_diagram.get_visible():
+                self.timing_diagram._draw_area.draw()
+        self.drawarea.redraw = True
+        self.drawarea.queue_draw()
+
+    def on_sim_progress(self, circuit, current_time):
+        # progress signal -> status % + trailing timing-graph refresh
+        if self.circuit.playback.is_playing:
+            pct = min(100, int(current_time / Preference.max_calc_duration * 100))
+            self.statusbar.update(_("Playing: %d%%") % pct)
+        if self.timing_diagram.get_visible():
+            self.timing_diagram._draw_area.draw()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
 
     def on_circuit_stop(self, *args):
+        self.circuit.cancel_simulation()
         if self.running_mode:
             self.running_mode = False
             if self.circuit.action_count < len(self.circuit.components_history) - 1:
                 self.action_redo.set_sensitive(True)
             self.comp_window.set_all_sensitive(True)
             self.action_net.set_sensitive(True)
-            self.diagram_window.close()
-            self.diagram_window = TimingDiagramWindow(self)
-            self.statusbar.update("")
+
+        self.drawarea.clear_animations()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
-
-    def on_action_pause_clicked(self, widget, *args):
-        if self.drawarea.drag_enabled:
-            return
-        if self.pause_running_mode:  # if already paused, play simulation
-            play_image = Gtk.Image.new_from_icon_name("media-playback-pause-symbolic")
-            widget.set_tooltip_markup(TOOLTIPS["simulation"]["pause"])
-            widget.set_child(play_image)
-
-            self.pause_running_mode = False
-            if not self.circuit.analyze_logic():
-                self.diagram_window.diagram_area.createDiagram()
-            self.drawarea.queue_draw()
-        else:  # if not paused, pause it
-            pause_image = Gtk.Image.new_from_icon_name("media-playback-start-symbolic")
-            widget.set_tooltip_markup(TOOLTIPS["simulation"]["start"])
-            widget.set_child(pause_image)
-            self.pause_running_mode = True
 
     def on_action_run_clicked(self, widget, *args):
         if self.drawarea.drag_enabled:
@@ -495,72 +478,60 @@ class MainFrame(Adw.ApplicationWindow):
             widget.set_tooltip_markup(TOOLTIPS["simulation"]["stop"])
             widget.set_child(stop_image)
             self.on_circuit_run()
-            self.action_pause.set_visible(True)
         else:
             start_image = Gtk.Image.new_from_icon_name("media-playback-start-symbolic")
             widget.set_tooltip_markup(TOOLTIPS["simulation"]["start"])
             widget.set_child(start_image)
             self.on_circuit_stop()
-            self.action_pause.set_visible(False)
 
     def on_action_cut_pressed(self, *widget):
         self.on_action_copy_pressed()
         self.on_action_delete_pressed()
 
     def on_action_copy_pressed(self, *widget):
-        self.clipboard.set(
-            self.circuit.converter
-                .components_to_string(self.circuit.selected_components)
-        )
+        serialized = self.circuit.converter.components_to_string(self.circuit.selected_components)
+        self.clipboard.set(serialized)
+        if not serialized: return
+        self.show_feedback(_("Copied selected components to clipboard"), is_toast=True)
 
-    def on_action_paste_pressed(self, *widget):
-        def _handler(clipboard, task):
+    def on_action_paste_pressed(self, *args):
+        def _handler(clipboard: Gdk.Clipboard, task, *args):
             str_data = clipboard.read_text_finish(task)
-            if str_data is not None:
-                tmp = string_to_components(str_data)
-                if isinstance(tmp, str):
-                    dialog = Gtk.MessageDialog(
-                        transient_for=self,
-                        message_type=Gtk.MessageType.ERROR,
-                        button_type=Gtk.ButtonsType.OK,
-                    )
-                    dialog.set_markup(_("Error"))
-                    dialog.get_message_area().append(Gtk.Label(label=tmp))
-                    dialog.present()
-                    return
-                else:
-                    pasted_components = tmp
+            if str_data is None: return  # noqa: E701
 
-                if not pasted_components:
-                    return
-
+            components = self.circuit.converter.string_to_components(str_data)
+            if isinstance(components, str) or len(components) == 0:
+                self.show_feedback(_("Unable to parse clipboard data"), is_toast=True)
+                return
+            else:
                 self.drawarea.set_component(const.component_none)
-                self.drawarea.set_pasted_components(pasted_components)
+                self.drawarea.set_pasted_components(components)
 
         self.clipboard.read_text_async(None, _handler)
 
     def on_action_undo_pressed(self, *widget):
-
         if self.circuit.action_count == 0:
             return
 
         self.circuit.undo()
+        self.drawarea.clear_animations()
         self.disable_edit_actions()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
 
     def on_action_redo_pressed(self, *widget):
-
         if self.circuit.action_count == len(self.circuit.components_history) - 1:
             return
 
         self.circuit.redo()
+        self.drawarea.clear_animations()
         self.disable_edit_actions()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
 
     def on_action_delete_pressed(self, *args):
         self.circuit.remove_selected_component()
+        self.drawarea.clear_animations()
         self.drawarea.nearest_component = None
         self.drawarea.preselected_component = None
         self.circuit.push_history()
@@ -569,6 +540,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.queue_draw()
 
     def on_action_rotate_left_90(self, *widget):
+        self.drawarea.clear_animations()
         if logic_gates[self.drawarea.get_component()] is None:
             self.circuit.rotate_left_selected_components()
             self.circuit.push_history()
@@ -578,6 +550,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.queue_draw()
 
     def on_action_rotate_right_90(self, *widget):
+        self.drawarea.clear_animations()
         if logic_gates[self.drawarea.get_component()] is None:
             self.circuit.rotate_right_selected_components()
             self.circuit.push_history()
@@ -587,6 +560,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.queue_draw()
 
     def on_action_flip_horizontally(self, *widget):
+        self.drawarea.clear_animations()
         if logic_gates[self.drawarea.get_component()] is None:
             self.circuit.flip_hori_selected_components()
             self.circuit.push_history()
@@ -596,6 +570,7 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.queue_draw()
 
     def on_action_flip_vertically(self, *widget):
+        self.drawarea.clear_animations()
         if logic_gates[self.drawarea.get_component()] is None:
             self.circuit.flip_vert_selected_components()
             self.circuit.push_history()
@@ -606,37 +581,23 @@ class MainFrame(Adw.ApplicationWindow):
 
     def on_action_property_pressed(self, *widget):
         self.drawarea.set_selected_component_to_prop_window()
-        self.prop_window.present()
 
     def on_action_show_help(self, *args):
         Gtk.show_uri(None, const.help, Gdk.CURRENT_TIME)
 
-    # def on_action_translate_pressed(self, *args):
-    #     webbrowser.open(const.devel_translate)
 
     def on_action_bug_pressed(self, *args):
         webbrowser.open(const.devel_bug)
 
     def on_action_diagram_pressed(self, *widget):
-        self.diagram_window.present()
+        self.timing_diagram.display()
 
     def on_action_save_image(self, *args):
         save_schematics_as_image(self.circuit, self.running_mode, self)
 
-    def _prefs_changed(self, dialog, response, *args):
-        if response == Gtk.ResponseType.APPLY:
-            self.pref_window.apply_settings()
-
-            Preference.save_settings()
-            self.drawarea.redraw = True
-            self.drawarea.queue_draw()
-        self.pref_window = PreferencesWindow(self)
-        dialog.close()
-
     def on_action_prefs_pressed(self, *widget):
-        self.pref_window.connect("response", self._prefs_changed)
-        self.pref_window.update_dialog()
-        self.pref_window.present()
+        pref_dialog = PreferencesWindow(self)
+        pref_dialog.present(self)
 
     def on_comp_checked(self, widget, comp_name):
         if logic_gates[comp_name]:
@@ -663,39 +624,45 @@ class MainFrame(Adw.ApplicationWindow):
         self.action_components.set_active(False)
 
     def on_propwindow_hidden(self, widget):
-
-        widget.destroy()
-        self.prop_window = PropertyWindow()
-        self.prop_window.set_transient_for(self)
-        self.prop_window.set_hide_on_close(True)
-        self.prop_window.set_modal(True)
-        self.prop_window.connect("window-hidden", self.on_propwindow_hidden)
-        self.prop_window.connect("property-changed", self.on_property_changed)
         self.drawarea.queue_draw()
 
     def on_property_changed(self, widget):
         self.circuit.push_history()
+        if self.running_mode:
+            self.recompute_simulation()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
+
+    def recompute_simulation(self):
+        # a live edit (property or switch) invalidates the recorded timeline: stop and recompute from t=0
+        self.circuit.analyze_net_connections()
+        self.circuit.initialize_logic()
+        self.circuit.analyze_logic(callback=self.on_simulation_finished)
 
     def on_circuit_title_changed(self, circuit, title):
         self.set_title(title)
 
-    def on_circuit_message_changed(self, circuit, message):
-        self.statusbar.update(message)
+    def show_feedback(self, message: str, is_toast: bool = False, timeout: int = 3):
+        if is_toast:
+            toast = Adw.Toast.new(message)
+            toast.set_timeout(timeout)
+            self.toast_overlay.add_toast(toast)
+        else:
+            self.statusbar.update(message)
+
+    def on_circuit_message_changed(self, circuit, message, is_toast=False):
+        self.show_feedback(message, is_toast=is_toast)
 
     def on_circuit_item_unselected(self, circuit):
-        self.prop_window.set_component(None)
+        self.prop_window.show_properties(None)
 
     def on_circuit_alert(self, circuit, message):
-        dialog = Gtk.MessageDialog(
-            transient_for=self,
-            message_type=Gtk.MessageType.ERROR,
-            buttons=Gtk.ButtonsType.OK,
+        dialog = Adw.AlertDialog(
+            heading=_("Error"),
+            body=_(message),
         )
-        dialog.set_markup(_("Error"))
-        dialog.get_message_area().append(Gtk.Label(label=_(message)))
-        dialog.present()
+        dialog.add_response("ok", _("OK"))
+        dialog.present(self)
 
     def disable_edit_actions(self):
         if logic_gates[self.drawarea.get_component()] is None:
@@ -707,7 +674,7 @@ class MainFrame(Adw.ApplicationWindow):
 
 class GLogicApplication(Adw.Application):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, application_id="org.astralco.ggate", **kwargs)
+        super().__init__(*args, application_id=config.APP_PREFIX, **kwargs)
         self.window = None
 
     def action_handler(self, action):
@@ -725,7 +692,13 @@ class GLogicApplication(Adw.Application):
         ShortCutWindow(self.window)
 
     def do_startup(self, *args):
-        Gtk.Application.do_startup(self)
+        Adw.Application.do_startup(self)
+
+        display = Gdk.Display.get_default()
+        if display:
+            theme = Gtk.IconTheme.get_for_display(display)
+            resource_prefix = "/org/astralco/ggate/Dev/hicolor" if config.RUNNING_FROM_SOURCE else "/org/astralco/ggate/hicolor"
+            theme.add_resource_path(resource_prefix)
 
         # New File Pressed
         action = Gio.SimpleAction.new("on_action_new_pressed", None)
@@ -792,3 +765,4 @@ class GLogicApplication(Adw.Application):
             self.add_window(self.window)
         self.window.present()
         self.window.show()
+        self.window.set_focus(None)

@@ -1,0 +1,46 @@
+{
+    "app-id" : "org.astralco.ggate",
+    "runtime" : "org.gnome.Platform",
+    "runtime-version" : "48",
+    "sdk" : "org.gnome.Sdk",
+    "command" : "ggate",
+    "finish-args" : [
+        "--share=ipc",
+        "--socket=fallback-x11",
+        "--socket=wayland",
+        "--device=dri",
+        "--filesystem=home"
+    ],
+    "modules" : [
+        {
+            "name": "python-modules",
+            "buildsystem": "simple",
+            "build-commands": [
+                "pip3 install --prefix=${FLATPAK_DEST} pycairo pygobject igraph shapely packaging"
+            ],
+            "build-options": {
+              "build-args": [
+                "--share=network"
+              ]
+            },
+            "sources": []
+        },
+        {
+            "name" : "ggate",
+            "builddir" : true,
+            "buildsystem" : "meson",
+            "sources" : [
+                {
+                    "type" : "dir",
+                    "path" : "../../"
+                }
+            ],
+            "config-opts" : [
+                "--libdir=lib"
+            ]
+        }
+    ],
+    "build-options" : {
+        "env" : {        }
+    }
+}
