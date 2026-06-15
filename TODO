@@ -1,38 +1,15 @@
 # Todo
 
-* Animate logic circuit
+Roadmap of upcoming work. The detailed working backlog lives in `.agents/TODO.md`.
 
+## Planned
 
-### Icons
+* Packaging: Flatpak, Snap and Deb builds
+* Guard against over-large circuits (warn before a load/save/simulation hangs)
+* Auto-scroll the timing diagram to follow the latest timestamp while running
+* Playback polish: frame subsampling for very long timelines, optional per-session speed
 
-> Done
+## Done
 
-- tff
-- rsff
-- jkff
-- counter
-- dff
-- 7seg
-- PIPO
-- PISO
-- SISO
-- SIPO
-- counter
-- dff
-- adder
-- and
-- nand
-- gnd
-- not
-- or
-- xor
-- nor
-
-> To convert 
-
-- vdd
-- tribuff
-- sw
-- probe
-- osc
-- led
+* Animated logic-circuit playback with a floating transport bar
+* Themed component icon set (all components, ANSI + IEC variants)

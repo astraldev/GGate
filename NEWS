@@ -1,5 +1,15 @@
 # NEWS
 
+2026-06: version 5.0.0
+
+* Animated simulation playback with a floating transport bar (stop, restart, play/pause, seek)
+* Playback duration preference; only circuits that evolve over time animate
+* Simplified header simulation controls to Play/Stop
+* Recompute the simulation on live edits (switch toggle / property change)
+* New themed component icon set (ANSI + IEC), with light/dark theming
+* Revamped timing diagram (Adw dialog, themed Cairo waveforms)
+* Migrated dialogs to libadwaita; build via meson, with CI
+
 2023-09-03: version 4.0.0-rc
 
 * Changed name to aid publishing

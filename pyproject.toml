@@ -26,7 +26,13 @@ ignore = ["E402"]
 pygobject-stubs = "^2.13.0"
 mypy = "^1.15.0"
 ruff = "^0.11.2"
+pytest = "^8.0.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
 
 [build-system]
 requires = ["meson-python>=0.11.0"]
 build-backend = "mesonpy"
+
