@@ -1,5 +1,13 @@
 # ChangeLog
 
+## 2026-06-15 Ekure Edem <ekureedem480@gmail.com>
+ Animated simulation playback: compute the full timeline, then play it back paced
+ Floating playback control bar (Stop/Restart/Play, seek, sim-time) for animating circuits
+ Add playback duration preference; only animate circuits that evolve over time (e.g. oscillators)
+ Simplify header simulation controls to Play/Stop
+ Recompute simulation on live edits (switch toggle / property change) to fix desync
+ New themed 7-segment and LED component icons
+
 ## 2026-06-14 Ekure Edem <ekureedem480@gmail.com>
  Revamp timing diagram: Adw dialog with themed Cairo waveforms
  Add theming system with Classic, Space, Frappé and Mocha themes

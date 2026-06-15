@@ -11,6 +11,7 @@ A logic gate simulator for linux developed with Gtk and python.
 * Easy to understand UI and accesible shortcuts
 * Contains all logic gates with appropriate diagrams and alternative (IEC, MIL/ANSI)
 * Supports Simulation and Timing Diagrams
+* Animated playback of a simulation with a floating transport bar (play/pause, restart, seek)
 * Support exporting of drawings and timing diagrams.
 * Variable component properties
 * Contains all types Flip Flop

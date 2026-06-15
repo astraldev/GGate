@@ -36,7 +36,6 @@ TOOLTIPS = {
     "simulation": {
         "start": _("Run and simulate this circuit"),
         "stop": _("Stop simulation"),
-        "pause": _("Continue simulation"),
     }
 }
 
@@ -78,7 +77,6 @@ class MainFrame(Adw.ApplicationWindow):
         )
         self.application: Adw.Application = kwargs["application"]
         self.running_mode = False
-        self.pause_running_mode = False
 
         self.io_manager = FileIOManager
         self.file_manager = FileManager.for_glc(self)
@@ -269,31 +267,18 @@ class MainFrame(Adw.ApplicationWindow):
         self.popover = Gtk.PopoverMenu.new_from_model(_menu)
         self.menu_button.set_popover(self.popover)
 
-        # play, pause, stop button
+        # play / stop button
         self.action_run = Gtk.ToggleButton()
-        self.action_pause = Gtk.Button()
 
         play_image = Gtk.Image.new_from_icon_name("media-playback-start-symbolic")
         self.action_run.set_tooltip_text(TOOLTIPS["simulation"]["start"])
         self.action_run.connect("toggled", self.on_action_run_clicked)
-
-        pause_image = Gtk.Image.new_from_icon_name("media-playback-pause-symbolic")
-        self.action_pause.set_tooltip_text(TOOLTIPS["simulation"]["pause"])
-        self.action_pause.set_visible(False)
-        self.action_pause.connect("clicked", self.on_action_pause_clicked)
-
         self.action_run.set_child(play_image)
-        self.action_pause.set_child(pause_image)
-
-        _run_pause_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        _run_pause_box.add_css_class("linked")
-        _run_pause_box.append(self.action_run)
-        _run_pause_box.append(self.action_pause)
 
         # Header Bar
         self.header_bar = Adw.HeaderBar()
         self.header_bar.pack_end(self.menu_button)
-        self.header_bar.pack_end(_run_pause_box)
+        self.header_bar.pack_end(self.action_run)
 
         # Draw area
         self.drawarea = DrawArea(self)
@@ -464,10 +449,9 @@ class MainFrame(Adw.ApplicationWindow):
 
     def on_sim_progress(self, circuit, current_time):
         # progress signal -> status % + trailing timing-graph refresh
-        if not self.circuit.is_playing:
-            return
-        pct = min(100, int(current_time / Preference.max_calc_duration * 100))
-        self.statusbar.update(_("Playing: %d%%") % pct)
+        if self.circuit.playback.is_playing:
+            pct = min(100, int(current_time / Preference.max_calc_duration * 100))
+            self.statusbar.update(_("Playing: %d%%") % pct)
         if self.timing_diagram.get_visible():
             self.timing_diagram._draw_area.draw()
         self.drawarea.redraw = True
@@ -486,21 +470,6 @@ class MainFrame(Adw.ApplicationWindow):
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
 
-    def on_action_pause_clicked(self, widget, *args):
-        if self.drawarea.drag_enabled:
-            return
-        if self.pause_running_mode:  # if already paused, play simulation
-            play_image = Gtk.Image.new_from_icon_name("media-playback-pause-symbolic")
-            widget.set_tooltip_markup(TOOLTIPS["simulation"]["pause"])
-            widget.set_child(play_image)
-            self.pause_running_mode = False
-            self.drawarea.queue_draw()
-        else:  # if not paused, pause it
-            pause_image = Gtk.Image.new_from_icon_name("media-playback-start-symbolic")
-            widget.set_tooltip_markup(TOOLTIPS["simulation"]["start"])
-            widget.set_child(pause_image)
-            self.pause_running_mode = True
-
     def on_action_run_clicked(self, widget, *args):
         if self.drawarea.drag_enabled:
             return
@@ -509,13 +478,11 @@ class MainFrame(Adw.ApplicationWindow):
             widget.set_tooltip_markup(TOOLTIPS["simulation"]["stop"])
             widget.set_child(stop_image)
             self.on_circuit_run()
-            self.action_pause.set_visible(True)
         else:
             start_image = Gtk.Image.new_from_icon_name("media-playback-start-symbolic")
             widget.set_tooltip_markup(TOOLTIPS["simulation"]["start"])
             widget.set_child(start_image)
             self.on_circuit_stop()
-            self.action_pause.set_visible(False)
 
     def on_action_cut_pressed(self, *widget):
         self.on_action_copy_pressed()
@@ -661,8 +628,16 @@ class MainFrame(Adw.ApplicationWindow):
 
     def on_property_changed(self, widget):
         self.circuit.push_history()
+        if self.running_mode:
+            self.recompute_simulation()
         self.drawarea.redraw = True
         self.drawarea.queue_draw()
+
+    def recompute_simulation(self):
+        # a live edit (property or switch) invalidates the recorded timeline: stop and recompute from t=0
+        self.circuit.analyze_net_connections()
+        self.circuit.initialize_logic()
+        self.circuit.analyze_logic(callback=self.on_simulation_finished)
 
     def on_circuit_title_changed(self, circuit, title):
         self.set_title(title)

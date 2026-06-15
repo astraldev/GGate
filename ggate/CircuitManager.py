@@ -10,8 +10,9 @@ import re
 import copy
 import time
 import igraph
-from gi.repository import GObject, GLib
+from gi.repository import GObject
 from shapely.geometry import LineString, Point
+from ggate.CircuitPlaybackAnimation import CircuitPlaybackAnimation
 from ggate.Components.LogicGates.SystemComponents import BaseComponent
 from ggate.Components.LogicGates import logic_gates
 from ggate.const import definitions
@@ -26,10 +27,7 @@ CircuitComponent = Tuple[definitions, BaseComponent]
 _SLOW_SIM_SECONDS = 15
 # max time each compute idle-tick may run before yielding to keep the UI responsive
 _COMPUTE_SLICE_SECONDS = 0.008
-# floor on playback frame interval (~60fps cap)
-_PLAYBACK_MIN_INTERVAL_MS = 16
-# ceiling on playback frame interval (stops few-frame circuits crawling)
-_PLAYBACK_MAX_INTERVAL_MS = 200
+
 
 class CircuitConverter():
   def __init__(self, circuit: CircuitManager):
@@ -234,12 +232,10 @@ class CircuitManager(GObject.GObject):
     self.filepath = ""
     self.mainframe = mainframe
     self.converter = CircuitConverter(self)
+    self.playback = CircuitPlaybackAnimation(self)
     self.sim_generator = None
-    self.sim_idle_id = None
     self.sim_cancelled = False
     self.sim_start_time = None
-    self.playback_index = 0
-    self.is_playing = False
 
     self.net_connections = []
     self.net_levels = []
@@ -583,12 +579,7 @@ class CircuitManager(GObject.GObject):
     self.emit("currenttime-changed", self.current_time)
 
   def cancel_simulation(self):
-    self.sim_cancelled = True
-    self.is_playing = False
-    if self.sim_idle_id is not None:
-      GLib.source_remove(self.sim_idle_id)
-      self.sim_idle_id = None
-    self.sim_generator = None
+    self.playback.cancel()
 
   def _rewind_history(self):
     # re-running from current_time: drop any recorded state newer than it
@@ -752,65 +743,62 @@ class CircuitManager(GObject.GObject):
     if elapsed > _SLOW_SIM_SECONDS:
       logger.warning("simulation took %.1fs (%d frames)", elapsed, len(self.probe_levels_history))
 
-  def _finish_sim(self, callback, val):
-    self.sim_idle_id = None
-    self.sim_generator = None
-    self.is_playing = False
-    if self.sim_cancelled:
-      return
-    self._log_if_slow()
-    if not val:
-      self.emit("message-changed", "", False)
-    if callback:
-      callback(val)
-
-  def _play_frame(self, callback, compute_error_result):
-    if self.sim_cancelled:
-      return GLib.SOURCE_REMOVE
-    if self.playback_index >= len(self.component_state_history):
-      self._finish_sim(callback, compute_error_result)
-      return GLib.SOURCE_REMOVE
-    self.current_time = self.component_state_history[self.playback_index][0]
-    self._apply_recorded_frame(self.playback_index)
-    self.emit("currenttime-changed", self.current_time)
-    self.playback_index += 1
-    return GLib.SOURCE_CONTINUE
-
   def analyze_logic(self, callback=None):
     self.cancel_simulation()
+    if callback is None:
+      self.sim_cancelled = False
+      self.sim_generator = self.analyze_logic_generator()
+      self.sim_start_time = time.time()
+      return self._run_sim_sync()
+    self.playback.run(callback)
+
+  def begin_compute(self):
     self.sim_cancelled = False
     self.sim_generator = self.analyze_logic_generator()
     self.sim_start_time = time.time()
-    self.is_playing = False
-    if callback is None:
-      return self._run_sim_sync()
-    self.sim_idle_id = GLib.idle_add(self._compute_step, callback)
 
-  def _compute_step(self, callback):
-    if self.sim_cancelled:
-      return GLib.SOURCE_REMOVE
+  def compute_slice(self):
     start = time.time()
     while time.time() - start < _COMPUTE_SLICE_SECONDS:
       try:
         step_type, val = next(self.sim_generator)
         if step_type in ("success", "error"):
-          self._begin_playback(callback, val)
-          return GLib.SOURCE_REMOVE
+          self._end_compute()
+          return ("done", val)
       except StopIteration:
-        self._begin_playback(callback, False)
-        return GLib.SOURCE_REMOVE
-    return GLib.SOURCE_CONTINUE
+        self._end_compute()
+        return ("done", False)
+    return ("running", None)
 
-  def _begin_playback(self, callback, compute_error_result):
+  def _end_compute(self):
     self._log_if_slow()
     self.sim_generator = None
-    if self.sim_cancelled:
-      return
-    self.playback_index = 0
-    self.is_playing = True
-    frame_count = len(self.component_state_history)
-    interval = max(_PLAYBACK_MIN_INTERVAL_MS, min(int(Preference.playback_duration * 1000 / max(1, frame_count)), _PLAYBACK_MAX_INTERVAL_MS))
-    self.sim_idle_id = GLib.timeout_add(interval, self._play_frame, callback, compute_error_result)
+
+  def cancel_compute(self):
+    self.sim_cancelled = True
+    self.sim_generator = None
+
+  def apply_frame_at(self, index):
+    self.current_time = self.component_state_history[index][0]
+    self._apply_recorded_frame(index)
+    self.emit("currenttime-changed", self.current_time)
+
+  def frame_count(self):
+    return len(self.component_state_history)
+
+  def total_time(self):
+    if not self.component_state_history:
+      return 0.0
+    return self.component_state_history[-1][0]
+
+  def is_animated(self):
+    return len(self.component_state_history) > 1 and self.total_time() > 0
+
+  def finalize_playback(self, error, callback):
+    if not error:
+      self.emit("message-changed", "", False)
+    if callback:
+      callback(error)
 
   def remove_selected_component(self):
     for c in self.selected_components:

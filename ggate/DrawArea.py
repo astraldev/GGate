@@ -15,24 +15,34 @@ from ggate.Components.LogicGates import logic_gates
 from ggate import Preference
 from gi.repository import Gtk, Gdk, Pango, PangoCairo, GLib
 from ggate.Animation import CanvasAnimationController
+from ggate.PlaybackControls import PlaybackControls
 
 
-class DrawArea(Gtk.ScrolledWindow):
+class DrawArea(Gtk.Overlay):
     def __init__(self, parent: MainFrame):
-        Gtk.ScrolledWindow.__init__(self)
+        Gtk.Overlay.__init__(self)
         self.set_hexpand(True)
         self.set_vexpand(True)
+
+        self.scroller = Gtk.ScrolledWindow()
+        self.scroller.set_hexpand(True)
+        self.scroller.set_vexpand(True)
+
         self.width = 1920
         self.height = 1080
         self.zoom = 1.0
-        self.vadj = self.get_vadjustment()
-        self.hadj = self.get_hadjustment()
+        self.vadj = self.scroller.get_vadjustment()
+        self.hadj = self.scroller.get_hadjustment()
         self.netstarted = False
 
         self.drawingarea = Gtk.DrawingArea()
         self.drawingarea.set_size_request(self.width, self.height)
-        self.set_child(self.drawingarea)
+        self.scroller.set_child(self.drawingarea)
+        self.set_child(self.scroller)
         self.drawingarea.set_draw_func(self.on_draw)
+
+        self.playback_controls = PlaybackControls(parent)
+        self.add_overlay(self.playback_controls)
 
         scroll_controller = Gtk.EventControllerScroll.new(Gtk.EventControllerScrollFlags.BOTH_AXES)
         scroll_controller.connect("scroll", self.on_scroll)
@@ -1194,8 +1204,7 @@ class DrawArea(Gtk.ScrolledWindow):
                                          im[2] * (self.cursor_smooth_x - c[1].pos_x) + im[3] * (
                                              self.cursor_smooth_y - c[1].pos_y) + c[1].pos_y,
                                          self.circuit.current_time):
-                            if not self.parent.pause_running_mode:
-                                self.circuit.analyze_logic(callback=self.parent.on_simulation_finished)
+                            self.parent.recompute_simulation()
                             self.queue_draw()
                             break
 

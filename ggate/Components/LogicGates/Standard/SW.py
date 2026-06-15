@@ -62,6 +62,7 @@ class SW(BaseComponent):
 
   def click(self, x, y, time):
     self.store[0] = not self.store[0]
+    self.values[0] = int(self.store[0])
     self.clicked_time = time
     return True
 
