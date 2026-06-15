@@ -1,3 +1,4 @@
 <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
-  <text x="14" y="20" font-family="serif" font-size="18" font-weight="bold" fill="currentColor" text-anchor="middle">A</text>
+  <!-- Bold "A" as paths: two diagonal legs + crossbar -->
+  <path d="M 14,5 L 6,23 M 14,5 L 22,23 M 9,17 L 19,17" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

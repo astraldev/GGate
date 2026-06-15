@@ -9,22 +9,22 @@ menu_xml = """
         <item>
           <attribute name="label" translatable="yes">Flip Horizontally</attribute>
           <attribute name="action">menu.flip_hori</attribute>
-          <attribute name="icon">flip-horizontal-symbolic</attribute>
+          <attribute name="verb-icon">flip-horizontal-symbolic</attribute>
         </item>
         <item>
           <attribute name="label" translatable="yes">Flip Vertically</attribute>
           <attribute name="action">menu.flip_verti</attribute>
-          <attribute name="icon">flip-vertical-symbolic</attribute>
+          <attribute name="verb-icon">flip-vertical-symbolic</attribute>
         </item>
         <item>
           <attribute name="label" translatable="yes">Rotate Left</attribute>
           <attribute name="action">menu.rot_left</attribute>
-          <attribute name="icon">rotate-left-symbolic</attribute>
+          <attribute name="verb-icon">rotate-left-symbolic</attribute>
         </item>
         <item>
           <attribute name="label" translatable="yes">Rotate right</attribute>
           <attribute name="action">menu.rot_right</attribute>
-          <attribute name="icon">rotate-right-symbolic</attribute>
+          <attribute name="verb-icon">rotate-right-symbolic</attribute>
         </item>
     </section>
     <section>

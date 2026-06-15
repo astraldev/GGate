@@ -1,15 +1,10 @@
-<svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
-  <rect x="8" y="3" width="16" height="22" rx="1.5" ry="1.5" fill="none" stroke="currentColor" stroke-width="2"/>
-  <line x1="1" y1="6" x2="8" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <line x1="1" y1="11" x2="8" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <line x1="1" y1="16" x2="8" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <line x1="1" y1="21" x2="8" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <line x1="12.5" y1="6" x2="19.5" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="butt"/>
-  <line x1="11.5" y1="7.5" x2="11.5" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="butt"/>
-  <line x1="20.5" y1="7.5" x2="20.5" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="butt"/>
-  <line x1="12.5" y1="14.5" x2="19.5" y2="14.5" stroke="currentColor" stroke-width="2" stroke-linecap="butt"/>
-  <line x1="11.5" y1="16" x2="11.5" y2="21.5" stroke="currentColor" stroke-width="2" stroke-linecap="butt"/>
-  <line x1="20.5" y1="16" x2="20.5" y2="21.5" stroke="currentColor" stroke-width="2" stroke-linecap="butt"/>
-  <line x1="12.5" y1="23" x2="19.5" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="butt"/>
-  <circle cx="22.5" cy="23" r="1" fill="currentColor"/>
+<svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+  <polygon points="6.4,3.4 7.6,2.1 16.4,2.1 17.6,3.4 16.4,4.7 7.6,4.7"/>
+  <polygon points="6.4,14 7.6,12.7 16.4,12.7 17.6,14 16.4,15.3 7.6,15.3"/>
+  <polygon points="6.4,24.6 7.6,23.3 16.4,23.3 17.6,24.6 16.4,25.9 7.6,25.9"/>
+  <polygon points="6.2,4.9 7.5,6.1 7.5,11.3 6.2,12.5 4.9,11.3 4.9,6.1"/>
+  <polygon points="17.8,4.9 19.1,6.1 19.1,11.3 17.8,12.5 16.5,11.3 16.5,6.1"/>
+  <polygon points="6.2,15.5 7.5,16.7 7.5,21.9 6.2,23.1 4.9,21.9 4.9,16.7"/>
+  <polygon points="17.8,15.5 19.1,16.7 19.1,21.9 17.8,23.1 16.5,21.9 16.5,16.7"/>
+  <circle cx="21.5" cy="24.8" r="1.3"/>
 </svg>

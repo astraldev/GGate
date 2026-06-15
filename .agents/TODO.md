@@ -47,6 +47,11 @@ Companion docs: `reference/build-system-analysis.md`, `reference/delegation-brie
 ## P3 — feature backlog
 
 - [ ] Animate logic circuit during simulation.
+- [ ] **Real-time (human-paced) simulation playback.** Add a mode that advances the sim in
+  wall-clock time (human seconds, not instant settle) so wires/components are seen toggling
+  live — net colors and component states switching at a watchable rate. Needs a clock that
+  maps sim-time→real-time with a speed control, driving incremental redraws. Pairs with the
+  "animate logic circuit during simulation" item above.
 - [ ] Auto-scroll the timing diagram to follow the latest timestamp while running (deferred from
   the timing plan §6 Q1).
 

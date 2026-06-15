@@ -4,5 +4,7 @@
   <line x1="1" y1="19" x2="5" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
   <line x1="23" y1="9" x2="27" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
   <line x1="23" y1="19" x2="27" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <text x="14" y="17" font-family="sans-serif" font-size="10" font-weight="bold" fill="currentColor" text-anchor="middle">Σ</text>
+  <!-- Bold "+" drawn as two crossed lines -->
+  <line x1="14" y1="8" x2="14" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="8" y1="14" x2="20" y2="14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
 </svg>
