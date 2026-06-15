@@ -51,7 +51,7 @@ class PIPOShiftRegister(BaseComponent):
   def drawComponent(self, cr, layout):
     cr.rectangle(30, self.comp_rect[1], 70, self.comp_rect[3] - self.comp_rect[1])
     if self.values[1] == 1:
-      cr.arc(25, self.outpin_b + 20, 5, 0, 2 * math.pi)
+      cr.arc(25, self.outpin_b + 40, 5, 0, 2 * math.pi)
     cairo_paths(cr, (30, self.outpin_b + 35), (40, self.outpin_b + 40), (30, self.outpin_b + 45))
     cr.stroke()
     cairo_draw_text(cr, layout, "PIPO", 65, self.comp_rect[1] + 10, 0.5, 0.5)

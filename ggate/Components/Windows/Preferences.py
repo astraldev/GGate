@@ -230,6 +230,8 @@ class PreferencesWindow(Adw.PreferencesDialog):
     def _on_symbol_type_changed(self, row, pspec):
         Preference.symbol_type = row.get_selected()
         Preference.save_settings()
+        if self.main_frame and hasattr(self.main_frame, "comp_window"):
+            self.main_frame.comp_window.refresh_icons()
         self._trigger_canvas_redraw()
 
     def _on_color_changed(self, button, pspec, key):

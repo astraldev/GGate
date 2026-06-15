@@ -1,11 +1,7 @@
-import os
 from gi.repository import Gtk, Gdk, GLib
 from ggate import config
 
-def _get_icon_path(icon: str):
-    return os.path.join(config.ICONDIR, "actions", f"{icon}.svg")
-
-menu_xml = f"""
+menu_xml = """
 <interface>
   <menu id="model">
     <section>
@@ -13,22 +9,22 @@ menu_xml = f"""
         <item>
           <attribute name="label" translatable="yes">Flip Horizontally</attribute>
           <attribute name="action">menu.flip_hori</attribute>
-          <attribute name="verb-icon">{_get_icon_path("flip-horizontal")}</attribute>
+          <attribute name="icon">flip-horizontal-symbolic</attribute>
         </item>
         <item>
           <attribute name="label" translatable="yes">Flip Vertically</attribute>
           <attribute name="action">menu.flip_verti</attribute>
-          <attribute name="verb-icon">{_get_icon_path("flip-vertical")}</attribute>
+          <attribute name="icon">flip-vertical-symbolic</attribute>
         </item>
         <item>
           <attribute name="label" translatable="yes">Rotate Left</attribute>
           <attribute name="action">menu.rot_left</attribute>
-          <attribute name="verb-icon">{_get_icon_path("rotate-left")}</attribute>
+          <attribute name="icon">rotate-left-symbolic</attribute>
         </item>
         <item>
           <attribute name="label" translatable="yes">Rotate right</attribute>
           <attribute name="action">menu.rot_right</attribute>
-          <attribute name="verb-icon">{_get_icon_path("rotate-right")}</attribute>
+          <attribute name="icon">rotate-right-symbolic</attribute>
         </item>
     </section>
     <section>

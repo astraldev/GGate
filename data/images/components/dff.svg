@@ -1,4 +1,11 @@
-<svg version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-  
-  <path d="m8.77 16.433v-1.608h0.836v-5.662h-0.836v-1.596h3.217q1.634 0 2.432 0.772 0.811 0.773 0.811 2.369v2.584q0 1.596-0.81 2.369-0.799 0.772-2.433 0.772zm2.508-1.596h0.71q0.873 0 1.215-0.405 0.355-0.418 0.355-1.292v-2.432q0-0.76-0.355-1.153-0.342-0.392-1.216-0.392h-0.709zm-7.897 4.279 1.922-2.37-1.922-2.09zm-0.1095156-4.739047a0.30003001 0.30003001 0 0 0-0.1914063 0.279297v4.458984a0.30003001 0.30003001 0 0 0 0.5332032 0.189453l1.9218749-2.36914a0.30003001 0.30003001 0 0 0-0.011719-0.392578l-1.921875-2.089844a0.30003001 0.30003001 0 0 0-0.3300781-0.07617zm0.4101562 1.048828 1.2246094 1.332031-1.2246094 1.511719zm0.7070313-13.9140623c-1.341946 0-2.53125 1.0626321-2.53125 2.4375001v1.7617187h-1.8574219v2.25h1.8574219v7.7988285h-1.8574219v2.25h1.8574219v2.041015c0 1.374868 1.189304 2.435547 2.53125 2.435547h15.1933591c1.341946 0 2.53125-1.060679 2.53125-2.435547v-2.041015h1.888672v-2.25h-1.888672v-7.7968754h1.888672v-2.25h-1.888672v-1.7636718c0-1.373297-1.187281-2.4311703-2.527344-2.4335938-0.0015-2.8e-6 -0.0024-0.00195-0.0039-0.00195a1.1251125 1.1251125 0 0 0 0-0.00195zm0 2.2500001h15.1934061a1.1251125 1.1251125 0 0 0 0 0.00195c0.214054 0 0.28125 0.1064148 0.28125 0.1855469v16.1015653c0 0.07913-0.0672 0.185547-0.28125 0.185547h-15.1934061c-0.214054 0-0.28125-0.106415-0.28125-0.185547v-16.1015622c0-0.079132 0.067196-0.1875 0.28125-0.1875z"/>
+<svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+  <rect x="6" y="4" width="16" height="20" rx="1" ry="1" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  <line x1="1" y1="8" x2="6" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <line x1="1" y1="20" x2="6" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 6,17 L 9,20 L 6,23" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <line x1="22" y1="8" x2="27" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <line x1="22" y1="20" x2="27" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <text x="8" y="10" font-family="sans-serif" font-size="5" font-weight="bold" fill="currentColor">D</text>
+  <text x="20" y="10" font-family="sans-serif" font-size="5" font-weight="bold" fill="currentColor" text-anchor="end">Q</text>
+  <text x="20" y="22" font-family="sans-serif" font-size="5" font-weight="bold" fill="currentColor" text-anchor="end">~Q</text>
 </svg>

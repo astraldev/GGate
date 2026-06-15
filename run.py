@@ -31,46 +31,23 @@ from ggate import __version__
 
 
 def build_dev_resources():
-  import glob
   base = os.path.dirname(os.path.abspath(__file__))
   images_dir = os.path.join(base, "data", "images")
   xml = os.path.join(images_dir, "dev-resources.xml")
   target = os.path.join(base, "dev-resources.gresource")
 
-  comp_files = sorted(glob.glob(os.path.join(images_dir, "components", "*.svg")))
-  act_files = sorted(glob.glob(os.path.join(images_dir, "actions", "*.svg")))
-  theme_files = sorted(glob.glob(os.path.join(base, "data", "themes", "*.json")))
-
-  icon_lines = []
-  for f in comp_files:
-    rel = os.path.relpath(f, images_dir).replace("\\", "/")
-    icon_lines.append(f"    <file preprocess=\"xml-stripblanks\">{rel}</file>")
-  for f in act_files:
-    rel = os.path.relpath(f, images_dir).replace("\\", "/")
-    icon_lines.append(f"    <file preprocess=\"xml-stripblanks\">{rel}</file>")
-
-  theme_lines = []
-  for f in theme_files:
-    rel = os.path.relpath(f, images_dir).replace("\\", "/")
-    basename = os.path.basename(f)
-    theme_lines.append(f"    <file alias=\"{basename}\">{rel}</file>")
-
-  xml_content = (
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-    "<gresources>\n"
-    "  <gresource prefix=\"/org/astralco/ggate/Dev/data/icons/scalable/actions/\">\n"
-    + "\n".join(icon_lines)
-    + "\n  </gresource>\n"
-    "  <gresource prefix=\"/org/astralco/ggate/Dev/themes/\">\n"
-    + "\n".join(theme_lines)
-    + "\n  </gresource>\n"
-    "</gresources>\n"
-  )
-
   try:
-    with open(xml, "w", encoding="utf-8") as f:
-      f.write(xml_content)
-  except OSError:
+    subprocess.run(
+      [
+        sys.executable,
+        os.path.join(base, "build-aux", "generate-resources-xml.py"),
+        "--prefix", "/org/astralco/ggate/Dev",
+        "--output", xml,
+        "--source-dir", images_dir,
+      ],
+      check=True,
+    )
+  except (OSError, subprocess.CalledProcessError):
     pass
 
   try:

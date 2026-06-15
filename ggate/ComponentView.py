@@ -1,17 +1,12 @@
-import os
-from ggate import config
+from ggate import config, Preference
 from ggate.Components.LogicGates.SystemComponents import BaseComponent
 from ggate.const import definitions
 from gettext import gettext as _
 from gi.repository import Gtk, GdkPixbuf, GObject
 
-def _get_icon_path(icon: str):
-    svg_path = os.path.join(config.ICONDIR, "components", f"{icon}.svg")
-    png_path = os.path.join(config.ICONDIR, "components", f"{icon}.png")
-    return svg_path if os.path.exists(svg_path) else png_path
-
 class ComponentViewListBoxRow(Gtk.ListBoxRow):
     type = BaseComponent
+    icon = None
 
 class ComponentView(Gtk.Box):
     __gsignals__ = {
@@ -110,10 +105,10 @@ class ComponentView(Gtk.Box):
                 content_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
                 content_box.set_valign(Gtk.Align.CENTER)
 
-                icon = Gtk.Image.new_from_file(_get_icon_path(gate))
+                icon = Gtk.Image()
                 icon.set_margin_end(4)
                 icon.set_margin_start(4)
-                icon.set_size_request(24, 24)
+                icon.set_pixel_size(22)
 
                 label = Gtk.Label(label=str(gate).upper())
                 label.add_css_class("subtitle")
@@ -123,6 +118,7 @@ class ComponentView(Gtk.Box):
 
                 # Setup row
                 gate_row.type = gate
+                gate_row.icon = icon
                 gate_row.set_child(content_box)
                 gate_row.set_activatable(True)
 
@@ -131,6 +127,13 @@ class ComponentView(Gtk.Box):
                 group_rows.append(gate_row)
 
             self.category_groups.append((group_label, lb, group_rows))
+
+        self.refresh_icons()
+
+    def refresh_icons(self):
+        suffix = "-iec" if Preference.symbol_type == 1 else ""
+        for row in self.components:
+            row.icon.set_from_icon_name(f"gate-{row.type}{suffix}-symbolic")
 
     def set_all_sensitive(self, state, *args):
         [row.set_sensitive(bool(state)) for row in self.components]

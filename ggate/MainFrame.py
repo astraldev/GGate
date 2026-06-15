@@ -718,6 +718,12 @@ class GLogicApplication(Adw.Application):
     def do_startup(self, *args):
         Adw.Application.do_startup(self)
 
+        display = Gdk.Display.get_default()
+        if display:
+            theme = Gtk.IconTheme.get_for_display(display)
+            resource_prefix = "/org/astralco/ggate/Dev/hicolor" if config.RUNNING_FROM_SOURCE else "/org/astralco/ggate/hicolor"
+            theme.add_resource_path(resource_prefix)
+
         # New File Pressed
         action = Gio.SimpleAction.new("on_action_new_pressed", None)
         action.connect("activate", self.action_handler("on_action_new_pressed"))

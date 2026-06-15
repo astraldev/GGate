@@ -9,12 +9,12 @@ if RUNNING_FROM_SOURCE:
     DATADIR = path.join(_parent_dir, "data")
     ICONDIR = path.join(DATADIR, "images")
     APP_PREFIX = "org.astralco.ggate.Dev"
+    VERSION = "5.0.0"
 else:
     DATADIR = "@pkgdatadir@"
     ICONDIR = path.join(DATADIR, "icons")
     APP_PREFIX = "@APP_PREFIX@"
-
-VERSION = "@VERSION@"
+    VERSION = "@VERSION@"
 
 compatibility = {
   "version": VERSION,

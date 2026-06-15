@@ -1,0 +1,5 @@
+<svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+  <line x1="14" y1="27" x2="14" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <path d="M 8,12 L 14,6 L 20,12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="17" y="18" font-family="sans-serif" font-size="6" font-weight="bold" fill="currentColor" text-anchor="start">Vdd</text>
+</svg>
