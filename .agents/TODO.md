@@ -52,6 +52,22 @@ Companion docs: `reference/build-system-analysis.md`, `reference/delegation-brie
   live — net colors and component states switching at a watchable rate. Needs a clock that
   maps sim-time→real-time with a speed control, driving incremental redraws. Pairs with the
   "animate logic circuit during simulation" item above.
+  - **Architecture (decided):** *record-then-play*, not compute-and-trail. Phase 1 computes
+    the full timeline at engine speed (existing `_run_sim_sync` path — already records history
+    via `_record_state`/output_stacks). Phase 2 is a separate `timeout_add` "player" that walks
+    the **recorded frames** (not the generator), restoring each frame's levels + emitting
+    `currenttime-changed` + redrawing. This decouples compute speed from playback cadence.
+  - **Pacing:** target a fixed playback *duration*, not a fixed per-frame delay:
+    `interval = target_duration / frame_count`, clamped to a ≥16ms floor; subsample frames when
+    the timeline is too long to hold the target. (So 1s compute → e.g. 30s playback over data
+    already in memory.)
+  - ⚠️ Supersedes the current uncommitted `CircuitManager.py` attempt, which throttles the
+    *engine* to 30 steps/sec. See `.agents/reviews/circuitmanager-sim-animation-review.md`.
+- [ ] **Sleek playback control bar (bottom).** When a simulation has started, surface a slim
+  transport control along the bottom of the canvas: play/pause, step, scrub/seek through the
+  recorded timeline, current-time readout, and a speed control. Driven by the record-then-play
+  player above. HIG: keep it minimal/overlayed and auto-hide when no sim is active. Cite
+  `.agents/skills/designing-gnome-ui` + relevant `.agents/gtk4/` pages on the UI delegation.
 - [ ] Auto-scroll the timing diagram to follow the latest timestamp while running (deferred from
   the timing plan §6 Q1).
 

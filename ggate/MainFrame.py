@@ -40,11 +40,10 @@ TOOLTIPS = {
     }
 }
 
-WINDOW_WIDTH_PERCENT = 0.65
-WINDOW_HEIGHT_PERCENT = 0.60
+WINDOW_WIDTH_PERCENT = 0.85
+WINDOW_HEIGHT_PERCENT = 0.75
 DEFAULT_WINDOW_WIDTH = 640
 DEFAULT_WINDOW_HEIGHT = 400
-
 
 def compute_default_window_size():
     display = Gdk.Display.get_default()
@@ -465,12 +464,14 @@ class MainFrame(Adw.ApplicationWindow):
 
     def on_sim_progress(self, circuit, current_time):
         # progress signal -> status % + trailing timing-graph refresh
-        if self.circuit.sim_idle_id is None:
+        if not self.circuit.is_playing:
             return
         pct = min(100, int(current_time / Preference.max_calc_duration * 100))
-        self.statusbar.update(_("Calculating... %d%%") % pct)
+        self.statusbar.update(_("Playing: %d%%") % pct)
         if self.timing_diagram.get_visible():
             self.timing_diagram._draw_area.draw()
+        self.drawarea.redraw = True
+        self.drawarea.queue_draw()
 
     def on_circuit_stop(self, *args):
         self.circuit.cancel_simulation()

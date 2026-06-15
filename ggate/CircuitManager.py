@@ -24,6 +24,12 @@ CircuitComponent = Tuple[definitions, BaseComponent]
 
 # warn if a simulation run takes longer than this (seconds)
 _SLOW_SIM_SECONDS = 15
+# max time each compute idle-tick may run before yielding to keep the UI responsive
+_COMPUTE_SLICE_SECONDS = 0.008
+# floor on playback frame interval (~60fps cap)
+_PLAYBACK_MIN_INTERVAL_MS = 16
+# ceiling on playback frame interval (stops few-frame circuits crawling)
+_PLAYBACK_MAX_INTERVAL_MS = 200
 
 class CircuitConverter():
   def __init__(self, circuit: CircuitManager):
@@ -232,7 +238,8 @@ class CircuitManager(GObject.GObject):
     self.sim_idle_id = None
     self.sim_cancelled = False
     self.sim_start_time = None
-    self.sim_last_emit = 0.0
+    self.playback_index = 0
+    self.is_playing = False
 
     self.net_connections = []
     self.net_levels = []
@@ -553,6 +560,17 @@ class CircuitManager(GObject.GObject):
         c[1].initialize()
     self.net_levels = [-1]*len(self.net_connections)
 
+  def _apply_recorded_frame(self, t):
+    i = 2
+    for c in self.components:
+      if c[0] != definitions.component_net:
+        c[1].input_level = self.component_state_history[t][i][0]
+        c[1].output_level = self.component_state_history[t][i][1]
+        c[1].output_stack = self.component_state_history[t][i][2]
+        c[1].store = self.component_state_history[t][i][3]
+        i += 1
+    self.net_levels = self.component_state_history[t][1]
+
   def revert_state(self):
     if self.component_state_history:
       t = 0
@@ -560,20 +578,13 @@ class CircuitManager(GObject.GObject):
         if comp_state[0] <= self.current_time:
           t = i
           break
-      i = 2
-      for c in self.components:
-        if c[0] != definitions.component_net:
-          c[1].input_level = self.component_state_history[t][i][0]
-          c[1].output_level = self.component_state_history[t][i][1]
-          c[1].output_stack = self.component_state_history[t][i][2]
-          c[1].store = self.component_state_history[t][i][3]
-          i += 1
-      self.net_levels = self.component_state_history[t][1]
+      self._apply_recorded_frame(t)
 
     self.emit("currenttime-changed", self.current_time)
 
   def cancel_simulation(self):
     self.sim_cancelled = True
+    self.is_playing = False
     if self.sim_idle_id is not None:
       GLib.source_remove(self.sim_idle_id)
       self.sim_idle_id = None
@@ -744,6 +755,7 @@ class CircuitManager(GObject.GObject):
   def _finish_sim(self, callback, val):
     self.sim_idle_id = None
     self.sim_generator = None
+    self.is_playing = False
     if self.sim_cancelled:
       return
     self._log_if_slow()
@@ -752,23 +764,16 @@ class CircuitManager(GObject.GObject):
     if callback:
       callback(val)
 
-  def _sim_idle_step(self, callback):
-    # process a ~20ms slice per idle tick so the UI stays responsive; emit progress ~10 Hz
+  def _play_frame(self, callback, compute_error_result):
     if self.sim_cancelled:
       return GLib.SOURCE_REMOVE
-    start = time.time()
-    try:
-      while time.time() - start < 0.02:
-        step_type, val = next(self.sim_generator)
-        if step_type in ("success", "error"):
-          self._finish_sim(callback, val)
-          return GLib.SOURCE_REMOVE
-    except StopIteration:
-      self._finish_sim(callback, False)
+    if self.playback_index >= len(self.component_state_history):
+      self._finish_sim(callback, compute_error_result)
       return GLib.SOURCE_REMOVE
-    if start - self.sim_last_emit > 0.1:
-      self.sim_last_emit = start
-      self.emit("currenttime-changed", self.current_time)
+    self.current_time = self.component_state_history[self.playback_index][0]
+    self._apply_recorded_frame(self.playback_index)
+    self.emit("currenttime-changed", self.current_time)
+    self.playback_index += 1
     return GLib.SOURCE_CONTINUE
 
   def analyze_logic(self, callback=None):
@@ -776,10 +781,36 @@ class CircuitManager(GObject.GObject):
     self.sim_cancelled = False
     self.sim_generator = self.analyze_logic_generator()
     self.sim_start_time = time.time()
-    self.sim_last_emit = 0.0
+    self.is_playing = False
     if callback is None:
       return self._run_sim_sync()
-    self.sim_idle_id = GLib.idle_add(self._sim_idle_step, callback)
+    self.sim_idle_id = GLib.idle_add(self._compute_step, callback)
+
+  def _compute_step(self, callback):
+    if self.sim_cancelled:
+      return GLib.SOURCE_REMOVE
+    start = time.time()
+    while time.time() - start < _COMPUTE_SLICE_SECONDS:
+      try:
+        step_type, val = next(self.sim_generator)
+        if step_type in ("success", "error"):
+          self._begin_playback(callback, val)
+          return GLib.SOURCE_REMOVE
+      except StopIteration:
+        self._begin_playback(callback, False)
+        return GLib.SOURCE_REMOVE
+    return GLib.SOURCE_CONTINUE
+
+  def _begin_playback(self, callback, compute_error_result):
+    self._log_if_slow()
+    self.sim_generator = None
+    if self.sim_cancelled:
+      return
+    self.playback_index = 0
+    self.is_playing = True
+    frame_count = len(self.component_state_history)
+    interval = max(_PLAYBACK_MIN_INTERVAL_MS, min(int(Preference.playback_duration * 1000 / max(1, frame_count)), _PLAYBACK_MAX_INTERVAL_MS))
+    self.sim_idle_id = GLib.timeout_add(interval, self._play_frame, callback, compute_error_result)
 
   def remove_selected_component(self):
     for c in self.selected_components:

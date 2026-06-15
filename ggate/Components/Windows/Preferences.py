@@ -114,6 +114,15 @@ class PreferencesWindow(Adw.PreferencesDialog):
         group.add(self.calc_duration_row)
 
         page.add(group)
+
+        playback_group = Adw.PreferencesGroup()
+        playback_group.set_title(_("Playback"))
+
+        self.playback_duration_row = Adw.SpinRow()
+        self.playback_duration_row.set_title(_("Animation duration (s)"))
+        playback_group.add(self.playback_duration_row)
+
+        page.add(playback_group)
         return page
 
     def _build_canvas_page(self):
@@ -175,6 +184,10 @@ class PreferencesWindow(Adw.PreferencesDialog):
         self.calc_duration_row.set_adjustment(adj_dur)
         self.calc_duration_row.set_digits(3)
 
+        adj_playback = Gtk.Adjustment.new(float(Preference.playback_duration), 0.5, 60.0, 0.5, 1.0, 0.0)
+        self.playback_duration_row.set_adjustment(adj_playback)
+        self.playback_duration_row.set_digits(1)
+
         self.autocenter_row.set_active(bool(Preference.autocenter_resize))
 
     def _sync_button_from_preference(self, key):
@@ -196,6 +209,7 @@ class PreferencesWindow(Adw.PreferencesDialog):
 
         self.calc_iter_row.connect("notify::value", self._on_calc_iters_changed)
         self.calc_duration_row.connect("notify::value", self._on_calc_duration_changed)
+        self.playback_duration_row.connect("notify::value", self._on_playback_duration_changed)
         self.autocenter_row.connect("notify::active", self._on_autocenter_changed)
 
     # ── signal handlers ───────────────────────────────────────────────────────
@@ -259,6 +273,10 @@ class PreferencesWindow(Adw.PreferencesDialog):
         Preference.autocenter_resize = int(row.get_active())
         Preference.save_settings()
         self._trigger_canvas_redraw()
+
+    def _on_playback_duration_changed(self, row, pspec):
+        Preference.playback_duration = row.get_value()
+        Preference.save_settings()
 
     # ── helpers ───────────────────────────────────────────────────────────────
 

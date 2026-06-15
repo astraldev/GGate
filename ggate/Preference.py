@@ -62,6 +62,7 @@ class _Preference(dict,object):
     "symbol_type": 0,
     "max_calc_iters": 10000,
     "max_calc_duration": 0.0002,
+    "playback_duration": 6.0,
     "autocenter_resize": 1,
     "theme": "Classic",
   }
